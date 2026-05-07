@@ -1,0 +1,38 @@
+,Problema,Expert 1,Expert 2,Expert 3,Expert 4,Expert 5,Expert 6,Euristiche,Id valutatori
+PB1,Cancella cronologia non aggiornato correttamente,1,2,1,1,0,2,E1-E2,EU1-ED2
+PB2,Navbar sezione Acquista,3,2,3,3,3,1,E1-E2-E3,EU1-EU2
+PB3,"Ambiguità ""Visualizza altro"" e ""freccia"" categorie",4,1,4,4,3,3,E1-E5-E8,EU1
+PB4,"Ambiguità ""I migliori abbinamenti""",3,2,2,3,1,2,E1-E3,EU1
+PB5,Pulsante info poco visibile,1,1,1,1,2,1,E10,EU1-EU2
+PB6,Muri di testo,4,3,4,4,4,4,E7-E10,EU1-EU2-ED2-ED3-ED4
+PB7,Visualizzazione risultati,3,2,4,3,2,2,E4,EU1
+PB8,Filtri nascondibili accidentalmente,2,2,1,2,1,1,E3-E4,EU1
+PB9,"Prodotti consigliati ne ""i miei ordini""",4,1,3,4,1,3,E1-E7,EU1-ED4
+PB10,Visualizzazione parziale nomi lunghi del prodotto,0,3,1,0,0,2,E1,EU1-ED2
+PB11,"Pulsante ""ritirare"" sconto non funziona",2,2,3,2,0,1,E1-E2,EU1
+PB12,Popup di notifiche invasivi,4,4,4,4,4,4,E3,EU1-EU2-ED3-ED4
+PB13,Videogiochi bloccanti,4,4,4,4,4,3,E3,EU1-EU2
+PB14,Impossibile rimuovere recensione utile,3,3,3,3,3,2,E3,EU2
+PB15,Lista dei desideri non aggiornata,3,3,4,3,3,3,E1,EU2
+PB16,Impossibile uscire dal menù della mascotte,4,3,4,4,4,3,E3-E8,EU2
+PB17,Impossibile aggiungere alcuni prodotti alla lista dei preferiti,3,3,3,3,2,2,E9,EU2
+PB18,"Icona degli ""store"" fuorviante",0,2,1,0,1,2,E2-E5,EU2
+PB19,"Menù impostazioni vuoto in ""paga dopo la consegna"" e ""bonus""",3,3,2,3,1,1,E7,EU2
+PB20,"Icona ""suggerimenti"" ambigua",1,2,1,1,2,1,E2-E5,EU2
+PB21,Errore semantico nel filtro delle recensioni,2,4,1,2,2,1,E1,EU2
+PB22,"Filtro ""data"" assente ""reso/rimborso""",1,2,0,1,0,2,E4,EU2
+PB23,Gestione della posizione nella navbar ambigua,2,1,4,2,3,2,E1-E4,ED1
+PB24,Filtro prodotto dispersivo,3,3,4,3,3,3,E7,ED1-ED2-ED4
+PB25,Sistema di ricompense non chiaro,2,2,3,2,2,2,E10,ED1-ED3
+PB26,"Mantenimento prodotti nel carrello ""Choice""",4,3,4,4,3,2,E9,ED1
+PB27,"Sezione ""articoli preferiti"" poco visibile",3,2,4,3,4,1,E4,ED1
+PB28,Carosello prodotti sempre presente,4,4,3,4,3,2,E7,ED2-ED3-ED4
+PB29,Manca possibilità di ridurre le animazioni per l'accessibilità,1,3,0,1,1,3,E6,ED2-ED4
+PB30,"Icona ""Impostazioni"" ambigua",2,2,1,2,2,2,E2-E5,ED2
+PB31,Troppi collegamenti diversi ed ambigui con indirizzi di spedizione,2,1,0,2,1,0,E7-E5,ED2
+PB32,"Ambiguità ""indirizzo di spedizione"" e ""spedisci a""",3,2,2,3,2,2,E4-E5-E7,ED2
+PB33,"""Home"" e ""Acquista"" hanno comportamenti simili",3,2,3,3,3,1,E2-E7,ED3
+PB34,Interfaccia oppressiva,4,3,4,4,4,3,E7,EU1-EU2-ED1-ED2-ED3-ED4
+PB35,Ambiguità sezione Choice,2,2,3,2,3,2,E10,ED3
+PB36,Incongruenza comportamento del tasto home,3,2,2,3,3,2,E2-E4,ED3
+PB37,Ambiguità nella semantica dei colori,0,1,1,0,3,1,E2-E4,ED4

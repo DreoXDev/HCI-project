@@ -1,0 +1,32 @@
+,ED1,ED2,ED3,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15,Q16,Q17,Q18,Q19,Q20,Q21
+genere,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina
+eta,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25
+situazione lavorativa,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente,Studente
+istruzione,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale,Laurea Triennale
+fastidioso-piacevole,1,5,3,3,1,6,5,1,4,4,2,5,3,5,5,3,6,5,3,5,5,5,7,1
+incomprensibile-comprensibile,2,5,3,3,7,4,6,7,4,4,4,6,5,5,4,3,3,6,4,5,4,5,7,4
+creativo-privo di fantasia,4,4,5,4,3,4,2,1,4,5,4,4,5,4,7,4,2,6,2,4,5,4,1,2
+facile da apprendere-difficile da apprendere,5,3,5,2,1,2,1,2,3,5,3,5,2,2,4,6,1,4,4,3,2,3,1,2
+di grande valore-di poco valore,6,3,5,4,7,4,2,7,4,5,2,4,6,4,7,3,4,4,4,4,4,4,3,7
+noioso-appassionante,4,4,3,3,3,5,6,1,6,3,4,5,4,4,2,4,4,4,5,4,3,4,7,4
+non interessante-interessante,4,4,3,4,1,5,6,1,6,2,5,5,4,4,3,4,4,4,5,4,4,4,7,2
+imprevedibile-prevedibile,2,5,5,3,3,4,6,1,4,5,4,6,6,3,7,6,2,4,4,4,6,5,3,5
+veloce-lento,4,3,4,5,1,4,1,1,2,5,2,3,3,2,4,2,4,4,4,4,3,3,1,4
+originale-convenzionale,4,3,3,3,3,6,2,4,4,6,4,6,6,4,7,4,2,5,4,4,4,4,1,1
+ostruttivo-di supporto,3,5,4,4,1,5,6,6,5,3,4,5,3,5,3,3,4,2,2,4,5,5,7,7
+buono-scarso,6,3,2,4,7,2,2,7,3,5,4,4,5,5,5,4,3,4,5,4,4,4,1,3
+complicato-facile,3,6,4,4,7,3,6,7,6,3,4,6,6,6,4,3,7,4,3,4,5,6,7,5
+repellente-attraente,1,7,3,2,1,5,6,1,6,5,4,6,5,5,2,4,4,6,3,4,4,4,7,7
+usuale-moderno,4,2,5,4,7,5,6,5,6,3,5,5,5,4,2,4,6,3,5,4,4,4,7,5
+sgradevole-gradevole,1,5,4,3,1,6,6,1,5,3,4,5,4,4,3,4,6,2,3,4,4,5,7,5
+sicuro-insicuro,5,3,4,5,5,6,2,2,4,6,2,5,4,4,4,5,4,6,3,4,5,4,1,4
+attivante-soporifero,5,2,5,4,4,2,2,6,4,4,3,4,3,2,5,3,2,4,3,4,4,5,2,1
+conforme alle aspettatitve-non conforme alle aspettative,5,2,2,5,1,1,2,6,4,2,3,3,3,1,4,2,2,4,3,3,2,3,3,2
+inefficiente-efficiente,3,6,5,2,6,4,6,4,4,3,5,5,4,5,4,3,5,4,2,4,5,4,6,6
+chiaro-confuso,7,2,2,6,2,5,2,1,4,5,5,2,5,3,5,6,3,3,5,4,4,4,1,2
+non pragmatico-pragmatico,2,6,4,4,7,4,4,6,4,3,4,2,5,2,4,4,4,3,3,4,5,4,7,7
+ordinato-sovraccarico,6,4,2,7,6,5,2,7,4,6,5,2,5,6,7,6,3,5,5,4,6,4,1,7
+invitante-non invitante,6,2,3,6,7,3,2,7,3,5,4,3,5,2,7,5,2,5,5,4,4,4,1,2
+congeniale-ostile,5,2,3,5,7,3,2,4,4,4,4,3,5,2,4,5,4,5,5,4,3,4,2,3
+conservativo-innovativo,5,7,2,4,5,4,6,5,5,2,5,4,5,4,3,6,5,4,5,4,4,4,6,7
+NPS,0,9,6,2,0,7,10,0,7,0,6,7,5,0,2,2,6,6,6,7,5,4,10,5

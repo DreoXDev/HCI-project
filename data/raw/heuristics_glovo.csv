@@ -1,0 +1,28 @@
+,Problema,Expert 1,Expert 2,Expert 3,Expert 4,Expert 5,Expert 6,Euristiche,Id valutatori
+PB01,Aggiornamento con trascinamento ambiguo,1,1,2,1,0,2,E1-E2,EU1
+PB02,Spedizione gratuita navbar poco leggibile,2,3,3,3,2,2,E2-E7,EU1-EU2-ED2
+PB03,Icona elenco ambigua,3,1,3,3,2,1,E5,EU1
+PB04,Gestione carrello superflua,1,2,2,2,2,1,E7,EU1
+PB05,Visualizzazione parziale nomi lunghi del prodotto,0,3,1,2,1,2,E7,EU1
+PB06,Tasto salva nei preferiti poco visibile,3,1,3,3,2,1,E2,EU1
+PB07,Icona notifiche messaggi ambigua,1,1,0,0,2,2,E2-E4,EU1-EU2
+PB08,Manca conferma elimina elemento dal carrello,3,3,4,2,3,3,E8-E9,EU1-EU2
+PB09,Pulsante carrello poco visibile,2,2,3,2,3,2,E4-E8,EU1-ED4
+PB10,Navbar ambigue filtri e categorie,3,4,3,3,2,2,E5-E6-E7,EU1-EU2-ED1-ED2-ED4
+PB11,"Pulsante ""tutto"" troppo vicino al pulsante ""torna indietro""",3,3,1,4,4,1,E3-E4-E8,EU1
+PB12,Roulette bloccanti,4,4,4,4,4,4,E3-E7,EU2-ED1
+PB13,Icona fotocamera ambigua,1,1,0,0,2,2,E2-E5,EU2
+PB14,Presenza costante di caroselli dei prodotti ,3,4,3,3,3,3,E7,EU2-ED2-ED3-ED4
+PB15,Incoerenza traduzioni,2,4,1,2,3,2,E2-E4,EU2-ED1
+PB17,Icona impostazioni ambigua,2,1,1,2,3,2,E5,EU2-ED4
+PB18,Animazioni distraenti,1,2,0,1,2,3,E4,ED1-ED2-ED3
+PB19,Interfaccia oppressiva,4,3,4,4,3,3,E3-E8,ED1-ED2-ED3-ED4
+PB20,Uscita dai filtri solo con clic esterno o reimpostazione.,2,2,2,2,2,1,E3,ED2
+PB21,Pochi dettagli nella preview dei prodotti,2,2,3,2,2,2,E7,ED2
+PB22,"Pulsante ""mostra tutto"" poco visibile",2,2,1,3,3,3,E4,ED2
+PB23,Mancanza recensioni in alcuni prodotti,4,2,3,3,4,2,E4,ED2
+PB24,"bottone ""impegni di Temu"" fuori coro",2,1,1,1,2,2,E7,ED2
+PB25,Maggior parte delle informazioni del prodotto nel titolo.,1,4,3,3,4,3,E2-E4,ED2
+PB26,Incessanti popup per promozioni,3,4,4,4,3,4,E3,EU2-ED3
+PB27,Home non rapidamente accessibile,3,2,3,3,3,4,E6,ED4
+PB28,"avviso del pulsante ""tutto"" non intuitivo.",3,2,3,3,2,4,E9,ED4

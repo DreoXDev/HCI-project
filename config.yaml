@@ -1,0 +1,35 @@
+project:
+  title: "Deliveroo VS Glovo - Analisi Trasversale di Usabilita"
+  system_1: "Deliveroo"
+  system_2: "Glovo"
+  academic_year: "20XX/20XX"
+
+paths:
+  users_time: "data/raw/users-time.csv"
+  heuristics_system_1: "data/raw/heuristics_deliveroo.csv"
+  heuristics_system_2: "data/raw/heuristics_glovo.csv"
+  questionnaire_system_1: "data/raw/questionnaire_deliveroo.csv"
+  questionnaire_system_2: "data/raw/questionnaire_glovo.csv"
+  output_figures: "outputs/figures"
+  output_tables: "outputs/tables"
+  output_tables_md: "outputs/tables_md"
+  output_text: "outputs/text_snippets"
+
+style:
+  system_1_color: "#00C7C7"
+  system_1_dark: "#07191B"
+  system_2_color: "#FFD300"
+  system_2_dark: "#1E1600"
+  background: "#050505"
+  text: "#FFFFFF"
+  secondary_text: "#D6D6D6"
+
+analysis:
+  task_success_completed: "C"
+  task_success_helped: "A"
+  task_failed: "F"
+  ueq_scale_min: 1
+  ueq_scale_max: 7
+  nps_min: 0
+  nps_max: 10
+  round_decimals: 2
