@@ -15,9 +15,15 @@ outputs/tables_md/*
 outputs/report_assets/*
 outputs/slide_assets/*
 outputs/text_snippets/*
+outputs/text/*
+outputs/reports/*
 outputs/generated_report_sections/*
 outputs/import_report.md
 outputs/slide_manifest.md
+reports/*.md
+reports/*.csv
+data/processed/heuristics_candidates.csv
+data/processed/heuristics_review.csv
 
 # Keep folder structure
 !outputs/**/.gitkeep

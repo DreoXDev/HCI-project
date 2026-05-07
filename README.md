@@ -16,6 +16,7 @@ Il toolkit permette di:
 
 - validare automaticamente i CSV prima dell'analisi
 - calcolare efficacia ed efficienza degli user test
+- analizzare il dataset osservazionale `users_time.csv` con tempi, success rate, errori e richieste di aiuto
 - generare grafici comparativi tra i due sistemi
 - analizzare i problemi della valutazione euristica
 - calcolare severita media, mediana e priorita dei problemi
@@ -88,6 +89,8 @@ Il comando esegue:
 - generazione asset slide
 - generazione `outputs/slide_manifest.md`
 
+Se trova un export euristico Formbricks, il comando si ferma dopo aver creato `data/processed/heuristics_review.csv`: bisogna completare la review manuale e lanciare `build-heuristics-from-review` prima dell'analisi finale.
+
 Se si vogliono usare solo i CSV gia puliti in `data/raw/`, usare invece:
 
 ```powershell
@@ -126,6 +129,9 @@ Importare e convertire i CSV esportati da Formbricks:
 python -m src.cli import-formbricks
 python -m src.cli import-formbricks-questionnaire
 python -m src.cli import-formbricks-heuristics
+python -m src.cli build-heuristics-from-review
+python -m src.cli validate-users-time
+python -m src.cli analyze-users-time
 python -m src.cli import-formbricks-all
 python -m src.cli all-from-formbricks
 python -m src.cli import-any-form --input data/formbricks_raw/export.csv
@@ -137,6 +143,144 @@ Con un file esplicito:
 ```powershell
 python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire_export_2026_05_07.csv
 ```
+
+## Valutazione euristica da Formbricks
+
+Questo e il flusso consigliato per nuovi dati. Importa una riga Formbricks per ogni problema trovato da un valutatore, genera una tabella di candidati e lascia manuale solo il raggruppamento dei problemi simili.
+
+1. Creare il form con almeno questi campi: `evaluator_id`, `app`, `task`, `short_description`, `long_description`, `heuristic`, `severity`, `top5`.
+2. Se Formbricks esporta intestazioni diverse, aggiornare `config/formbricks_heuristics_mapping.yml`.
+3. Salvare il CSV esportato in `data/formbricks_raw/heuristics/`, per esempio `data/formbricks_raw/heuristics/export_esperti.csv`.
+4. Importare e normalizzare i candidati:
+
+```powershell
+python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
+```
+
+Il comando genera:
+
+```txt
+data/processed/heuristics_candidates.csv
+data/processed/heuristics_review.csv
+reports/heuristics_import_report.md
+reports/heuristics_import_errors.csv
+```
+
+5. Aprire `data/processed/heuristics_review.csv` e compilare manualmente `problem_group_id`: problemi diversi devono avere gruppi diversi, problemi simili o duplicati devono condividere lo stesso gruppo.
+6. Generare i CSV finali per app:
+
+```powershell
+python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+```
+
+Il comando genera file come:
+
+```txt
+data/raw/heuristics_deliveroo.csv
+data/raw/heuristics_glovo.csv
+reports/heuristics_build_report.md
+```
+
+La priorita viene calcolata con `scipy.stats.binomtest` sul numero di valutatori che hanno marcato il problema come `top5`: `A` quando i `top5` prevalgono in modo significativo, `C` quando prevalgono i non `top5`, `B` nei casi intermedi. La deduplicazione semantica non e automatica: resta una revisione manuale del gruppo problema.
+
+Gli esempi minimi sono in:
+
+```txt
+examples/formbricks_heuristics_export_example.csv
+examples/heuristics_review_example.csv
+examples/heuristics_final_deliveroo_example.csv
+examples/heuristics_final_glovo_example.csv
+```
+
+## Manuale operativo
+
+Per il flusso completo partendo dai tre file di lavoro, usare:
+
+```txt
+Manuale.md
+handbook.md
+docs/formbricks_workflow.md
+```
+
+La sequenza di produzione e:
+
+```powershell
+python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/export_questionario.csv
+python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
+# revisione manuale di data/processed/heuristics_review.csv
+python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+python -m src.cli validate
+python -m src.cli all
+```
+
+`data/raw/users_time.csv` deve essere compilato manualmente dagli osservatori. Non usare Formbricks per questi dati: parti dal template in `data/examples/users_time_template.xlsx`.
+
+## Users Time osservazionale
+
+`users_time` e il dataset manuale dei test utenti. Non va raccolto tramite Formbricks: contiene misurazioni osservazionali compilate dall'osservatore.
+
+File ufficiale:
+
+```txt
+data/raw/users_time.csv
+```
+
+Template ed esempi:
+
+```txt
+data/examples/users_time_template.csv
+data/examples/users_time_template.xlsx
+data/examples/users_time_example.csv
+data/examples/users_time_example.xlsx
+```
+
+Comandi:
+
+```powershell
+python -m src.cli create-templates
+python -m src.cli validate-users-time
+python -m src.cli analyze-users-time
+```
+
+Output:
+
+```txt
+outputs/reports/users_time_validation_report.md
+outputs/tables/users_time_summary.csv
+outputs/tables/users_time_summary.md
+outputs/tables/users_time_stat_tests.csv
+outputs/figures/users_time_mean_by_task.png
+outputs/figures/users_time_boxplot_by_task.png
+outputs/figures/users_time_success_rate.png
+outputs/figures/users_time_errors_by_task.png
+outputs/text/users_time_interpretation.md
+```
+
+Il vecchio `data/raw/users-time.csv` resta usato dalla pipeline legacy di efficacia/efficienza. Per nuovi dati, preferire `data/raw/users_time.csv`.
+
+## Graph styling
+
+La pipeline genera due versioni dei grafici:
+
+- `clean`: grafici puliti per report e controllo statistico
+- `presentation`: grafici con sfondo trasparente e DPI alto per slide
+
+Comandi:
+
+```powershell
+python -m src.cli full-pipeline --plot-style clean
+python -m src.cli full-pipeline --plot-style presentation
+python -m src.cli full-pipeline --plot-style both
+```
+
+Output:
+
+```txt
+outputs/figures/clean/
+outputs/figures/presentation/
+```
+
+La guida completa e in `docs/visual_style.md`.
 
 ## Notebook
 
@@ -244,7 +388,19 @@ paths:
 
 ### User test
 
-File attivo:
+Formato osservazionale consigliato:
+
+```txt
+data/raw/users_time.csv
+```
+
+Ogni riga rappresenta un utente che esegue una task su una app. Colonne principali:
+
+```txt
+user_id,app,task_id,task_name,completion_time_sec,success,errors_count,help_requests
+```
+
+Formato legacy ancora supportato:
 
 ```txt
 data/raw/users-time.csv
@@ -484,11 +640,14 @@ Sono disponibili anche:
 - `docs/dynamic_form_architecture.md`: architettura dinamica schema/tag driven
 - `docs/formbricks_workflow.md`: flusso completo con CSV Formbricks
 - `docs/heuristic_consolidation.md`: consolidamento manuale dei problemi euristici
+- `docs/users_time.md`: dataset osservazionale manuale dei test utenti
+- `docs/visual_style.md`: stile centralizzato dei grafici
+- `docs/codex_notes.md`: note operative per agenti AI che lavorano sul progetto
 - `docs/slide_generation.md`: uso degli asset slide
 - `docs/text_snippets.md`: testi generati per report
 - `docs/troubleshooting.md`: problemi comuni
 - `handbook.md`: guida operativa breve dalla root del progetto
-- `docs/codex_notes.md`: note sul refactor
+- `Manuale.md`: checklist passo-passo per arrivare dagli input all'analisi completa
 
 ## Requirements
 

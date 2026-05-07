@@ -8,7 +8,8 @@ import pandas as pd
 from .config import ensure_output_dirs, load_config, resolve_path
 from .data_loading import load_all
 from .export import create_templates
-from .formbricks_adapter import comparable, convert_heuristics_export, convert_questionnaire_export, load_formbricks_export
+from .formbricks_adapter import comparable, convert_questionnaire_export, load_formbricks_export
+from .formbricks_heuristics_pipeline import build_heuristics_from_review, import_formbricks_heuristics
 from .heuristics import clean_heuristics, priority_table, summarize_heuristics
 from .plots import (
     plot_distribution,
@@ -24,6 +25,7 @@ from .tables import export_table
 from .text_generation.final_summary_text import generate_text_outputs
 from .slide_export.slide_manifest import generate_slide_manifest
 from .user_tests import compute_effectiveness, compute_efficiency, compute_user_test_statistics
+from .users_time import analyze_users_time, users_time_enabled, users_time_file, validate_users_time_file
 from .validation import (
     format_validation,
     validate_heuristics_csv,
@@ -39,20 +41,23 @@ def _existing(path: str | Path | None) -> Path | None:
     return target if target.exists() else None
 
 
-def import_formbricks_available(config: dict, include_unfinished: bool = False) -> None:
+def import_formbricks_available(config: dict, include_unfinished: bool = False) -> bool:
     paths = config.get("paths", {})
     q_path = _existing(paths.get("questionnaire_raw")) or _existing(config.get("formbricks", {}).get("questionnaire", {}).get("export_path"))
     h_path = _existing(paths.get("heuristics_raw")) or _existing(config.get("formbricks", {}).get("heuristics", {}).get("export_path"))
+    heuristic_review_required = False
     if q_path:
         convert_questionnaire_export(q_path, config, include_unfinished=include_unfinished)
         print(f"OK: questionario importato da {q_path}")
     else:
         print("WARNING: CSV questionario Formbricks non trovato, uso eventuali file data/raw esistenti.")
     if h_path:
-        convert_heuristics_export(h_path, config, include_unfinished=include_unfinished)
-        print(f"OK: euristiche importate da {h_path}")
+        import_formbricks_heuristics(h_path)
+        print(f"OK: candidati euristici importati da {h_path}. Completa data/processed/heuristics_review.csv prima di rigenerare data/raw.")
+        heuristic_review_required = True
     else:
         print("WARNING: CSV euristiche Formbricks non trovato, uso eventuali file data/raw esistenti.")
+    return heuristic_review_required
 
 
 def build_heuristics_from_consolidation(config: dict) -> None:
@@ -87,7 +92,12 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     print("HCI Toolkit - Full Pipeline")
     ensure_output_dirs(config)
     print("\n[1/7] Import Formbricks CSV...")
-    import_formbricks_available(config, include_unfinished)
+    heuristic_review_required = import_formbricks_available(config, include_unfinished)
+    if heuristic_review_required:
+        raise SystemExit(
+            "STOP: euristiche importate come candidati. Revisiona data/processed/heuristics_review.csv, "
+            "esegui build-heuristics-from-review, poi rilancia python -m src.cli all."
+        )
     print("\n[2/7] Validazione dati...")
     data = load_all(config)
     print(validate(config, data))
@@ -207,6 +217,14 @@ def analyze(config: dict, data: dict[str, pd.DataFrame]) -> None:
         f"Pipeline completata per {systems[0]} vs {systems[1]}. Consultare outputs/figures e outputs/tables_md.",
         encoding="utf-8",
     )
+    if users_time_enabled(config):
+        users_time_path = users_time_file(config)
+        if users_time_path.exists():
+            analyze_users_time(config, users_time_path)
+            print("OK: analisi users_time completata")
+        else:
+            print(f"[users-time] File non trovato: {users_time_path}")
+            print("[users-time] Analisi saltata. Usa create-templates per generare un template.")
 
 
 def main() -> None:
@@ -215,6 +233,7 @@ def main() -> None:
         "command",
         choices=[
             "validate",
+            "validate-users-time",
             "analyze",
             "create-templates",
             "all",
@@ -230,26 +249,63 @@ def main() -> None:
             "export-tables",
             "export-figures",
             "analyze-user-tests",
+            "analyze-users-time",
             "analyze-heuristics",
             "analyze-questionnaire",
             "build-heuristics-from-consolidation",
+            "build-heuristics-from-review",
             "suggest-heuristic-duplicates",
         ],
     )
     parser.add_argument("--config", default="config.yaml")
     parser.add_argument("--input", help="Path CSV Formbricks da importare")
+    parser.add_argument("--output", help="Path CSV normalizzato da generare")
+    parser.add_argument("--output-dir", help="Cartella output per i CSV finali")
+    parser.add_argument("--mapping", default="config/formbricks_heuristics_mapping.yml", help="Mapping colonne per import euristiche Formbricks")
+    parser.add_argument("--plot-style", choices=["clean", "presentation", "both"], help="Stile grafici da esportare")
+    parser.add_argument("--overwrite", action="store_true", help="Sovrascrive template esistenti quando supportato")
     parser.add_argument("--include-unfinished", action="store_true", help="Importa anche risposte non completate")
     args = parser.parse_args()
     config = load_config(args.config)
+    if args.plot_style:
+        config.setdefault("visualization", {})["style"] = args.plot_style
     if args.command == "create-templates":
-        create_templates()
-        print("Template CSV creati in data/templates")
+        created = create_templates(overwrite=args.overwrite)
+        if created:
+            print("Template creati/aggiornati:")
+            for path in created:
+                print(resolve_path(path))
+        else:
+            print("Nessun template sovrascritto. Usa --overwrite per rigenerare file esistenti.")
+        return
+    if args.command == "validate-users-time":
+        path = resolve_path(args.input) if args.input else users_time_file(config)
+        result = validate_users_time_file(path, required_columns=config.get("users_time", {}).get("required_columns"))
+        print("\n".join(result.messages))
+        print(resolve_path("outputs/reports/users_time_validation_report.md"))
+        return
+    if args.command == "analyze-users-time":
+        path = resolve_path(args.input) if args.input else users_time_file(config)
+        if not path.exists():
+            print(f"[users-time] File non trovato: {path}")
+            print("[users-time] Analisi saltata. Usa create-templates per generare un template.")
+            validate_users_time_file(path, required_columns=config.get("users_time", {}).get("required_columns"))
+            return
+        analyze_users_time(config, path)
+        print("Analisi users_time completata.")
         return
     if args.command == "full-pipeline":
         full_pipeline(config, include_unfinished=args.include_unfinished)
         return
     if args.command == "build-heuristics-from-consolidation":
         build_heuristics_from_consolidation(config)
+        return
+    if args.command == "build-heuristics-from-review":
+        build_heuristics_from_review(
+            input_path=args.input or "data/processed/heuristics_review.csv",
+            output_dir=args.output_dir or "data/raw",
+        )
+        print("Euristiche finali generate da review manuale.")
         return
     if args.command == "suggest-heuristic-duplicates":
         print("Suggerimenti duplicati: controllare outputs/heuristic_review/possible_duplicates.md dopo import euristiche.")
@@ -263,20 +319,30 @@ def main() -> None:
         preview = load_formbricks_export(args.input)
         column_text = " ".join(comparable(column) for column in preview.columns)
         if "heuristic" in column_text or "euristic" in column_text or "severita" in column_text or "severity" in column_text:
-            convert_heuristics_export(args.input, config, include_unfinished=args.include_unfinished)
-            print("Form rilevato come valutazione euristica e convertito.")
+            import_formbricks_heuristics(args.input, mapping_path=args.mapping)
+            print("Form rilevato come valutazione euristica e importato come candidati per review manuale.")
         else:
             convert_questionnaire_export(args.input, config, include_unfinished=args.include_unfinished)
             print("Form rilevato come questionario e convertito.")
         return
     if args.command == "all-from-formbricks":
-        import_formbricks_available(config, include_unfinished=args.include_unfinished)
+        heuristic_review_required = import_formbricks_available(config, include_unfinished=args.include_unfinished)
+        if heuristic_review_required:
+            raise SystemExit(
+                "STOP: completa data/processed/heuristics_review.csv e lancia build-heuristics-from-review prima dell'analisi."
+            )
     if args.command in {"import-formbricks-questionnaire", "import-formbricks-all"}:
         convert_questionnaire_export(args.input, config, include_unfinished=args.include_unfinished)
         print("Questionario Formbricks convertito nei CSV del toolkit.")
     if args.command in {"import-formbricks-heuristics", "import-formbricks-all"}:
-        convert_heuristics_export(args.input, config, include_unfinished=args.include_unfinished)
-        print("Euristiche Formbricks convertite nei CSV del toolkit.")
+        source = args.input or config["formbricks"]["heuristics"]["export_path"]
+        import_formbricks_heuristics(
+            input_path=source,
+            output_path=args.output or "data/processed/heuristics_candidates.csv",
+            review_path="data/processed/heuristics_review.csv",
+            mapping_path=args.mapping,
+        )
+        print("Euristiche Formbricks importate. Review manuale in data/processed/heuristics_review.csv.")
     if args.command in {"import-formbricks-questionnaire", "import-formbricks-heuristics", "import-formbricks-all"}:
         return
     data = load_all(config)

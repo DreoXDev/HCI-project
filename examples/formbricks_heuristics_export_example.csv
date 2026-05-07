@@ -1,0 +1,5 @@
+ID valutatore,App analizzata,Task analizzata,Descrizione breve,Descrizione lunga,Euristica violata,Severita,Problema tra i 5 piu gravi?
+EU1,Deliveroo,Checkout,Mancanza feedback pagamento,Durante il checkout non e chiaro se il pagamento sia in corso.,E1 - Visibility of system status,3,Si
+EU2,Deliveroo,Checkout,Feedback pagamento poco visibile,Il sistema non comunica bene lo stato del pagamento dopo il tap sul pulsante.,Visibility of system status,4,Yes
+EU1,Glovo,Ricerca,Filtri poco chiari,I filtri sono nascosti e non e chiaro quando sono attivi.,E4 - Consistency and standards,2,No
+EU3,Glovo,Ricerca,Troppi elementi nella schermata,La pagina di ricerca mostra molte informazioni secondarie e rende difficile scegliere.,Aesthetic and minimalist design,3,Top 5

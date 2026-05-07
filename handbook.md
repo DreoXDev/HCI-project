@@ -1,113 +1,160 @@
-# Handbook operativo - Pipeline Formbricks -> output HCI
+# Handbook operativo
 
-Questa guida spiega il flusso piu semplice per usare il toolkit partendo dai CSV scaricati da Formbricks.
+Questa guida e il percorso breve per arrivare dagli export Formbricks agli output finali del toolkit HCI.
 
-## 1. Dove mettere i CSV scaricati
+## Prerequisiti
 
-Salva gli export originali senza modificarli manualmente:
+Lavora dalla root del progetto:
+
+```powershell
+cd "D:\Projects\IUM\Improved Notebooks\HCI-project"
+..\.venv\Scripts\Activate.ps1
+```
+
+Installa o aggiorna le dipendenze se necessario:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+## I tre file di partenza
+
+La pipeline completa usa tre sorgenti:
 
 ```txt
 data/formbricks_raw/questionnaire/export_questionario.csv
 data/formbricks_raw/heuristics/export_esperti.csv
-data/formbricks_raw/user_tests/user_tests.csv
+data/raw/users_time.csv
 ```
 
-Il questionario e il file euristiche sono quelli principali. Il file user test puo anche essere gestito manualmente tramite:
+I primi due sono export Formbricks importati automaticamente. Il terzo, `users_time.csv`, e una tabella osservazionale manuale descritta in `docs/users_time.md`.
+
+## Step 1 - Configura progetto e mapping
+
+Controlla in `config.yaml`:
+
+```yaml
+project:
+  system_1: "Deliveroo"
+  system_2: "Glovo"
+paths:
+  questionnaire_raw: "data/formbricks_raw/questionnaire/export_questionario.csv"
+  heuristics_raw: "data/formbricks_raw/heuristics/export_esperti.csv"
+  users_time: "data/raw/users-time.csv"
+users_time:
+  input_path: "data/raw/users_time.csv"
+```
+
+Se Formbricks esporta intestazioni diverse per il form euristico, aggiorna:
 
 ```txt
-data/raw/users-time.csv
+config/formbricks_heuristics_mapping.yml
 ```
 
-## 2. Come nominare le domande Formbricks
-
-Usa tag nei titoli per rendere il parser robusto:
+Per il questionario, preferisci titoli con tag:
 
 ```txt
 [DEMOGRAPHIC] Genere
-[DEMOGRAPHIC] Eta
-[DEMOGRAPHIC] Professione
-[DEMOGRAPHIC] Familiarita delivery
-[DEMOGRAPHIC] App usata piu spesso
-
 [UEQ][Deliveroo] Fastidioso/Piacevole
-[UEQ][Deliveroo] Incomprensibile/Comprensibile
 [UEQ][Glovo] Fastidioso/Piacevole
-[UEQ][Glovo] Incomprensibile/Comprensibile
-
 [NPS][Deliveroo] Quanto consiglieresti Deliveroo?
 [NPS][Glovo] Quanto consiglieresti Glovo?
 ```
 
-Per le euristiche:
-
-```txt
-[HEURISTIC] ID valutatore
-[HEURISTIC] Tipo valutatore
-[HEURISTIC] App valutata
-[HEURISTIC] Titolo problema
-[HEURISTIC] Descrizione problema
-[HEURISTIC] Euristiche violate
-[HEURISTIC] Severita
-[HEURISTIC] Note aggiuntive
-```
-
-## 3. Cosa modificare se cambiano le domande
-
-Prima scelta: mantenere i tag nei titoli. In quel caso puoi cambiare quasi tutto il testo umano senza rompere l'import.
-
-Se non puoi usare tag o se Formbricks esporta nomi diversi, aggiorna:
-
-```txt
-config.yaml
-src/schemas/questionnaire_schema.yaml
-src/schemas/heuristic_schema.yaml
-```
-
-In `config.yaml` controlla soprattutto:
-
-```yaml
-paths:
-  questionnaire_raw: "data/formbricks_raw/questionnaire/export_questionario.csv"
-  heuristics_raw: "data/formbricks_raw/heuristics/export_esperti.csv"
-
-project:
-  system_1: "Deliveroo"
-  system_2: "Glovo"
-```
-
-Negli schema YAML aggiungi alias per le nuove domande demografiche o per campi euristici rinominati.
-
-## 4. Comando principale
-
-Da dentro la root della repo:
+## Step 2 - Prepara users_time
 
 ```powershell
-python -m src.cli full-pipeline
+python -m src.cli create-templates
 ```
 
-Il comando esegue:
-
-1. import CSV Formbricks disponibili
-2. conversione nei CSV del toolkit
-3. validazione
-4. analisi
-5. grafici
-6. tabelle
-7. testi per report
-8. asset slide
-9. manifest finale
-
-## 5. Output principali
-
-Dopo la pipeline apri:
+Compila il template `data/examples/users_time_template.xlsx` e salva il CSV finale in:
 
 ```txt
-outputs/slide_manifest.md
+data/raw/users_time.csv
 ```
 
-Questo file dice cosa usare nelle slide.
+Poi valida:
 
-Cartelle utili:
+```powershell
+python -m src.cli validate-users-time
+```
+
+## Step 3 - Importa il questionario Formbricks
+
+```powershell
+python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/export_questionario.csv
+```
+
+Output:
+
+```txt
+data/raw/questionnaire_deliveroo.csv
+data/raw/questionnaire_glovo.csv
+data/processed/questionnaire_long.csv
+outputs/import_report.md
+```
+
+## Step 4 - Importa le euristiche Formbricks
+
+```powershell
+python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
+```
+
+Output:
+
+```txt
+data/processed/heuristics_candidates.csv
+data/processed/heuristics_review.csv
+reports/heuristics_import_report.md
+reports/heuristics_import_errors.csv
+```
+
+Apri `reports/heuristics_import_report.md` e correggi eventuali errori segnalati prima di procedere.
+
+## Step 5 - Revisiona manualmente i gruppi euristici
+
+Apri:
+
+```txt
+data/processed/heuristics_review.csv
+```
+
+Compila `problem_group_id` con questa regola:
+
+- problemi diversi: gruppi diversi, per esempio `PG001`, `PG002`
+- problemi simili o duplicati: stesso gruppo, per esempio due righe entrambe `PG001`
+
+Non serve usare AI in questa fase. La scelta del gruppo e una decisione metodologica del team.
+
+## Step 6 - Genera i CSV euristici finali
+
+```powershell
+python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+```
+
+Output:
+
+```txt
+data/raw/heuristics_deliveroo.csv
+data/raw/heuristics_glovo.csv
+reports/heuristics_build_report.md
+```
+
+## Step 7 - Verifica tutti i dati
+
+```powershell
+python -m src.cli validate
+```
+
+Se compaiono errori, correggi i CSV sorgente o i mapping e ripeti gli step precedenti.
+
+## Step 8 - Esegui analisi e output finali
+
+```powershell
+python -m src.cli all
+```
+
+Output principali:
 
 ```txt
 outputs/figures/
@@ -115,95 +162,49 @@ outputs/tables/
 outputs/tables_md/
 outputs/text_snippets/
 outputs/generated_report_sections/
-outputs/slide_assets/
+outputs/slide_manifest.md
 ```
 
-## 6. Risultati che ottieni
+## Step 9 - Controllo finale
 
-User test:
-
-- efficacia per task
-- intervalli di confidenza
-- efficienza media
-- boxplot tempi
-- violin plot tempi
-
-Euristiche:
-
-- distribuzione euristiche violate
-- euristiche per categoria
-- tabella problemi prioritari
-- file di consolidamento se i dati arrivano da Formbricks
-
-Questionario:
-
-- sintesi UEQ
-- NPS se presente
-- subgroup analysis per demographics disponibili
-
-Report/slide:
-
-- testi markdown pronti in `outputs/text_snippets/`
-- sezioni report in `outputs/generated_report_sections/`
-- asset slide in `outputs/slide_assets/`
-- manifest in `outputs/slide_manifest.md`
-
-## 7. Consolidamento euristiche
-
-Se importi euristiche da Formbricks, controlla:
-
-```txt
-data/processed/heuristics_consolidation_template.csv
-outputs/heuristic_review/all_problems.md
-```
-
-Il gruppo deve revisionare manualmente i problemi simili. Dopo la revisione:
+Prima di consegnare:
 
 ```powershell
-python -m src.cli build-heuristics-from-consolidation
-python -m src.cli analyze-heuristics
-python -m src.cli export-text
-python -m src.cli export-slide-assets
+python -m pytest
+python -m src.cli validate
 ```
 
-## 8. Comandi utili
+Controlla almeno:
 
-Flusso legacy con CSV gia puliti:
+- `outputs/tables_md/problems_priority_table.md`
+- `outputs/tables_md/heuristics_summary.md`
+- `outputs/tables_md/ueq_summary.md`
+- `outputs/tables/users_time_summary.md`
+- `outputs/slide_manifest.md`
+
+## Comandi utili
+
+Flusso legacy con CSV gia pronti in `data/raw/`:
 
 ```powershell
 python -m src.cli all
 ```
 
-Solo import Formbricks:
+Import automatico dei file configurati:
 
 ```powershell
 python -m src.cli import-formbricks
 ```
 
-Import di un singolo file:
+Import con rilevamento del tipo form:
 
 ```powershell
 python -m src.cli import-any-form --input data/formbricks_raw/questionnaire/export_questionario.csv
 ```
 
-Solo testi:
+Rigenerare solo testi e asset slide:
 
 ```powershell
 python -m src.cli export-text
-```
-
-Solo slide assets:
-
-```powershell
 python -m src.cli export-slide-assets
 ```
-
-## 9. Warning comuni
-
-Se manca NPS, la pipeline continua e salta il grafico NPS.
-
-Se manca il CSV questionario Formbricks, la pipeline usa i CSV gia presenti in `data/raw/`.
-
-Se le colonne non vengono riconosciute, aggiungi tag nei form o alias negli schema YAML.
-
-Se mancano euristiche consolidate, compila il template in `data/processed/`.

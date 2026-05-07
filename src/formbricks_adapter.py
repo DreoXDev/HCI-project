@@ -14,6 +14,7 @@ from .adapters.formbricks.questionnaire_adapter import (
     load_formbricks_export,
 )
 from .config import load_config
+from .formbricks_heuristics_pipeline import import_formbricks_heuristics
 
 
 def normalize_column_name(column: str) -> str:
@@ -31,8 +32,9 @@ def main() -> None:
     if args.kind == "questionnaire":
         convert_questionnaire_export(args.input, config, args.include_unfinished)
     else:
-        convert_heuristics_export(args.input, config, args.include_unfinished)
-    print("Import Formbricks completato. Report in outputs/import_report.md")
+        source = args.input or config["formbricks"]["heuristics"]["export_path"]
+        import_formbricks_heuristics(source)
+    print("Import Formbricks completato. Controlla outputs/import_report.md o reports/ per le euristiche.")
 
 
 __all__ = [
@@ -48,6 +50,7 @@ __all__ = [
     "pd",
     "Path",
     "strip_accents",
+    "import_formbricks_heuristics",
 ]
 
 

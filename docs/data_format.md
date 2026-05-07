@@ -4,7 +4,21 @@ La configurazione del progetto vive in `config.yaml`. Per cambiare progetto o si
 
 ## User test
 
-File predefinito: `data/raw/users-time.csv`.
+Nuovo file osservazionale consigliato: `data/raw/users_time.csv`.
+
+Ogni riga rappresenta un utente che esegue una task su una app. Vedi `docs/users_time.md`.
+
+Colonne obbligatorie:
+
+```txt
+user_id,app,task_id,task_name,completion_time_sec,success,errors_count,help_requests
+```
+
+Il vecchio formato wide resta supportato come input legacy:
+
+```txt
+data/raw/users-time.csv
+```
 
 Colonne attese:
 
@@ -33,6 +47,18 @@ Colonne chiave:
 - `Expert 1`, `Expert 2`, ...
 - `Euristiche`, nel formato `E1-E3-E10`
 - `Id valutatori`, nel formato `EU1-ED1`
+
+Se i dati arrivano da Formbricks, non creare questi file a mano. Usa:
+
+```powershell
+python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
+```
+
+Poi revisiona `data/processed/heuristics_review.csv` e genera i CSV finali con:
+
+```powershell
+python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+```
 
 ## Questionario
 

@@ -1,43 +1,59 @@
-# Consolidamento euristiche
+# Review manuale delle euristiche
 
-Le risposte euristiche sono semi-strutturate: due valutatori possono descrivere lo stesso problema con parole diverse. Per questo il toolkit non unisce automaticamente i problemi.
+La valutazione euristica non viene deduplicata automaticamente. Il toolkit importa ogni riga Formbricks come problema candidato e lascia al team la decisione su quali segnalazioni descrivono lo stesso problema.
 
-## Output generati dall'import
-
-```txt
-data/processed/heuristics_submissions_clean.csv
-data/processed/heuristics_consolidation_template.csv
-outputs/heuristic_review/all_problems.md
-outputs/heuristic_review/grouped_problems.md
-outputs/heuristic_review/possible_duplicates.md
-```
-
-## Come usare il template
-
-Apri:
+## File generati dall'import
 
 ```txt
-data/processed/heuristics_consolidation_template.csv
+data/processed/heuristics_candidates.csv
+data/processed/heuristics_review.csv
+reports/heuristics_import_report.md
+reports/heuristics_import_errors.csv
 ```
 
-Poi:
+`heuristics_candidates.csv` e una fotografia normalizzata dell'export. `heuristics_review.csv` e il file da modificare manualmente.
 
-1. assegna o correggi `canonical_problem_id`
-2. unisci manualmente problemi simili
-3. scrivi `canonical_title` e `canonical_description`
-4. controlla le euristiche violate
-5. controlla i valori di severita per valutatore
+## Colonne da modificare
 
-Quando il file e pronto:
+- `problem_group_id`: stesso valore per problemi simili o duplicati
+- `include`: `true` per tenere la riga, `false` per escluderla dalla build finale
+- `review_notes`: annotazioni libere
+
+Le altre colonne dovrebbero restare derivate dall'import, salvo correzioni motivate.
+
+## Regole di gruppo
+
+Esempio:
+
+| candidate_id | short_description | evaluator_id | problem_group_id |
+| --- | --- | --- | --- |
+| C001 | Home troppo piena | EU1 | PG001 |
+| C002 | Troppe informazioni nella home | EU2 | PG001 |
+| C003 | Mancanza feedback checkout | EU1 | PG002 |
+
+## Build finale
 
 ```powershell
-python -m src.cli build-heuristics-from-consolidation
-python -m src.cli analyze-heuristics
+python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
 ```
 
-I file finali saranno:
+Il comando genera un problema finale per ogni `problem_group_id` e calcola:
+
+- ID problema per app (`PD1`, `PG1`, ...)
+- descrizione breve e lunga dalla riga con severita piu alta
+- euristiche violate senza duplicati
+- popolarita come numero di valutatori distinti
+- media, deviazione standard, mediana e IQR della severita
+- priorita `A/B/C` da `top5` con test binomiale
+
+Output:
 
 ```txt
 data/raw/heuristics_deliveroo.csv
 data/raw/heuristics_glovo.csv
+reports/heuristics_build_report.md
 ```
+
+## Flusso legacy
+
+Il vecchio `heuristics_consolidation_template.csv` puo ancora essere presente in alcune doc o output storici, ma il flusso consigliato per nuovi dati e `heuristics_review.csv` + `build-heuristics-from-review`.

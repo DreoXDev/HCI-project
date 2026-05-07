@@ -2,49 +2,53 @@
 
 ## Comandi principali
 
-Attivare il virtualenv creato nella cartella superiore:
+Attivare il virtualenv dalla root della repo:
 
 ```powershell
 ..\.venv\Scripts\Activate.ps1
 ```
 
-Eseguire tutto:
-
-```powershell
-python -m src.cli all
-```
-
-Solo validazione:
+Validare i CSV in `data/raw/`:
 
 ```powershell
 python -m src.cli validate
 ```
 
-Creare template CSV:
+Eseguire analisi, grafici, tabelle e testi:
+
+```powershell
+python -m src.cli all
+```
+
+Creare template:
 
 ```powershell
 python -m src.cli create-templates
 ```
 
-Importare dati da Formbricks:
+## Pipeline da Formbricks
 
 ```powershell
-python -m src.cli import-formbricks-questionnaire
-python -m src.cli import-formbricks-heuristics
-python -m src.cli import-formbricks-all
-python -m src.cli all-from-formbricks
+python -m src.cli validate-users-time
+python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/export_questionario.csv
+python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
+# review manuale di data/processed/heuristics_review.csv
+python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+python -m src.cli validate
+python -m src.cli all
 ```
 
 ## Output
 
-La pipeline salva:
+- `outputs/figures/`: grafici PNG/SVG
+- `outputs/tables/`: tabelle CSV
+- `outputs/tables_md/`: tabelle Markdown
+- `outputs/text_snippets/`: frasi pronte per report
+- `outputs/text/`: testi deterministici dedicati, incluso `users_time_interpretation.md`
+- `outputs/reports/`: report di validazione
+- `outputs/generated_report_sections/`: sezioni report
+- `outputs/slide_manifest.md`: indice operativo per le slide
 
-- grafici in `outputs/figures/`
-- tabelle CSV in `outputs/tables/`
-- tabelle Markdown in `outputs/tables_md/`
-- frasi pronte per il report in `outputs/text_snippets/`
-- report di import Formbricks in `outputs/import_report.md`
+## Nota di architettura
 
-## Note di refactor
-
-I notebook originali sono stati conservati in `notebooks/original/`. I nuovi notebook devono restare interfacce leggere e chiamare la logica in `src/`.
+I notebook nuovi devono restare interfacce leggere. La logica va nei moduli in `src/` e deve essere coperta da test quando cambia comportamento.

@@ -19,7 +19,7 @@ def load_schema(path: str | Path = "src/schemas/questionnaire_schema.yaml") -> d
 
 
 def load_formbricks_export(path: str | Path) -> pd.DataFrame:
-    return pd.read_csv(resolve_path(path), sep=None, engine="python")
+    return pd.read_csv(resolve_path(path), sep=",", encoding="utf-8-sig")
 
 
 def _is_nps_column(column: str, configured: str, systems: list[str]) -> bool:

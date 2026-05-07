@@ -26,12 +26,16 @@ def ensure_output_dirs(config: dict[str, Any]) -> None:
     paths = config.get("paths", {})
     base_dirs = [
         paths.get("output_figures", "outputs/figures"),
+        "outputs/figures/clean",
+        "outputs/figures/presentation",
         paths.get("output_tables", "outputs/tables"),
         "outputs/tables/csv",
         "outputs/tables/xlsx",
         "outputs/tables/json",
         paths.get("output_tables_md", "outputs/tables_md"),
         paths.get("output_text", "outputs/text_snippets"),
+        "outputs/text",
+        "outputs/reports",
         "outputs/report_assets",
         "outputs/slide_assets",
         "outputs/slide_assets/01_intro",

@@ -1,65 +1,55 @@
 # Workflow Formbricks
 
-## 1. Prepara i form
+Questo e il workflow raccomandato per nuovi progetti.
 
-Usa tag nei titoli delle domande quando possibile:
+## 1. Esporta i dati
 
-```txt
-[DEMOGRAPHIC] Genere
-[DEMOGRAPHIC] Eta
-[DEMOGRAPHIC] App usata piu spesso
-[UEQ][Deliveroo] Fastidioso/Piacevole
-[UEQ][Glovo] Fastidioso/Piacevole
-[NPS][Deliveroo] Quanto consiglieresti Deliveroo?
-[NPS][Glovo] Quanto consiglieresti Glovo?
-```
-
-Per il form esperti:
-
-```txt
-[HEURISTIC] ID valutatore
-[HEURISTIC] Tipo valutatore
-[HEURISTIC] App valutata
-[HEURISTIC] Titolo problema
-[HEURISTIC] Descrizione problema
-[HEURISTIC] Euristiche violate
-[HEURISTIC] Severita
-[HEURISTIC] Note aggiuntive
-```
-
-## 2. Scarica i CSV
-
-Da Formbricks esporta i CSV e mettili qui:
+Salva i file in:
 
 ```txt
 data/formbricks_raw/questionnaire/export_questionario.csv
 data/formbricks_raw/heuristics/export_esperti.csv
-data/formbricks_raw/user_tests/user_tests.csv
+data/raw/users_time.csv
 ```
 
-## 3. Configura i mapping
+`users_time.csv` non arriva da Formbricks: e il formato osservazionale compilato dagli osservatori durante i test utenti.
 
-Se i tag non sono presenti o i testi sono cambiati, aggiorna:
-
-```txt
-config.yaml
-src/schemas/questionnaire_schema.yaml
-src/schemas/heuristic_schema.yaml
-```
-
-## 4. Esegui
+## 2. Importa questionario ed euristiche
 
 ```powershell
-python -m src.cli full-pipeline
+python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/export_questionario.csv
+python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
 ```
 
-## 5. Leggi i warning
+## 3. Revisiona le euristiche
 
-Controlla:
+Apri:
+
+```txt
+data/processed/heuristics_review.csv
+```
+
+Assegna lo stesso `problem_group_id` alle righe che descrivono lo stesso problema.
+
+## 4. Genera i CSV finali
+
+```powershell
+python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+```
+
+## 5. Valida e analizza
+
+```powershell
+python -m src.cli validate
+python -m src.cli all
+```
+
+## Report da controllare
 
 ```txt
 outputs/import_report.md
+reports/heuristics_import_report.md
+reports/heuristics_import_errors.csv
+reports/heuristics_build_report.md
 outputs/slide_manifest.md
 ```
-
-Se manca NPS, la pipeline continua e salta solo il grafico NPS. Se mancano euristiche consolidate, genera un template da revisionare.

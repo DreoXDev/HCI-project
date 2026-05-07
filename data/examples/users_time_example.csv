@@ -1,0 +1,5 @@
+user_id,app,task_id,task_name,completion_time_sec,success,errors_count,help_requests,notes,start_time,end_time,device,observer_id,order
+U01,Deliveroo,T01,Ricerca ristorante,34,True,0,0,Ricerca completata senza difficolta,14:00:00,14:00:34,Android,OBS1,1
+U01,Glovo,T01,Ricerca ristorante,47,True,1,0,L'utente ha esitato nella scelta della categoria,14:05:00,14:05:47,Android,OBS1,2
+U02,Deliveroo,T02,Aggiunta prodotto al carrello,29,True,0,0,Nessun problema rilevante,14:12:00,14:12:29,iOS,OBS1,1
+U02,Glovo,T02,Aggiunta prodotto al carrello,41,True,1,1,L'utente ha chiesto conferma sul pulsante corretto,14:18:00,14:18:41,iOS,OBS1,2

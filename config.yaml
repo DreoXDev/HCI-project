@@ -24,6 +24,50 @@ paths:
   output_tables_md: "outputs/tables_md"
   output_text: "outputs/text_snippets"
 
+users_time:
+  enabled: true
+  input_path: "data/raw/users_time.csv"
+  required_columns:
+    - user_id
+    - app
+    - task_id
+    - task_name
+    - completion_time_sec
+    - success
+    - errors_count
+    - help_requests
+  tasks:
+    - id: T01
+      name: "Ricerca ristorante"
+    - id: T02
+      name: "Aggiunta prodotto al carrello"
+    - id: T03
+      name: "Modifica carrello"
+    - id: T04
+      name: "Checkout"
+    - id: T05
+      name: "Tracking ordine"
+
+visualization:
+  style: both
+  export_svg: true
+  export_png: true
+  dpi: 220
+  transparent_background: true
+  fonts:
+    preferred: Inter
+    fallback: DejaVu Sans
+  colors:
+    deliveroo: "#00CCBC"
+    glovo: "#FFC244"
+    neutral: "#1F2937"
+    muted: "#6B7280"
+    grid: "#E5E7EB"
+  presentation:
+    enabled: true
+    glow: true
+    annotations: true
+
 style:
   system_1_color: "#00C7C7"
   system_1_dark: "#07191B"
@@ -145,6 +189,7 @@ formbricks:
 
   heuristics:
     schema_path: "src/schemas/heuristic_schema.yaml"
+    mapping_path: "config/formbricks_heuristics_mapping.yml"
     export_path: "data/formbricks_raw/heuristics/export_esperti.csv"
     output_system_1: "data/raw/heuristics_deliveroo.csv"
     output_system_2: "data/raw/heuristics_glovo.csv"

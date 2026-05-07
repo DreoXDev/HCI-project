@@ -1,9 +1,9 @@
 # Generazione slide
 
-Il comando:
+Con i CSV gia pronti in `data/raw/`, il comando:
 
 ```powershell
-python -m src.cli full-pipeline
+python -m src.cli all
 ```
 
 genera:
@@ -14,6 +14,8 @@ outputs/slide_assets/
 outputs/text_snippets/
 outputs/generated_report_sections/
 ```
+
+Se parti da export Formbricks, completa prima il workflow in `Manuale.md`, inclusa la review manuale delle euristiche.
 
 ## Manifest
 
