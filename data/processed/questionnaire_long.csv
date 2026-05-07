@@ -1,0 +1,27 @@
+respondent_id,system,item_type,item,value
+Utente 1,profile,demographic,preferred_app,Deliveroo
+Utente 2,profile,demographic,preferred_app,Glovo
+Utente 1,profile,demographic,eta,22
+Utente 2,profile,demographic,eta,23
+Utente 1,profile,demographic,familiarita delivery,9
+Utente 2,profile,demographic,familiarita delivery,10
+Utente 1,profile,demographic,genere,9
+Utente 2,profile,demographic,genere,10
+Utente 1,profile,demographic,situazione lavorativa,9
+Utente 2,profile,demographic,situazione lavorativa,10
+Utente 1,profile,demographic,istruzione,9
+Utente 2,profile,demographic,istruzione,10
+Utente 1,profile,demographic,frequency_usage,22
+Utente 2,profile,demographic,frequency_usage,23
+Utente 1,Deliveroo,ueq,fastidioso-piacevole,6
+Utente 2,Deliveroo,ueq,fastidioso-piacevole,5
+Utente 1,Deliveroo,ueq,incomprensibile-comprensibile,7
+Utente 2,Deliveroo,ueq,incomprensibile-comprensibile,6
+Utente 1,Deliveroo,nps,NPS,9
+Utente 2,Deliveroo,nps,NPS,10
+Utente 1,Glovo,ueq,fastidioso-piacevole,4
+Utente 2,Glovo,ueq,fastidioso-piacevole,5
+Utente 1,Glovo,ueq,incomprensibile-comprensibile,5
+Utente 2,Glovo,ueq,incomprensibile-comprensibile,6
+Utente 1,Glovo,nps,NPS,8
+Utente 2,Glovo,nps,NPS,9

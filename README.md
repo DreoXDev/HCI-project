@@ -72,11 +72,12 @@ python -m pip install -r requirements.txt
 Da dentro la cartella della repo:
 
 ```powershell
-python -m src.cli all
+python -m src.cli full-pipeline
 ```
 
 Il comando esegue:
 
+- import dei CSV Formbricks disponibili
 - caricamento della configurazione
 - caricamento dei CSV
 - validazione dei dati
@@ -84,6 +85,14 @@ Il comando esegue:
 - analisi euristica
 - analisi questionari UEQ e NPS
 - esportazione grafici, tabelle e testi
+- generazione asset slide
+- generazione `outputs/slide_manifest.md`
+
+Se si vogliono usare solo i CSV gia puliti in `data/raw/`, usare invece:
+
+```powershell
+python -m src.cli all
+```
 
 ## Comandi disponibili
 
@@ -109,6 +118,24 @@ Eseguire tutto:
 
 ```powershell
 python -m src.cli all
+```
+
+Importare e convertire i CSV esportati da Formbricks:
+
+```powershell
+python -m src.cli import-formbricks
+python -m src.cli import-formbricks-questionnaire
+python -m src.cli import-formbricks-heuristics
+python -m src.cli import-formbricks-all
+python -m src.cli all-from-formbricks
+python -m src.cli import-any-form --input data/formbricks_raw/export.csv
+python -m src.cli full-pipeline
+```
+
+Con un file esplicito:
+
+```powershell
+python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire_export_2026_05_07.csv
 ```
 
 ## Notebook
@@ -141,12 +168,15 @@ HCI-project/
 |-- data/
 |   |-- raw/
 |   |-- examples/
+|   |-- formbricks_raw/
 |   |-- processed/
 |   |-- templates/
 |
 |-- docs/
 |   |-- data_format.md
 |   |-- analysis_pipeline.md
+|   |-- formbricks_import.md
+|   |-- dynamic_form_architecture.md
 |   |-- codex_notes.md
 |
 |-- notebooks/
@@ -164,6 +194,7 @@ HCI-project/
 |   |-- text_snippets/
 |
 |-- src/
+    |-- adapters/
     |-- config.py
     |-- data_loading.py
     |-- validation.py
@@ -175,6 +206,7 @@ HCI-project/
     |-- tables.py
     |-- export.py
     |-- cli.py
+    |-- schemas/
 ```
 
 ## Configurazione
@@ -189,6 +221,10 @@ Il file `config.yaml` contiene le impostazioni principali del progetto:
 - parametri di analisi
 - range validi per UEQ e NPS
 - numero di decimali da usare negli output
+- mapping delle colonne esportate da Formbricks
+- righe demografiche del questionario
+- tag machine-readable per import dinamico
+- path degli schemi YAML
 
 Per cambiare progetto o sistemi confrontati, modificare principalmente:
 
@@ -244,9 +280,9 @@ data/raw/heuristics_glovo.csv
 
 Formato concettuale:
 
-| Codice problema | Problema | Expert 1 | Expert 2 | ... | Euristiche | Id valutatori |
-|---|---|---:|---:|---|---|---|
-| PB1 | Descrizione problema | 2 | 3 | ... | E1-E5 | EU1-ED1 |
+| Codice problema | Problema             | Expert 1 | Expert 2 | ... | Euristiche | Id valutatori |
+| --------------- | -------------------- | -------: | -------: | --- | ---------- | ------------- |
+| PB1             | Descrizione problema |        2 |        3 | ... | E1-E5      | EU1-ED1       |
 
 Indicazioni:
 
@@ -269,15 +305,15 @@ Ogni colonna rappresenta un utente. Le righe iniziali contengono informazioni de
 
 Formato concettuale:
 
-| item | Utente 1 | ... | Utente 24 |
-|---|---:|---|---:|
-| genere | Maschio | ... | Femmina |
-| eta | 25 | ... | 32 |
-| situazione lavorativa | Studente | ... | Lavoratore |
-| istruzione | Laurea | ... | Diploma |
-| fastidioso-piacevole | 4 | ... | 6 |
-| incomprensibile-comprensibile | 5 | ... | 7 |
-| NPS | 8 | ... | 10 |
+| item                          | Utente 1 | ... |  Utente 24 |
+| ----------------------------- | -------: | --- | ---------: |
+| genere                        |  Maschio | ... |    Femmina |
+| eta                           |       25 | ... |         32 |
+| situazione lavorativa         | Studente | ... | Lavoratore |
+| istruzione                    |   Laurea | ... |    Diploma |
+| fastidioso-piacevole          |        4 | ... |          6 |
+| incomprensibile-comprensibile |        5 | ... |          7 |
+| NPS                           |        8 | ... |         10 |
 
 Regole:
 
@@ -297,6 +333,8 @@ La pipeline controlla:
 - euristiche scritte in formato non valido
 - valori UEQ fuori range 1-7
 - valori NPS fuori range 0-10
+
+Se la riga `NPS` manca, il toolkit emette un warning e salta il grafico NPS senza bloccare l'intera pipeline. Per la versione finale del progetto e comunque consigliato aggiungere una domanda NPS per ciascuna app.
 
 Esempio di output:
 
@@ -360,6 +398,25 @@ outputs/text_snippets/
 
 Contiene frasi interpretative automatiche, per esempio sui test statistici degli user test.
 
+### Report import Formbricks
+
+Quando si usa l'importer Formbricks viene creato:
+
+```txt
+outputs/import_report.md
+```
+
+Il report indica:
+
+- file importato
+- numero di risposte raw
+- numero di risposte usate
+- numero di risposte escluse perche incomplete
+- colonne riconosciute
+- colonne ignorate
+- warning
+- output generati
+
 ## Moduli Python
 
 La logica principale si trova in `src/`.
@@ -367,6 +424,9 @@ La logica principale si trova in `src/`.
 - `config.py`: caricamento configurazione e creazione cartelle output
 - `data_loading.py`: lettura dei CSV con separatore automatico
 - `validation.py`: controlli sui dati in input
+- `formbricks_adapter.py`: conversione CSV Formbricks nel formato del toolkit
+- `adapters/formbricks/`: adapter dinamici basati su tag, alias e schemi
+- `schemas/`: schemi YAML per questionari, euristiche e user test
 - `user_tests.py`: parsing task, efficacia, efficienza e statistiche user test
 - `heuristics.py`: severita, priorita, distribuzione euristiche e categorie
 - `questionnaire.py`: item UEQ, scale UEQ, NPS e sottogruppi
@@ -397,15 +457,22 @@ Rispetto alla base originale sono stati implementati o preparati:
 - frasi interpretative con approccio "metodo del gorilla"
 - notebook `00_run_all.ipynb`
 - CLI `python -m src.cli`
+- import automatico da Formbricks
+- import dinamico con `import-any-form`
+- report di import Formbricks
+- NPS opzionale durante le fasi intermedie
+- demographics arbitrarie e subgroup analysis generica
 
 ## Workflow consigliato
 
 1. Aggiornare `config.yaml` con titolo, nomi sistemi e path corretti.
-2. Inserire i CSV reali in `data/raw/`.
-3. Eseguire `python -m src.cli validate`.
-4. Correggere eventuali errori segnalati.
-5. Eseguire `python -m src.cli all`.
-6. Usare grafici e tabelle da `outputs/` per report, PDF e slide.
+2. Se i dati arrivano da Formbricks, salvare gli export originali in `data/formbricks_raw/`.
+3. Eseguire `python -m src.cli import-formbricks-all`, oppure inserire manualmente i CSV gia convertiti in `data/raw/`.
+4. Controllare `outputs/import_report.md`.
+5. Eseguire `python -m src.cli validate`.
+6. Correggere eventuali errori segnalati.
+7. Eseguire `python -m src.cli all`.
+8. Usare grafici e tabelle da `outputs/` per report, PDF e slide.
 
 ## Documentazione aggiuntiva
 
@@ -413,6 +480,14 @@ Sono disponibili anche:
 
 - `docs/data_format.md`: formato dei CSV
 - `docs/analysis_pipeline.md`: comandi e pipeline
+- `docs/formbricks_import.md`: import e conversione dei CSV Formbricks
+- `docs/dynamic_form_architecture.md`: architettura dinamica schema/tag driven
+- `docs/formbricks_workflow.md`: flusso completo con CSV Formbricks
+- `docs/heuristic_consolidation.md`: consolidamento manuale dei problemi euristici
+- `docs/slide_generation.md`: uso degli asset slide
+- `docs/text_snippets.md`: testi generati per report
+- `docs/troubleshooting.md`: problemi comuni
+- `handbook.md`: guida operativa breve dalla root del progetto
 - `docs/codex_notes.md`: note sul refactor
 
 ## Requirements
@@ -432,11 +507,3 @@ Le dipendenze principali sono:
 - tabulate
 
 Tutte le dipendenze sono elencate in `requirements.txt`.
-
-## Contatti originali
-
-In caso di problemi o domande non attinenti all'insegnamento o all'esame:
-
-```txt
-d.scalena [at] campus.unimib [dot] it
-```

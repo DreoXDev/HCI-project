@@ -2,9 +2,18 @@ project:
   title: "Deliveroo VS Glovo - Analisi Trasversale di Usabilita"
   system_1: "Deliveroo"
   system_2: "Glovo"
+  system_1_id: "deliveroo"
+  system_2_id: "glovo"
   academic_year: "20XX/20XX"
 
 paths:
+  formbricks_raw_dir: "data/formbricks_raw"
+  processed_dir: "data/processed"
+  raw_dir: "data/raw"
+  outputs_dir: "outputs"
+  questionnaire_raw: "data/formbricks_raw/questionnaire/export_questionario.csv"
+  heuristics_raw: "data/formbricks_raw/heuristics/export_esperti.csv"
+  user_tests_raw: "data/formbricks_raw/user_tests/user_tests.csv"
   users_time: "data/raw/users-time.csv"
   heuristics_system_1: "data/raw/heuristics_deliveroo.csv"
   heuristics_system_2: "data/raw/heuristics_glovo.csv"
@@ -21,6 +30,7 @@ style:
   system_2_color: "#FFD300"
   system_2_dark: "#1E1600"
   background: "#050505"
+  card_background: "#141418"
   text: "#FFFFFF"
   secondary_text: "#D6D6D6"
 
@@ -33,3 +43,114 @@ analysis:
   nps_min: 0
   nps_max: 10
   round_decimals: 2
+  generate_text_snippets: true
+  generate_slide_assets: true
+
+final_score:
+  enabled: true
+  weights:
+    effectiveness: 0.25
+    efficiency: 0.20
+    ueq: 0.30
+    nps: 0.15
+    heuristic_penalty: 0.10
+
+questionnaire:
+  demographic_rows:
+    - "genere"
+    - "eta"
+    - "situazione lavorativa"
+    - "istruzione"
+    - "familiarita delivery"
+    - "familiarita con app di delivery"
+    - "familiarita"
+    - "preferred_app"
+    - "frequency_usage"
+
+formbricks:
+  raw_dir: "data/formbricks_raw"
+  use_only_finished: true
+  finished_column_aliases:
+    - "Finished"
+    - "Completato"
+    - "completed"
+  schema_dir: "src/schemas"
+
+  tags:
+    demographic: "DEMOGRAPHIC"
+    ueq: "UEQ"
+    nps: "NPS"
+    heuristic: "HEURISTIC"
+
+  questionnaire:
+    schema_path: "src/schemas/questionnaire_schema.yaml"
+    export_path: "data/formbricks_raw/questionnaire/export_questionario.csv"
+    output_system_1: "data/raw/questionnaire_deliveroo.csv"
+    output_system_2: "data/raw/questionnaire_glovo.csv"
+
+    metadata_columns:
+      - "No."
+      - "Response ID"
+      - "Timestamp"
+      - "Finished"
+      - "Survey ID"
+      - "Formbricks ID (internal)"
+      - "User ID"
+      - "Tags"
+      - "url"
+      - "country"
+      - "userAgent - os"
+      - "userAgent - device"
+      - "userAgent - browser"
+
+    demographic_map:
+      genere: "1. Genere"
+      eta: "2. Eta"
+      situazione lavorativa: "3. Professione"
+      familiarita delivery: "4. Familiarita con app di delivery di cibo."
+
+    system_1_column_contains: "Deliveroo"
+    system_2_column_contains: "Glovo"
+
+    nps_system_1: ""
+    nps_system_2: ""
+
+    ueq_items:
+      - "fastidioso-piacevole"
+      - "incomprensibile-comprensibile"
+      - "creativo-privo di fantasia"
+      - "facile da apprendere-difficile da apprendere"
+      - "di grande valore-di poco valore"
+      - "noioso-appassionante"
+      - "non interessante-interessante"
+      - "imprevedibile-prevedibile"
+      - "veloce-lento"
+      - "originale-convenzionale"
+      - "ostruttivo-di supporto"
+      - "buono-scarso"
+      - "complicato-facile"
+      - "repellente-attraente"
+      - "usuale-moderno"
+      - "sgradevole-gradevole"
+      - "sicuro-insicuro"
+      - "attivante-soporifero"
+      - "conforme alle aspettative-non conforme alle aspettative"
+      - "inefficiente-efficiente"
+      - "chiaro-confuso"
+      - "non pragmatico-pragmatico"
+      - "ordinato-sovraccarico"
+      - "invitante-non invitante"
+      - "congeniale-ostile"
+      - "conservativo-innovativo"
+
+  heuristics:
+    schema_path: "src/schemas/heuristic_schema.yaml"
+    export_path: "data/formbricks_raw/heuristics/export_esperti.csv"
+    output_system_1: "data/raw/heuristics_deliveroo.csv"
+    output_system_2: "data/raw/heuristics_glovo.csv"
+    evaluator_id_column: "ID Valutatore"
+    system_column: "App valutata"
+    problem_id_column: "Codice problema"
+    problem_column: "Descrizione breve"
+    heuristics_column: "Euristiche violate"
+    severity_column: "Severita"

@@ -1,0 +1,29 @@
+heuristics:
+  fields:
+    evaluator_id:
+      required: true
+      aliases: ["id valutatore", "evaluator id", "valutatore"]
+    evaluator_type:
+      required: false
+      aliases: ["tipo valutatore", "evaluator type"]
+    system:
+      required: true
+      aliases: ["app valutata", "sistema", "system", "app"]
+    problem_id:
+      required: false
+      aliases: ["codice problema", "problem id"]
+    title:
+      required: true
+      aliases: ["descrizione breve", "problem title", "problema", "titolo"]
+    description:
+      required: false
+      aliases: ["descrizione completa", "problem description", "description"]
+    heuristics:
+      required: true
+      aliases: ["euristiche violate", "violated heuristics", "euristiche"]
+    severity:
+      required: true
+      aliases: ["severita", "severity"]
+    notes:
+      required: false
+      aliases: ["note", "notes", "screenshot"]

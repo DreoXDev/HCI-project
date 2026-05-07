@@ -67,8 +67,31 @@ def validate_questionnaire_csv(df: pd.DataFrame, config: dict) -> list[Validatio
     ueq_max = config["analysis"]["ueq_scale_max"]
     nps_min = config["analysis"]["nps_min"]
     nps_max = config["analysis"]["nps_max"]
-    demographic = {"genere", "eta", "situazione lavorativa", "istruzione"}
-    numeric_rows = [idx for idx in df.index if idx not in demographic]
+    configured = config.get("questionnaire", {}).get("demographic_rows", [])
+    demographic = {
+        "genere",
+        "eta",
+        "situazione lavorativa",
+        "istruzione",
+        "familiarita delivery",
+        "familiarita con app di delivery",
+        "familiarita",
+        *[str(row).strip().lower() for row in configured],
+    }
+    numeric_rows = []
+    if "NPS" not in df.index:
+        messages.append(ValidationMessage("WARNING", "Riga NPS mancante: analisi NPS saltata"))
+    for idx in df.index:
+        if str(idx).strip().lower() in demographic:
+            continue
+        if str(idx).upper() == "NPS":
+            numeric_rows.append(idx)
+            continue
+        values = pd.to_numeric(df.loc[idx], errors="coerce")
+        if values.isna().any():
+            messages.append(ValidationMessage("WARNING", f"Riga non numerica trattata come demografica: {idx}"))
+            continue
+        numeric_rows.append(idx)
     for idx in numeric_rows:
         values = pd.to_numeric(df.loc[idx], errors="coerce")
         if values.isna().any():

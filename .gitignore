@@ -1,5 +1,30 @@
 __pycache__/
 *.py[cod]
+.venv/
+venv/
+.env
 .ipynb_checkpoints/
 .virtual_documents/
 .DS_Store
+Thumbs.db
+
+# Generated outputs
+outputs/figures/*
+outputs/tables/*
+outputs/tables_md/*
+outputs/report_assets/*
+outputs/slide_assets/*
+outputs/text_snippets/*
+outputs/generated_report_sections/*
+outputs/import_report.md
+outputs/slide_manifest.md
+
+# Keep folder structure
+!outputs/**/.gitkeep
+
+# Raw real survey data
+data/formbricks_raw/**/*.csv
+
+# Keep examples/templates
+!data/examples/**/*.csv
+!data/templates/**/*.csv

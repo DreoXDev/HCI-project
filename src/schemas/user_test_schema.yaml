@@ -1,0 +1,6 @@
+user_tests:
+  respondent_id_aliases: ["user", "utente", "respondent id"]
+  task_status_codes:
+    completed: "C"
+    helped: "A"
+    failed: "F"

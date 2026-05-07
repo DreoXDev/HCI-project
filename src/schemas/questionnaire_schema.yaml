@@ -1,0 +1,56 @@
+questionnaire:
+  demographic_fields:
+    - id: genere
+      required: false
+      aliases: ["genere", "gender", "sesso"]
+    - id: eta
+      required: false
+      aliases: ["eta", "età", "age"]
+    - id: situazione lavorativa
+      required: false
+      aliases: ["professione", "lavoro", "situazione lavorativa", "occupation"]
+    - id: istruzione
+      required: false
+      aliases: ["istruzione", "education", "titolo di studio"]
+    - id: familiarita delivery
+      required: false
+      aliases: ["familiarita", "familiarità", "delivery familiarity", "familiarita delivery"]
+    - id: preferred_app
+      required: false
+      aliases: ["app preferita", "preferred app", "sistema usato piu spesso"]
+    - id: frequency_usage
+      required: false
+      aliases: ["frequenza utilizzo", "frequency usage", "uso delivery"]
+
+  scale_tags:
+    ueq: "UEQ"
+    nps: "NPS"
+    demographic: "DEMOGRAPHIC"
+
+  ueq_items:
+    - "fastidioso-piacevole"
+    - "incomprensibile-comprensibile"
+    - "creativo-privo di fantasia"
+    - "facile da apprendere-difficile da apprendere"
+    - "di grande valore-di poco valore"
+    - "noioso-appassionante"
+    - "non interessante-interessante"
+    - "imprevedibile-prevedibile"
+    - "veloce-lento"
+    - "originale-convenzionale"
+    - "ostruttivo-di supporto"
+    - "buono-scarso"
+    - "complicato-facile"
+    - "repellente-attraente"
+    - "usuale-moderno"
+    - "sgradevole-gradevole"
+    - "sicuro-insicuro"
+    - "attivante-soporifero"
+    - "conforme alle aspettative-non conforme alle aspettative"
+    - "inefficiente-efficiente"
+    - "chiaro-confuso"
+    - "non pragmatico-pragmatico"
+    - "ordinato-sovraccarico"
+    - "invitante-non invitante"
+    - "congeniale-ostile"
+    - "conservativo-innovativo"

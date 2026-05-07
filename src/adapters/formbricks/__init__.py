@@ -1,0 +1,2 @@
+"""Formbricks adapter package."""
+

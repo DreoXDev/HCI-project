@@ -26,6 +26,15 @@ Creare template CSV:
 python -m src.cli create-templates
 ```
 
+Importare dati da Formbricks:
+
+```powershell
+python -m src.cli import-formbricks-questionnaire
+python -m src.cli import-formbricks-heuristics
+python -m src.cli import-formbricks-all
+python -m src.cli all-from-formbricks
+```
+
 ## Output
 
 La pipeline salva:
@@ -34,6 +43,7 @@ La pipeline salva:
 - tabelle CSV in `outputs/tables/`
 - tabelle Markdown in `outputs/tables_md/`
 - frasi pronte per il report in `outputs/text_snippets/`
+- report di import Formbricks in `outputs/import_report.md`
 
 ## Note di refactor
 
