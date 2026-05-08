@@ -96,7 +96,7 @@ Non andare avanti con errori di validazione.
 ## 10. Genera analisi, grafici, tabelle e testi
 
 ```powershell
-python -m src.cli all
+python -m src.cli all --plot-style both
 ```
 
 Se vuoi rigenerare solo gli output del dataset osservazionale:
@@ -106,6 +106,13 @@ python -m src.cli analyze-users-time
 ```
 
 ## 11. Consegna gli output
+
+Genera il pacchetto slide finale:
+
+```powershell
+python -m src.cli build-slide-pack
+python -m src.cli quality-check
+```
 
 Usa:
 
@@ -117,6 +124,8 @@ outputs/text_snippets/
 outputs/text/
 outputs/generated_report_sections/
 outputs/slide_manifest.md
+outputs/slide_pack/
+outputs/reports/final_quality_check.md
 ```
 
 ## 12. Checklist finale
@@ -128,3 +137,6 @@ outputs/slide_manifest.md
 - `data/raw/heuristics_deliveroo.csv` e `data/raw/heuristics_glovo.csv` derivano dal file di review
 - `outputs/tables/users_time_summary.md` esiste se `users_time.csv` e presente
 - `outputs/slide_manifest.md` esiste
+- `outputs/slide_pack/executive_summary.md` esiste
+- `outputs/slide_pack/assets_manifest.csv` esiste
+- `outputs/reports/final_quality_check.md` chiude con `STATUS: READY_FOR_SLIDES`

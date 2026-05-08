@@ -77,12 +77,22 @@ def generate_text_outputs(config: dict) -> None:
 
     outputs = {
         "intro.md": intro,
+        "intro_summary.md": intro,
+        "sample_summary.md": _sample_text(systems),
         "methods.md": methods,
         "heuristics.md": heuristics,
+        "heuristic_conclusions.md": heuristics,
         "user_tests.md": user_tests,
+        "user_test_effectiveness_conclusions.md": _user_test_effectiveness_text(systems),
+        "user_test_efficiency_conclusions.md": _user_test_efficiency_text(systems),
         "questionnaire.md": questionnaire,
+        "questionnaire_conclusions.md": questionnaire,
         "nps.md": nps,
+        "nps_conclusions.md": nps,
         "conclusions.md": final,
+        "final_comparative_conclusions.md": final,
+        "redesign_recommendations.md": _redesign_text(),
+        "limitations.md": _limitations_text(),
     }
     for name, text in outputs.items():
         (snippets_dir / name).write_text(text, encoding="utf-8")
@@ -116,6 +126,14 @@ def _heuristics_text(systems: list[str]) -> str:
     )
 
 
+def _sample_text(systems: list[str]) -> str:
+    nps = _read_csv("outputs/tables/nps_summary.csv")
+    if nps.empty:
+        return "# Campione\n\nLa descrizione del campione sara completata dopo l'import dei questionari."
+    parts = [f"{row.system}: {int(row.total)} rispondenti questionario" for row in nps.itertuples() if pd.notna(row.total)]
+    return "# Campione\n\n" + ("; ".join(parts) if parts else "Numerosita campione non disponibile.") + "."
+
+
 def _user_tests_text(systems: list[str]) -> str:
     eff = _read_csv("outputs/tables/user_test_effectiveness.csv")
     speed = _read_csv("outputs/tables/user_test_efficiency.csv")
@@ -130,6 +148,25 @@ def _user_tests_text(systems: list[str]) -> str:
         f"Per quanto riguarda l'efficacia, {best} ottiene il tasso medio di completamento piu alto. "
         f"L'analisi dei tempi mostra invece che {fastest} risulta mediamente piu rapido nel completamento dei task."
     )
+
+
+def _user_test_effectiveness_text(systems: list[str]) -> str:
+    eff = _read_csv("outputs/tables/user_test_effectiveness.csv")
+    if eff.empty:
+        return "# Efficacia user test\n\nDati non disponibili."
+    completion = eff.groupby("system")["completion_rate"].mean().sort_values(ascending=False)
+    best = completion.index[0]
+    gap = completion.iloc[0] - completion.iloc[-1] if len(completion) > 1 else 0
+    return f"# Efficacia user test\n\n{best} mostra il tasso medio di completamento piu alto. Il divario medio osservato e pari a {gap:.2%}."
+
+
+def _user_test_efficiency_text(systems: list[str]) -> str:
+    speed = _read_csv("outputs/tables/user_test_efficiency.csv")
+    if speed.empty:
+        return "# Efficienza user test\n\nDati non disponibili."
+    means = speed.groupby("system")["mean_seconds"].mean().sort_values()
+    fastest = means.index[0]
+    return f"# Efficienza user test\n\n{fastest} risulta mediamente piu rapido sui task osservati. Consultare gli asset task-by-task per verificare dove la differenza e piu marcata."
 
 
 def _questionnaire_text(systems: list[str]) -> str:
@@ -161,4 +198,21 @@ def _final_text(config: dict) -> str:
         "# Conclusioni\n\n"
         f"Nel complesso, la sintesi interna dei risultati assegna a {best['system']} un punteggio complessivo superiore "
         f"rispetto a {other['system']}. Questo punteggio va interpretato come supporto alla lettura dei risultati, non come verita assoluta."
+    )
+
+
+def _redesign_text() -> str:
+    return (
+        "# Raccomandazioni di redesign\n\n"
+        "1. Prioritizzare i problemi euristici con severita alta e alta ricorrenza tra valutatori.\n"
+        "2. Ridurre passaggi, ambiguita e richieste di aiuto nei task con successo piu basso.\n"
+        "3. Migliorare gli item UEQ con differenza maggiore tra i due sistemi, verificando con screenshot e osservazioni qualitative."
+    )
+
+
+def _limitations_text() -> str:
+    return (
+        "# Limiti dello studio\n\n"
+        "I risultati dipendono da numerosita campionaria, profilo dei partecipanti, task scelti e consolidamento manuale dei problemi. "
+        "Le stime statistiche e di copertura vanno lette come supporto alla discussione critica, non come conclusioni automatiche."
     )

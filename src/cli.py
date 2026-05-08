@@ -6,8 +6,12 @@ from pathlib import Path
 import pandas as pd
 
 from .config import ensure_output_dirs, load_config, resolve_path
+from .asset_manifest import build_assets_manifest
+from .benchmark import analyze_ueq_benchmark
 from .data_loading import load_all
+from .dark_patterns import analyze_dark_patterns
 from .export import create_templates
+from .final_assets import generate_final_assets
 from .formbricks_adapter import comparable, convert_questionnaire_export, load_formbricks_export
 from .formbricks_heuristics_pipeline import build_heuristics_from_review, import_formbricks_heuristics
 from .heuristics import clean_heuristics, priority_table, summarize_heuristics
@@ -21,6 +25,8 @@ from .plots import (
     plot_ueq_summary,
 )
 from .questionnaire import item_summary, nps_summary, subgroup_summaries, ueq_summary
+from .quality_check import run_quality_check
+from .slide_pack import build_slide_pack
 from .tables import export_table
 from .text_generation.final_summary_text import generate_text_outputs
 from .slide_export.slide_manifest import generate_slide_manifest
@@ -104,13 +110,20 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     print("\n[3/7] Analisi, grafici e tabelle...")
     analyze(config, data)
     print("OK: analisi completata")
-    print("\n[4/7] Testi slide/report...")
+    print("\n[4/8] Asset finali granulari...")
+    data = load_all(config)
+    generate_final_assets(config, data)
+    analyze_dark_patterns(config)
+    analyze_ueq_benchmark(config)
+    print("OK: asset finali generati")
+    print("\n[5/8] Testi slide/report...")
     generate_text_outputs(config)
     print("OK: testi generati")
-    print("\n[5/7] Slide assets...")
+    print("\n[6/8] Slide pack...")
     generate_slide_manifest()
-    print("OK: slide manifest generato")
-    print("\n[6/7] Report import...")
+    build_slide_pack(config)
+    print("OK: slide pack generato")
+    print("\n[7/8] Report import...")
     report = resolve_path("outputs/import_report.md")
     if not report.exists():
         report.write_text(
@@ -133,8 +146,11 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
             encoding="utf-8",
         )
     print(f"OK: {report}")
-    print("\n[7/7] Output principale:")
-    print(resolve_path("outputs/slide_manifest.md"))
+    print("\n[8/8] Quality check...")
+    run_quality_check(config)
+    print(resolve_path("outputs/reports/final_quality_check.md"))
+    print("\nOutput principale:")
+    print(resolve_path("outputs/slide_pack/00_index.md"))
 
 
 def validate(config: dict, data: dict[str, pd.DataFrame]) -> str:
@@ -206,6 +222,7 @@ def analyze(config: dict, data: dict[str, pd.DataFrame]) -> None:
     export_table(nps, Path(paths["output_tables_md"]) / "nps_summary.md", decimals)
     if not subgroup.empty:
         export_table(subgroup, Path(paths["output_tables_md"]) / "subgroup_analysis.md", decimals)
+        export_table(subgroup, Path(paths["output_tables"]) / "subgroup_analysis.csv", decimals)
     plot_ueq_summary(ueq, config, Path(paths["output_figures"]) / "questionnaire/ueq_scales.png")
     if nps["total"].fillna(0).sum() > 0:
         plot_nps(nps, config, Path(paths["output_figures"]) / "questionnaire/nps_comparison.png")
@@ -255,6 +272,11 @@ def main() -> None:
             "build-heuristics-from-consolidation",
             "build-heuristics-from-review",
             "suggest-heuristic-duplicates",
+            "build-slide-pack",
+            "quality-check",
+            "analyze-benchmark",
+            "analyze-dark-patterns",
+            "build-asset-manifest",
         ],
     )
     parser.add_argument("--config", default="config.yaml")
@@ -262,7 +284,7 @@ def main() -> None:
     parser.add_argument("--output", help="Path CSV normalizzato da generare")
     parser.add_argument("--output-dir", help="Cartella output per i CSV finali")
     parser.add_argument("--mapping", default="config/formbricks_heuristics_mapping.yml", help="Mapping colonne per import euristiche Formbricks")
-    parser.add_argument("--plot-style", choices=["clean", "presentation", "both"], help="Stile grafici da esportare")
+    parser.add_argument("--plot-style", choices=["dark", "presentation", "both"], help="Stile grafici da esportare")
     parser.add_argument("--overwrite", action="store_true", help="Sovrascrive template esistenti quando supportato")
     parser.add_argument("--include-unfinished", action="store_true", help="Importa anche risposte non completate")
     args = parser.parse_args()
@@ -296,6 +318,32 @@ def main() -> None:
         return
     if args.command == "full-pipeline":
         full_pipeline(config, include_unfinished=args.include_unfinished)
+        return
+    if args.command == "analyze-dark-patterns":
+        analyze_dark_patterns(config, args.input or "data/raw/dark_patterns.csv")
+        print("Dark pattern pack generato.")
+        return
+    if args.command == "analyze-benchmark":
+        analyze_ueq_benchmark(config, args.input or "data/raw/ueq_benchmark.csv")
+        print("Benchmark UEQ analizzato o saltato con warning.")
+        return
+    if args.command == "build-asset-manifest":
+        build_assets_manifest()
+        print("Manifest asset generato.")
+        return
+    if args.command == "build-slide-pack":
+        data = load_all(config)
+        generate_final_assets(config, data)
+        analyze_dark_patterns(config)
+        analyze_ueq_benchmark(config)
+        generate_text_outputs(config)
+        build_slide_pack(config)
+        print("Slide pack generato in outputs/slide_pack/.")
+        return
+    if args.command == "quality-check":
+        ready = run_quality_check(config)
+        print(resolve_path("outputs/reports/final_quality_check.md"))
+        print("STATUS: READY_FOR_SLIDES" if ready else "STATUS: NEEDS_FIXES")
         return
     if args.command == "build-heuristics-from-consolidation":
         build_heuristics_from_consolidation(config)
@@ -355,8 +403,13 @@ def main() -> None:
         generate_text_outputs(config)
         print("Testi generati in outputs/text_snippets e outputs/generated_report_sections.")
     if args.command in {"all", "all-from-formbricks", "export-slide-assets"}:
+        data = load_all(config)
+        generate_final_assets(config, data)
+        analyze_dark_patterns(config)
+        analyze_ueq_benchmark(config)
         generate_slide_manifest()
-        print("Slide assets e manifest generati.")
+        build_slide_pack(config)
+        print("Manifest e slide pack generati.")
 
 
 if __name__ == "__main__":

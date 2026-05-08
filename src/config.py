@@ -26,7 +26,7 @@ def ensure_output_dirs(config: dict[str, Any]) -> None:
     paths = config.get("paths", {})
     base_dirs = [
         paths.get("output_figures", "outputs/figures"),
-        "outputs/figures/clean",
+        "outputs/figures/dark",
         "outputs/figures/presentation",
         paths.get("output_tables", "outputs/tables"),
         "outputs/tables/csv",
@@ -37,13 +37,18 @@ def ensure_output_dirs(config: dict[str, Any]) -> None:
         "outputs/text",
         "outputs/reports",
         "outputs/report_assets",
-        "outputs/slide_assets",
-        "outputs/slide_assets/01_intro",
-        "outputs/slide_assets/02_heuristics",
-        "outputs/slide_assets/03_user_tests",
-        "outputs/slide_assets/04_questionnaire",
-        "outputs/slide_assets/05_conclusions",
+        "outputs/slide_pack",
         "outputs/generated_report_sections",
+        "outputs/figures/presentation/sample",
+        "outputs/figures/presentation/questionnaire/items",
+        "outputs/figures/presentation/questionnaire/subgroups",
+        "outputs/figures/presentation/user_tests/tasks",
+        "outputs/figures/presentation/heuristics",
+        "outputs/figures/dark/sample",
+        "outputs/figures/dark/questionnaire/items",
+        "outputs/figures/dark/questionnaire/subgroups",
+        "outputs/figures/dark/user_tests/tasks",
+        "outputs/figures/dark/heuristics",
         "data/processed",
         "data/templates",
         "data/formbricks_raw/questionnaire",
@@ -53,9 +58,13 @@ def ensure_output_dirs(config: dict[str, Any]) -> None:
     figure_root = resolve_path(paths.get("output_figures", "outputs/figures"))
     base_dirs.extend(
         [
-            figure_root / "user_tests",
-            figure_root / "heuristics",
-            figure_root / "questionnaire",
+            figure_root / "dark/user_tests",
+            figure_root / "dark/heuristics",
+            figure_root / "dark/questionnaire",
+            figure_root / "dark/sample",
+            figure_root / "dark/questionnaire/items",
+            figure_root / "dark/questionnaire/subgroups",
+            figure_root / "dark/user_tests/tasks",
         ]
     )
     for directory in base_dirs:

@@ -1,12 +1,10 @@
-| group_value      |   count |   mean |   median |   std | system    | group_field           |
-|:-----------------|--------:|-------:|---------:|------:|:----------|:----------------------|
-| Femmina          |      12 |   4.01 |     3.98 |  0.3  | Deliveroo | genere                |
-| Maschio          |      12 |   4.21 |     4.21 |  0.13 | Deliveroo | genere                |
-| 25               |      24 |   4.11 |     4.12 |  0.25 | Deliveroo | eta                   |
-| Studente         |      24 |   4.11 |     4.12 |  0.25 | Deliveroo | situazione lavorativa |
-| Laurea Triennale |      24 |   4.11 |     4.12 |  0.25 | Deliveroo | istruzione            |
-| Femmina          |      12 |   4.05 |     4.06 |  0.16 | Glovo     | genere                |
-| Maschio          |      12 |   4    |     3.98 |  0.29 | Glovo     | genere                |
-| 25               |      24 |   4.03 |     4    |  0.23 | Glovo     | eta                   |
-| Studente         |      24 |   4.03 |     4    |  0.23 | Glovo     | situazione lavorativa |
-| Laurea Triennale |      24 |   4.03 |     4    |  0.23 | Glovo     | istruzione            |
+| group_value     |   count |   mean |   median |   std | system    | group_field           |
+|:----------------|--------:|-------:|---------:|------:|:----------|:----------------------|
+| Maschio         |       1 |   4.04 |     4.04 |   nan | Deliveroo | genere                |
+| Meno di 25 Anni |       1 |   4.04 |     4.04 |   nan | Deliveroo | eta                   |
+| Studente        |       1 |   4.04 |     4.04 |   nan | Deliveroo | situazione lavorativa |
+| 3.0             |       1 |   4.04 |     4.04 |   nan | Deliveroo | familiarita delivery  |
+| Maschio         |       1 |   4.08 |     4.08 |   nan | Glovo     | genere                |
+| Meno di 25 Anni |       1 |   4.08 |     4.08 |   nan | Glovo     | eta                   |
+| Studente        |       1 |   4.08 |     4.08 |   nan | Glovo     | situazione lavorativa |
+| 3.0             |       1 |   4.08 |     4.08 |   nan | Glovo     | familiarita delivery  |

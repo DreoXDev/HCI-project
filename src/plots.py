@@ -20,8 +20,8 @@ from .visualization.theme import (
 )
 
 
-def apply_project_theme(config: dict, theme: str = "clean") -> None:
-    apply_base_theme(config, "presentation" if theme == "presentation" else "clean")
+def apply_project_theme(config: dict, theme: str = "dark") -> None:
+    apply_base_theme(config, "presentation" if theme == "presentation" else "dark")
 
 
 def _palette(config: dict) -> dict[str, str]:
@@ -29,7 +29,7 @@ def _palette(config: dict) -> dict[str, str]:
 
 
 def save_figure(fig, path: str | Path, config: dict | None = None, also_svg: bool = True) -> None:
-    save_figure_variants(fig, path, config=config, keep_legacy=True)
+    save_figure_variants(fig, path, config=config, keep_legacy=False)
 
 
 def plot_effectiveness(effectiveness, config: dict, path: str | Path) -> None:

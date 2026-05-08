@@ -134,6 +134,10 @@ python -m src.cli validate-users-time
 python -m src.cli analyze-users-time
 python -m src.cli import-formbricks-all
 python -m src.cli all-from-formbricks
+python -m src.cli build-slide-pack
+python -m src.cli quality-check
+python -m src.cli analyze-benchmark
+python -m src.cli analyze-dark-patterns
 python -m src.cli import-any-form --input data/formbricks_raw/export.csv
 python -m src.cli full-pipeline
 ```
@@ -262,13 +266,13 @@ Il vecchio `data/raw/users-time.csv` resta usato dalla pipeline legacy di effica
 
 La pipeline genera due versioni dei grafici:
 
-- `clean`: grafici puliti per report e controllo statistico
+- `dark`: grafici con sfondo scuro
 - `presentation`: grafici con sfondo trasparente e DPI alto per slide
 
 Comandi:
 
 ```powershell
-python -m src.cli full-pipeline --plot-style clean
+python -m src.cli full-pipeline --plot-style dark
 python -m src.cli full-pipeline --plot-style presentation
 python -m src.cli full-pipeline --plot-style both
 ```
@@ -276,7 +280,7 @@ python -m src.cli full-pipeline --plot-style both
 Output:
 
 ```txt
-outputs/figures/clean/
+outputs/figures/dark/
 outputs/figures/presentation/
 ```
 
@@ -628,7 +632,39 @@ Rispetto alla base originale sono stati implementati o preparati:
 5. Eseguire `python -m src.cli validate`.
 6. Correggere eventuali errori segnalati.
 7. Eseguire `python -m src.cli all`.
-8. Usare grafici e tabelle da `outputs/` per report, PDF e slide.
+8. Eseguire `python -m src.cli build-slide-pack`.
+9. Eseguire `python -m src.cli quality-check`.
+10. Usare grafici, tabelle, testi e `outputs/slide_pack/executive_summary.md` per report, PDF e slide.
+
+## Slide pack finale
+
+Il comando:
+
+```powershell
+python -m src.cli build-slide-pack
+```
+
+crea:
+
+```txt
+outputs/slide_pack/
+  00_index.md
+  01_intro.md
+  02_heuristics.md
+  03_user_tests.md
+  04_questionnaire.md
+  05_conclusions.md
+  executive_summary.md
+  assets_manifest.csv
+```
+
+Il comando non inventa evidenze: raccoglie asset gia prodotti, testi template-driven e note da completare manualmente. La checklist finale e:
+
+```powershell
+python -m src.cli quality-check
+```
+
+Il report `outputs/reports/final_quality_check.md` termina con `STATUS: READY_FOR_SLIDES` o `STATUS: NEEDS_FIXES`.
 
 ## Documentazione aggiuntiva
 

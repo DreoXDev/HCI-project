@@ -20,7 +20,7 @@ def test_get_brand_palette_contains_project_systems() -> None:
 def test_apply_base_theme_does_not_error() -> None:
     config = load_config("config.yaml")
 
-    apply_base_theme(config, "clean")
+    apply_base_theme(config, "dark")
     fig, ax = plt.subplots()
     ax.plot([1, 2], [1, 2])
     plt.close(fig)

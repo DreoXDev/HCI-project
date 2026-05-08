@@ -39,14 +39,19 @@ users_time:
   tasks:
     - id: T01
       name: "Ricerca ristorante"
+      oet_seconds: 45
     - id: T02
       name: "Aggiunta prodotto al carrello"
+      oet_seconds: 90
     - id: T03
       name: "Modifica carrello"
+      oet_seconds: 60
     - id: T04
       name: "Checkout"
+      oet_seconds: 90
     - id: T05
       name: "Tracking ordine"
+      oet_seconds: 60
 
 visualization:
   style: both
@@ -55,7 +60,14 @@ visualization:
   dpi: 220
   transparent_background: true
   fonts:
-    preferred: Inter
+    preferred: Sora
+    weight: 600
+    local_files:
+      - "assets/fonts/Sora-wght.ttf"
+      - "assets/fonts/Sora-Bold.ttf"
+      - "assets/fonts/Inter-opsz-wght.ttf"
+      - "assets/fonts/Inter-Italic-opsz-wght.ttf"
+      - "assets/fonts/BebasNeue-Regular.ttf"
     fallback: DejaVu Sans
   colors:
     deliveroo: "#00CCBC"
@@ -88,7 +100,7 @@ analysis:
   nps_max: 10
   round_decimals: 2
   generate_text_snippets: true
-  generate_slide_assets: true
+  generate_slide_assets: false
 
 final_score:
   enabled: true

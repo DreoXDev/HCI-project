@@ -6,8 +6,8 @@ Mantenere grafici coerenti tra questionari utente, valutazione euristica, user t
 
 La pipeline genera due versioni:
 
-- `clean`: report, analisi e controllo statistico
-- `presentation`: slide-ready con sfondo trasparente e DPI alto
+- `dark`: grafici con sfondo scuro
+- `presentation`: grafici senza sfondo, DPI alto
 
 ## Palette
 
@@ -24,16 +24,14 @@ La pipeline genera due versioni:
 Ogni grafico principale viene esportato in PNG e SVG:
 
 ```txt
-outputs/figures/clean/
+outputs/figures/dark/
 outputs/figures/presentation/
 ```
-
-Per compatibilita, la pipeline mantiene anche una copia nei path storici, per esempio `outputs/figures/user_tests/`.
 
 ## Comandi
 
 ```powershell
-python -m src.cli full-pipeline --plot-style clean
+python -m src.cli full-pipeline --plot-style dark
 python -m src.cli full-pipeline --plot-style presentation
 python -m src.cli full-pipeline --plot-style both
 ```

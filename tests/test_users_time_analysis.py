@@ -57,10 +57,15 @@ def test_analyze_users_time_writes_outputs(tmp_path: Path) -> None:
     assert (tmp_path / "tables" / "users_time_summary.csv").exists()
     assert (tmp_path / "tables" / "users_time_summary.md").exists()
     assert (tmp_path / "tables" / "users_time_stat_tests.csv").exists()
-    assert (tmp_path / "figures" / "users_time_mean_by_task.png").exists()
-    assert (tmp_path / "figures" / "users_time_boxplot_by_task.png").exists()
-    assert (tmp_path / "figures" / "users_time_success_rate.png").exists()
-    assert (tmp_path / "figures" / "users_time_errors_by_task.png").exists()
+    assert (tmp_path / "figures" / "dark" / "users_time_mean_by_task.png").exists()
+    assert (tmp_path / "figures" / "presentation" / "users_time_mean_by_task.png").exists()
+    for filename in [
+        "users_time_boxplot_by_task.png",
+        "users_time_success_rate.png",
+        "users_time_errors_by_task.png",
+    ]:
+        assert (tmp_path / "figures" / "dark" / filename).exists()
+        assert (tmp_path / "figures" / "presentation" / filename).exists()
     assert (tmp_path / "text" / "users_time_interpretation.md").exists()
 
 

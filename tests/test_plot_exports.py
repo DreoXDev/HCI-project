@@ -15,7 +15,7 @@ def test_save_figure_variants_creates_png_and_svg(tmp_path) -> None:
     paths = save_figure_variants(fig, tmp_path / "demo_chart.png", config, plot_style="both", keep_legacy=False)
 
     assert len(paths) == 2
-    assert any("clean" in str(path) for path in paths)
+    assert any("dark" in str(path) for path in paths)
     assert any("presentation" in str(path) for path in paths)
     for path in paths:
         assert path.exists()
@@ -28,4 +28,4 @@ def test_slide_manifest_contains_presentation_references() -> None:
     manifest = open("outputs/slide_manifest.md", encoding="utf-8").read()
 
     assert "outputs/figures/presentation/" in manifest
-    assert "outputs/figures/clean/" in manifest
+    assert "outputs/figures/dark/" in manifest
