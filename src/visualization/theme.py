@@ -234,6 +234,7 @@ def save_figure(fig, path: str | Path, config: dict | None = None, style: str = 
     values = _style_values(style)
     target = resolve_path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
+    _apply_style_to_existing_figure(fig, style)
     fig.tight_layout()
     transparent = bool(visual.get("transparent_background", True)) if style == "presentation" else False
     dpi = int(visual.get("dpi", values["figure_dpi"])) if style == "presentation" else values["figure_dpi"]
@@ -244,6 +245,38 @@ def save_figure(fig, path: str | Path, config: dict | None = None, style: str = 
     if close:
         plt.close(fig)
     return target
+
+
+def _apply_style_to_existing_figure(fig, style: str) -> None:
+    values = _style_values(style)
+    is_transparent = style == "presentation"
+    background = "none" if is_transparent else BRAND_COLORS["dark_background"]
+    text_color = BRAND_COLORS["neutral"] if is_transparent else BRAND_COLORS["dark_text"]
+    muted_color = BRAND_COLORS["muted"] if is_transparent else BRAND_COLORS["dark_muted"]
+    grid_color = BRAND_COLORS["grid"] if is_transparent else BRAND_COLORS["dark_grid"]
+
+    if not is_transparent:
+        fig.patch.set_facecolor(background)
+    for ax in fig.axes:
+        if not is_transparent:
+            ax.set_facecolor(background)
+        ax.title.set_color(text_color)
+        ax.xaxis.label.set_color(text_color)
+        ax.yaxis.label.set_color(text_color)
+        ax.tick_params(axis="both", colors=muted_color, labelsize=values["tick_size"])
+        for spine in ax.spines.values():
+            spine.set_color(grid_color)
+        for gridline in ax.get_xgridlines() + ax.get_ygridlines():
+            gridline.set_color(grid_color)
+            gridline.set_alpha(0.18 if is_transparent else 0.28)
+        legend = ax.get_legend()
+        if legend:
+            legend.get_frame().set_facecolor(background if not is_transparent else "none")
+            legend.get_frame().set_edgecolor("none")
+            for text in legend.get_texts():
+                text.set_color(text_color)
+        for text in ax.texts:
+            text.set_color(text_color)
 
 
 def save_figure_variants(

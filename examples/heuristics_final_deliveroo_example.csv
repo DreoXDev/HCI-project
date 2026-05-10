@@ -1,2 +1,0 @@
-ID,Problem ID,Descrizione breve,Problema,Descrizione lunga,Euristiche violate (ID),Euristiche,Popolarita,Popolarità,Valutatori (ID),Id valutatori,Priorita,Priorità,Severita media (SD),Severità media (SD),Severita mediana (IQR),Severità mediana (IQR),severity_mean,severity_sd,severity_median,severity_iqr,top5_count,not_top5_count,Expert 1,Expert 2
-PD1,PD1,Mancanza feedback pagamento,Mancanza feedback pagamento,Durante il checkout non e chiaro se il pagamento sia in corso.,E1,E1,2,2,"EU1, EU2",EU1-EU2,B,B,3.50 [0.71],3.50 [0.71],3.50 [0.50],3.50 [0.50],3.5,0.71,3.5,0.5,2,0,3,4

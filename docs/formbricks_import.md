@@ -34,43 +34,43 @@ python -m src.cli import-formbricks-questionnaire --include-unfinished
 
 ## Euristiche
 
-Il nuovo flusso euristico e in due fasi: import dei candidati, review manuale, build dei CSV finali.
+Il nuovo flusso euristico e in due survey: raccolta grezza dei problemi, review manuale, survey severita.
 
 Input consigliato:
 
 ```txt
-data/formbricks_raw/heuristics/export_esperti.csv
+data/raw/formbricks/heuristics_experts_raw.csv
 ```
 
 Import:
 
 ```powershell
-python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
+python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
 ```
 
 Output:
 
 ```txt
-data/processed/heuristics_candidates.csv
-data/processed/heuristics_review.csv
-reports/heuristics_import_report.md
-reports/heuristics_import_errors.csv
+data/processed/heuristics/raw_problems_long.csv
+data/processed/heuristics/raw_problems_table.csv
+data/processed/heuristics/expert_profiles.csv
+reports/heuristics_raw_report.md
 ```
 
-Poi si modifica manualmente `data/processed/heuristics_review.csv`, soprattutto `problem_group_id`.
+Poi si modifica manualmente il template `data/templates/heuristics_consolidated_problems_template.csv` e si salva il risultato come `data/processed/heuristics/consolidated_problems.csv`.
 
-Build finale:
+Survey severita:
 
 ```powershell
-python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
 ```
 
 Output:
 
 ```txt
-data/raw/heuristics_deliveroo.csv
-data/raw/heuristics_glovo.csv
-reports/heuristics_build_report.md
+data/processed/heuristics/severity_ratings_long.csv
+data/processed/heuristics/final_problem_summary.csv
+reports/heuristics_final_report.md
 ```
 
 ## User test
@@ -98,27 +98,24 @@ Per il questionario usare tag nei titoli quando possibile:
 Per le euristiche, il mapping delle colonne vive in:
 
 ```txt
-config/formbricks_heuristics_mapping.yml
+config/heuristics_raw_mapping.yml
 ```
 
 Campi logici obbligatori:
 
 - `evaluator_id`
 - `app`
-- `task`
 - `short_description`
 - `long_description`
-- `heuristic`
-- `severity`
-- `top5`
+- `heuristics`
 
 ## Workflow completo
 
 ```powershell
 python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/export_questionario.csv
-python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
-# revisiona data/processed/heuristics_review.csv
-python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
+# compila data/processed/heuristics/consolidated_problems.csv
+python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
 python -m src.cli validate
 python -m src.cli all
 ```

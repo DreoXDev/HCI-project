@@ -10,10 +10,10 @@
 - `outputs/figures/dark/user_tests/efficiency_boxplot.svg` (figure, high)
 - `outputs/figures/dark/user_tests/efficiency_violinplot.png` (figure, high)
 - `outputs/figures/dark/user_tests/efficiency_violinplot.svg` (figure, high)
-- `outputs/figures/presentation/user_tests/effectiveness_confidence_interval.png` (figure, high)
-- `outputs/figures/presentation/user_tests/effectiveness_confidence_interval.svg` (figure, high)
-- `outputs/figures/presentation/user_tests/effectiveness_deliveroo_vs_glovo.png` (figure, high)
-- `outputs/figures/presentation/user_tests/effectiveness_deliveroo_vs_glovo.svg` (figure, high)
+- `outputs/figures/dark/user_tests/tasks/t01_effectiveness.png` (figure, high)
+- `outputs/figures/dark/user_tests/tasks/t01_effectiveness.svg` (figure, high)
+- `outputs/figures/dark/user_tests/tasks/t01_efficiency.png` (figure, high)
+- `outputs/figures/dark/user_tests/tasks/t01_efficiency.svg` (figure, high)
 
 ## Testo suggerito
 

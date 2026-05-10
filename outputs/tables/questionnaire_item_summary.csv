@@ -1,53 +1,53 @@
 item,mean,median,std,min,max,system
-fastidioso-piacevole,5.0,5.0,,5.0,5.0,Deliveroo
-incomprensibile-comprensibile,3.0,3.0,,3.0,3.0,Deliveroo
-creativo-privo di fantasia,4.0,4.0,,4.0,4.0,Deliveroo
-facile da apprendere-difficile da apprendere,2.0,2.0,,2.0,2.0,Deliveroo
-di grande valore-di poco valore,6.0,6.0,,6.0,6.0,Deliveroo
-noioso-appassionante,4.0,4.0,,4.0,4.0,Deliveroo
-non interessante-interessante,3.0,3.0,,3.0,3.0,Deliveroo
-imprevedibile-prevedibile,5.0,5.0,,5.0,5.0,Deliveroo
-veloce-lento,4.0,4.0,,4.0,4.0,Deliveroo
-originale-convenzionale,3.0,3.0,,3.0,3.0,Deliveroo
-ostruttivo-di supporto,5.0,5.0,,5.0,5.0,Deliveroo
-buono-scarso,5.0,5.0,,5.0,5.0,Deliveroo
-complicato-facile,4.0,4.0,,4.0,4.0,Deliveroo
-repellente-attraente,3.0,3.0,,3.0,3.0,Deliveroo
-usuale-moderno,4.0,4.0,,4.0,4.0,Deliveroo
-sgradevole-gradevole,3.0,3.0,,3.0,3.0,Deliveroo
-sicuro-insicuro,6.0,6.0,,6.0,6.0,Deliveroo
-attivante-soporifero,3.0,3.0,,3.0,3.0,Deliveroo
-conforme alle aspettative-non conforme alle aspettative,7.0,7.0,,7.0,7.0,Deliveroo
-inefficiente-efficiente,1.0,1.0,,1.0,1.0,Deliveroo
-chiaro-confuso,3.0,3.0,,3.0,3.0,Deliveroo
-non pragmatico-pragmatico,5.0,5.0,,5.0,5.0,Deliveroo
-ordinato-sovraccarico,4.0,4.0,,4.0,4.0,Deliveroo
-invitante-non invitante,3.0,3.0,,3.0,3.0,Deliveroo
-congeniale-ostile,5.0,5.0,,5.0,5.0,Deliveroo
-conservativo-innovativo,5.0,5.0,,5.0,5.0,Deliveroo
-fastidioso-piacevole,4.0,4.0,,4.0,4.0,Glovo
-incomprensibile-comprensibile,4.0,4.0,,4.0,4.0,Glovo
-creativo-privo di fantasia,3.0,3.0,,3.0,3.0,Glovo
-facile da apprendere-difficile da apprendere,5.0,5.0,,5.0,5.0,Glovo
-di grande valore-di poco valore,5.0,5.0,,5.0,5.0,Glovo
-noioso-appassionante,4.0,4.0,,4.0,4.0,Glovo
-non interessante-interessante,3.0,3.0,,3.0,3.0,Glovo
-imprevedibile-prevedibile,4.0,4.0,,4.0,4.0,Glovo
-veloce-lento,5.0,5.0,,5.0,5.0,Glovo
-originale-convenzionale,4.0,4.0,,4.0,4.0,Glovo
-ostruttivo-di supporto,3.0,3.0,,3.0,3.0,Glovo
-buono-scarso,3.0,3.0,,3.0,3.0,Glovo
-complicato-facile,5.0,5.0,,5.0,5.0,Glovo
-repellente-attraente,5.0,5.0,,5.0,5.0,Glovo
-usuale-moderno,4.0,4.0,,4.0,4.0,Glovo
-sgradevole-gradevole,4.0,4.0,,4.0,4.0,Glovo
-sicuro-insicuro,5.0,5.0,,5.0,5.0,Glovo
-attivante-soporifero,4.0,4.0,,4.0,4.0,Glovo
-conforme alle aspettative-non conforme alle aspettative,3.0,3.0,,3.0,3.0,Glovo
-inefficiente-efficiente,3.0,3.0,,3.0,3.0,Glovo
-chiaro-confuso,4.0,4.0,,4.0,4.0,Glovo
-non pragmatico-pragmatico,6.0,6.0,,6.0,6.0,Glovo
-ordinato-sovraccarico,4.0,4.0,,4.0,4.0,Glovo
-invitante-non invitante,1.0,1.0,,1.0,1.0,Glovo
-congeniale-ostile,7.0,7.0,,7.0,7.0,Glovo
-conservativo-innovativo,4.0,4.0,,4.0,4.0,Glovo
+fastidioso-piacevole,5.88,6.0,0.83,5,7,Deliveroo
+incomprensibile-comprensibile,6.12,6.0,0.83,5,7,Deliveroo
+creativo-privo di fantasia,6.0,6.0,0.93,5,7,Deliveroo
+facile da apprendere-difficile da apprendere,5.88,6.0,0.83,5,7,Deliveroo
+di grande valore-di poco valore,6.12,6.0,0.83,5,7,Deliveroo
+noioso-appassionante,6.0,6.0,0.93,5,7,Deliveroo
+non interessante-interessante,5.88,6.0,0.83,5,7,Deliveroo
+imprevedibile-prevedibile,6.12,6.0,0.83,5,7,Deliveroo
+veloce-lento,5.0,5.0,0.93,4,6,Deliveroo
+originale-convenzionale,5.88,6.0,0.83,5,7,Deliveroo
+ostruttivo-di supporto,6.12,6.0,0.83,5,7,Deliveroo
+buono-scarso,6.0,6.0,0.93,5,7,Deliveroo
+complicato-facile,4.88,5.0,0.83,4,6,Deliveroo
+repellente-attraente,6.12,6.0,0.83,5,7,Deliveroo
+usuale-moderno,6.0,6.0,0.93,5,7,Deliveroo
+sgradevole-gradevole,5.88,6.0,0.83,5,7,Deliveroo
+sicuro-insicuro,6.12,6.0,0.83,5,7,Deliveroo
+attivante-soporifero,6.0,6.0,0.93,5,7,Deliveroo
+conforme alle aspettative-non conforme alle aspettative,5.88,6.0,0.83,5,7,Deliveroo
+inefficiente-efficiente,5.12,5.0,0.83,4,6,Deliveroo
+chiaro-confuso,6.0,6.0,0.93,5,7,Deliveroo
+non pragmatico-pragmatico,5.88,6.0,0.83,5,7,Deliveroo
+ordinato-sovraccarico,6.12,6.0,0.83,5,7,Deliveroo
+invitante-non invitante,6.0,6.0,0.93,5,7,Deliveroo
+congeniale-ostile,5.88,6.0,0.83,5,7,Deliveroo
+conservativo-innovativo,6.12,6.0,0.83,5,7,Deliveroo
+fastidioso-piacevole,5.12,5.0,0.83,4,6,Glovo
+incomprensibile-comprensibile,4.0,4.0,0.93,3,5,Glovo
+creativo-privo di fantasia,4.88,5.0,0.83,4,6,Glovo
+facile da apprendere-difficile da apprendere,5.12,5.0,0.83,4,6,Glovo
+di grande valore-di poco valore,5.0,5.0,0.93,4,6,Glovo
+noioso-appassionante,4.88,5.0,0.83,4,6,Glovo
+non interessante-interessante,5.12,5.0,0.83,4,6,Glovo
+imprevedibile-prevedibile,5.0,5.0,0.93,4,6,Glovo
+veloce-lento,4.88,5.0,0.83,4,6,Glovo
+originale-convenzionale,5.12,5.0,0.83,4,6,Glovo
+ostruttivo-di supporto,4.0,4.0,0.93,3,5,Glovo
+buono-scarso,4.88,5.0,0.83,4,6,Glovo
+complicato-facile,5.12,5.0,0.83,4,6,Glovo
+repellente-attraente,5.0,5.0,0.93,4,6,Glovo
+usuale-moderno,4.88,5.0,0.83,4,6,Glovo
+sgradevole-gradevole,5.12,5.0,0.83,4,6,Glovo
+sicuro-insicuro,5.0,5.0,0.93,4,6,Glovo
+attivante-soporifero,4.88,5.0,0.83,4,6,Glovo
+conforme alle aspettative-non conforme alle aspettative,5.12,5.0,0.83,4,6,Glovo
+inefficiente-efficiente,5.0,5.0,0.93,4,6,Glovo
+chiaro-confuso,4.88,5.0,0.83,4,6,Glovo
+non pragmatico-pragmatico,4.12,4.0,0.83,3,5,Glovo
+ordinato-sovraccarico,5.0,5.0,0.93,4,6,Glovo
+invitante-non invitante,4.88,5.0,0.83,4,6,Glovo
+congeniale-ostile,5.12,5.0,0.83,4,6,Glovo
+conservativo-innovativo,5.0,5.0,0.93,4,6,Glovo

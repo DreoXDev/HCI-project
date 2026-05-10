@@ -1,4 +1,4 @@
-| system    |   detractors |   passives |   promoters |   total | nps   | warning                       |
-|:----------|-------------:|-----------:|------------:|--------:|:------|:------------------------------|
-| Deliveroo |            0 |          0 |           0 |       0 | <NA>  | NPS mancante nel questionario |
-| Glovo     |            0 |          0 |           0 |       0 | <NA>  | NPS mancante nel questionario |
+| system    |   detractors |   passives |   promoters |   total |   nps |
+|:----------|-------------:|-----------:|------------:|--------:|------:|
+| Deliveroo |            0 |          5 |           3 |       8 |  37.5 |
+| Glovo     |            0 |          8 |           0 |       8 |   0   |

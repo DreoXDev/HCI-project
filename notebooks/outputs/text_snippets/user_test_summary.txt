@@ -1,3 +1,0 @@
-Il test non evidenzia una differenza statisticamente significativa tra Deliveroo e Glovo per Task 1 (p = 0.389).
-Il test non evidenzia una differenza statisticamente significativa tra Deliveroo e Glovo per Task 2 (p = 0.963).
-Il test non evidenzia una differenza statisticamente significativa tra Deliveroo e Glovo per Task 3 (p = 0.280).

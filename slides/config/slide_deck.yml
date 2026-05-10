@@ -1,0 +1,84 @@
+deck:
+  output: outputs/slides/final_report.pptx
+  template: slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx
+
+metadata:
+  project_title: "Deliveroo vs Glovo"
+  subtitle: "Analisi trasversale di usabilita"
+  authors: "Gruppo HCI"
+  date: "2026"
+
+auto_slides:
+  enabled: true
+  # Modalita che segue l'ordine del PDF di riferimento:
+  # introduzione, valutazione euristica, user test, questionario,
+  # conclusioni e appendici. I testi statici sono in
+  # slides/content/reference_static_texts.md.
+  mode: reference_order
+  reference_texts: slides/content/reference_static_texts.md
+  figure_style: dark
+  include_figures: true
+  include_tables: true
+  include_text_findings: true
+  include_text_slides: true
+  include_slide_pack_text: false
+  include_sources: true
+  table_rows_per_slide: 12
+  # Lasciare vuoto per generare tutte le slide possibili dagli asset esistenti.
+  # Impostare un numero se serve produrre solo un sottoinsieme per revisione rapida.
+  max_slides:
+  exclude: []
+
+slides:
+  - template_id: cover
+    fields:
+      PROJECT_TITLE: "Deliveroo vs Glovo"
+      PROJECT_SUBTITLE: "Analisi trasversale di usabilita"
+      AUTHORS: "Gruppo HCI"
+      YEAR/DATE: "2026"
+
+  - template_id: section_divider
+    fields:
+      SECTION_NAME: "Questionario UEQ e NPS"
+
+  - template_id: graph_full
+    fields:
+      GRAPH_TITLE: "Distribuzione dei punteggi UEQ"
+      INSIGHT_TEXT: "Le scale UEQ evidenziano differenze utili per leggere efficacia percepita, chiarezza e attrattiva."
+    images:
+      GRAPH_MAIN: outputs/figures/dark/questionnaire/ueq_scales.png
+
+  - template_id: comparison
+    fields:
+      COMPARISON_TITLE: "Confronto euristiche"
+      SUMMARY_TEXT: "Il confronto visualizza la distribuzione delle euristiche violate e le categorie piu ricorrenti."
+    images:
+      LEFT_GRAPH: outputs/figures/dark/heuristics/heuristics_distribution.png
+      RIGHT_GRAPH: outputs/figures/dark/heuristics/heuristics_by_category.png
+
+  - template_id: table_large
+    fields:
+      TABLE_TITLE: "Risultati statistici users time"
+      TABLE_FOOTNOTE: "Output generato dalla pipeline di analisi."
+    table:
+      placeholder: TABLE_MAIN
+      source: outputs/tables/users_time_stat_tests.csv
+
+  - template_id: findings
+    fields:
+      FINDING_1: "Deliveroo e Glovo mostrano punti di forza diversi lungo il percorso utente."
+      FINDING_2: "I task critici emergono combinando tempi, successo e richieste di aiuto."
+      FINDING_3: "Le euristiche aiutano a prioritizzare gli interventi di redesign."
+      FINDING_4: "Le conclusioni vanno lette insieme alla dimensione del campione."
+    images:
+      MINI_GRAPH: outputs/figures/dark/heuristics/heuristics_distribution.png
+
+  - template_id: final_verdict
+    fields:
+      FINAL_TITLE: "Sintesi finale"
+      STRENGTH 1: "Percorso utente competitivo"
+      STRENGTH 2: "Buona riconoscibilita visiva"
+      WEAKNESS: "Criticita da verificare nei task piu lunghi"
+      WINNER_LABEL: "Lettura comparativa, non verdetto automatico"
+    images:
+      SUMMARY_GRAPH: outputs/figures/dark/questionnaire/ueq_scales.png

@@ -9,7 +9,7 @@ from .config import resolve_path
 
 SECTION_RULES = [
     ("intro", "Introduzione", ["intro", "sample"]),
-    ("heuristics", "Valutazione euristica", ["heuristic", "problem_evaluator", "coverage", "dark_patterns"]),
+    ("heuristics", "Valutazione euristica", ["heuristic", "problem_evaluator", "coverage"]),
     ("user_tests", "User test", ["user_test", "users_time", "task_"]),
     ("questionnaire", "Questionario UEQ/NPS", ["ueq", "questionnaire", "nps", "subgroup"]),
     ("conclusions", "Conclusioni", ["final", "conclusion", "recommendation", "limitation", "executive"]),

@@ -1,0 +1,54 @@
+deck:
+  output: outputs/slides/demo.pptx
+  template: slides/templates/Deliveroo_vs_Glovo_python_ready_template.pptx
+
+metadata:
+  project_title: "Demo Slide Generation"
+  subtitle: "Template + YAML + asset"
+  authors: "HCI Toolkit"
+  date: "2026"
+
+slides:
+  - template_id: cover
+    fields:
+      PROJECT_TITLE: "Demo Slide Generation"
+      PROJECT_SUBTITLE: "Generazione PPTX da asset normalizzati"
+      AUTHORS: "HCI Toolkit"
+      YEAR/DATE: "2026"
+
+  - template_id: section_divider
+    fields:
+      SECTION_NAME: "Demo"
+
+  - template_id: graph_full
+    fields:
+      GRAPH_TITLE: "Grafico demo"
+    fields_from_file:
+      INSIGHT_TEXT: outputs/demo/text/demo_findings.md
+    images:
+      GRAPH_MAIN: outputs/demo/graphs/demo_graph.png
+
+  - template_id: table_large
+    fields:
+      TABLE_TITLE: "Tabella demo"
+      TABLE_FOOTNOTE: "CSV demo generato localmente."
+    table:
+      placeholder: TABLE_MAIN
+      source: outputs/demo/tables/demo_stats.csv
+
+  - template_id: findings
+    fields:
+      FINDING_1: "La pipeline duplica le slide marcate da TEMPLATE_ID."
+      FINDING_2: "I placeholder testuali vengono sostituiti dal file YAML."
+      FINDING_3: "Le immagini rispettano le proporzioni del box originale."
+      FINDING_4: "Le tabelle CSV diventano tabelle PowerPoint native."
+
+  - template_id: final_verdict
+    fields:
+      FINAL_TITLE: "Conclusioni demo"
+      STRENGTH 1: "Configurabile"
+      STRENGTH 2: "Riutilizzabile"
+      WEAKNESS: "Richiede un template con placeholder chiari"
+      WINNER_LABEL: "Demo completata"
+    images:
+      SUMMARY_GRAPH: outputs/demo/graphs/demo_graph.png

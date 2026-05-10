@@ -1,5 +1,0 @@
-candidate_id,app,task,evaluator_id,short_description,long_description,heuristic_id,heuristic_label,severity,top5,problem_group_id,include,review_notes
-C001,Deliveroo,Checkout,EU1,Mancanza feedback pagamento,Durante il checkout non e chiaro se il pagamento sia in corso.,E1,Visibility of system status,3,True,PG001,True,
-C002,Deliveroo,Checkout,EU2,Feedback pagamento poco visibile,Il sistema non comunica bene lo stato del pagamento dopo il tap sul pulsante.,E1,Visibility of system status,4,True,PG001,True,
-C003,Glovo,Ricerca,EU1,Filtri poco chiari,I filtri sono nascosti e non e chiaro quando sono attivi.,E4,Consistency and standards,2,False,PG002,True,
-C004,Glovo,Ricerca,EU3,Troppi elementi nella schermata,La pagina di ricerca mostra molte informazioni secondarie e rende difficile scegliere.,E8,Aesthetic and minimalist design,3,True,PG003,True,

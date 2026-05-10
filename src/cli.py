@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -9,11 +10,14 @@ from .config import ensure_output_dirs, load_config, resolve_path
 from .asset_manifest import build_assets_manifest
 from .benchmark import analyze_ueq_benchmark
 from .data_loading import load_all
-from .dark_patterns import analyze_dark_patterns
 from .export import create_templates
 from .final_assets import generate_final_assets
 from .formbricks_adapter import comparable, convert_questionnaire_export, load_formbricks_export
-from .formbricks_heuristics_pipeline import build_heuristics_from_review, import_formbricks_heuristics
+from .formbricks_heuristics_pipeline import (
+    import_heuristics_raw_survey,
+    parse_severity_ratings,
+    write_consolidated_problems_template,
+)
 from .heuristics import clean_heuristics, priority_table, summarize_heuristics
 from .plots import (
     plot_distribution,
@@ -30,6 +34,13 @@ from .slide_pack import build_slide_pack
 from .tables import export_table
 from .text_generation.final_summary_text import generate_text_outputs
 from .slide_export.slide_manifest import generate_slide_manifest
+from .slide_export.pptx_generator import (
+    SlideGenerationError,
+    format_slide_generation_summary,
+    generate_slides,
+    validate_slide_assets,
+    validate_template_structure,
+)
 from .user_tests import compute_effectiveness, compute_efficiency, compute_user_test_statistics
 from .users_time import analyze_users_time, users_time_enabled, users_time_file, validate_users_time_file
 from .validation import (
@@ -50,60 +61,25 @@ def _existing(path: str | Path | None) -> Path | None:
 def import_formbricks_available(config: dict, include_unfinished: bool = False) -> bool:
     paths = config.get("paths", {})
     q_path = _existing(paths.get("questionnaire_raw")) or _existing(config.get("formbricks", {}).get("questionnaire", {}).get("export_path"))
-    h_path = _existing(paths.get("heuristics_raw")) or _existing(config.get("formbricks", {}).get("heuristics", {}).get("export_path"))
-    heuristic_review_required = False
+    h_path = _existing("data/raw/formbricks/heuristics_experts_raw.csv")
     if q_path:
         convert_questionnaire_export(q_path, config, include_unfinished=include_unfinished)
         print(f"OK: questionario importato da {q_path}")
     else:
         print("WARNING: CSV questionario Formbricks non trovato, uso eventuali file data/raw esistenti.")
     if h_path:
-        import_formbricks_heuristics(h_path)
-        print(f"OK: candidati euristici importati da {h_path}. Completa data/processed/heuristics_review.csv prima di rigenerare data/raw.")
-        heuristic_review_required = True
+        import_heuristics_raw_survey(h_path, config=config)
+        print(f"OK: survey euristica raw importata da {h_path}. Completa data/processed/heuristics/consolidated_problems.csv prima della survey severita.")
     else:
-        print("WARNING: CSV euristiche Formbricks non trovato, uso eventuali file data/raw esistenti.")
-    return heuristic_review_required
-
-
-def build_heuristics_from_consolidation(config: dict) -> None:
-    source = resolve_path("data/processed/heuristics_consolidation_template.csv")
-    if not source.exists():
-        print("WARNING: file di consolidamento non trovato. Importa prima le euristiche da Formbricks.")
-        return
-    df = pd.read_csv(source)
-    systems = [config["project"]["system_1"], config["project"]["system_2"]]
-    outputs = [resolve_path(config["paths"]["heuristics_system_1"]), resolve_path(config["paths"]["heuristics_system_2"])]
-    metadata = {"canonical_problem_id", "system", "canonical_title", "canonical_description", "heuristics", "linked_submission_ids", "notes"}
-    evaluator_columns = [column for column in df.columns if column not in metadata]
-    for system, output in zip(systems, outputs):
-        subset = df[df["system"].astype(str).map(comparable).str.contains(comparable(system), na=False)]
-        rows = []
-        for _, row in subset.iterrows():
-            out = {
-                "Problem ID": row["canonical_problem_id"],
-                "Problema": row["canonical_title"],
-                "Euristiche": row["heuristics"],
-                "Id valutatori": "-".join([col for col in evaluator_columns if pd.to_numeric(pd.Series([row[col]]), errors="coerce").fillna(0).iloc[0] > 0]),
-            }
-            for index, evaluator in enumerate(evaluator_columns, start=1):
-                out[f"Expert {index}"] = row[evaluator]
-            rows.append(out)
-        output.parent.mkdir(parents=True, exist_ok=True)
-        pd.DataFrame(rows).to_csv(output, index=False)
-    print("OK: file euristiche toolkit generati dal consolidamento.")
+        print("WARNING: CSV euristiche raw Formbricks non trovato, uso eventuali file euristiche gia consolidati.")
+    return False
 
 
 def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     print("HCI Toolkit - Full Pipeline")
     ensure_output_dirs(config)
     print("\n[1/7] Import Formbricks CSV...")
-    heuristic_review_required = import_formbricks_available(config, include_unfinished)
-    if heuristic_review_required:
-        raise SystemExit(
-            "STOP: euristiche importate come candidati. Revisiona data/processed/heuristics_review.csv, "
-            "esegui build-heuristics-from-review, poi rilancia python -m src.cli all."
-        )
+    import_formbricks_available(config, include_unfinished)
     print("\n[2/7] Validazione dati...")
     data = load_all(config)
     print(validate(config, data))
@@ -113,7 +89,6 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     print("\n[4/8] Asset finali granulari...")
     data = load_all(config)
     generate_final_assets(config, data)
-    analyze_dark_patterns(config)
     analyze_ueq_benchmark(config)
     print("OK: asset finali generati")
     print("\n[5/8] Testi slide/report...")
@@ -151,6 +126,106 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     print(resolve_path("outputs/reports/final_quality_check.md"))
     print("\nOutput principale:")
     print(resolve_path("outputs/slide_pack/00_index.md"))
+
+
+def generate_report(config: dict) -> None:
+    """Generate normalized report assets without assembling the PPTX deck."""
+    ensure_output_dirs(config)
+    data = load_all(config)
+    print(validate(config, data))
+    analyze(config, data)
+    generate_final_assets(config, data)
+    analyze_ueq_benchmark(config)
+    generate_text_outputs(config)
+    generate_slide_manifest()
+    build_slide_pack(config)
+    print("Report assets generati in outputs/.")
+
+
+def generate_demo_assets() -> None:
+    import matplotlib.pyplot as plt
+
+    graph_dir = resolve_path("outputs/demo/graphs")
+    table_dir = resolve_path("outputs/demo/tables")
+    text_dir = resolve_path("outputs/demo/text")
+    graph_dir.mkdir(parents=True, exist_ok=True)
+    table_dir.mkdir(parents=True, exist_ok=True)
+    text_dir.mkdir(parents=True, exist_ok=True)
+
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    ax.bar(["Deliveroo", "Glovo"], [82, 76], color=["#00CCBC", "#FFC244"])
+    ax.set_ylabel("Score")
+    ax.set_title("Demo comparison")
+    ax.set_ylim(0, 100)
+    ax.spines[["top", "right"]].set_visible(False)
+    fig.tight_layout()
+    fig.savefig(graph_dir / "demo_graph.png", dpi=180)
+    plt.close(fig)
+
+    pd.DataFrame(
+        [
+            {"Metric": "Task Success Rate", "Deliveroo": "92%", "Glovo": "85%", "p-value": "0.042", "Significance": "Significant"},
+            {"Metric": "Time on Task", "Deliveroo": "45.2", "Glovo": "58.1", "p-value": "0.001", "Significance": "High"},
+        ]
+    ).to_csv(table_dir / "demo_stats.csv", index=False)
+    (text_dir / "demo_findings.md").write_text(
+        "Il deck demo conferma che il generatore legge testo, grafici e tabelle da asset gia prodotti.",
+        encoding="utf-8",
+    )
+    print("Demo assets generati in outputs/demo/.")
+
+
+def heuristics_cli(argv: list[str]) -> None:
+    parser = argparse.ArgumentParser(description="HCI heuristics pipeline")
+    sub = parser.add_subparsers(dest="phase", required=True)
+
+    raw = sub.add_parser("raw", help="Importa survey Formbricks grezza degli esperti")
+    raw.add_argument("--input", default="data/raw/formbricks/heuristics_experts_raw.csv")
+    raw.add_argument("--config", default="config.yaml")
+    raw.add_argument("--mapping", default="config/heuristics_raw_mapping.yml")
+
+    severity = sub.add_parser("severity", help="Importa survey severita sui problemi consolidati")
+    severity.add_argument("--ratings", default="data/raw/formbricks/heuristics_severity_ratings.csv")
+    severity.add_argument("--problems", default="data/processed/heuristics/consolidated_problems.csv")
+
+    all_cmd = sub.add_parser("all", help="Esegue raw e, se disponibile, severity")
+    all_cmd.add_argument("--input", default="data/raw/formbricks/heuristics_experts_raw.csv")
+    all_cmd.add_argument("--ratings", default="data/raw/formbricks/heuristics_severity_ratings.csv")
+    all_cmd.add_argument("--problems", default="data/processed/heuristics/consolidated_problems.csv")
+    all_cmd.add_argument("--config", default="config.yaml")
+    all_cmd.add_argument("--mapping", default="config/heuristics_raw_mapping.yml")
+
+    args = parser.parse_args(argv)
+    config = load_config(getattr(args, "config", "config.yaml"))
+    if args.phase == "raw":
+        result = import_heuristics_raw_survey(args.input, config=config, mapping_path=args.mapping)
+        for warning in result.warnings:
+            print(f"WARNING: {warning}")
+        print("Pipeline euristiche raw completata.")
+        print(resolve_path("reports/heuristics_raw_report.md"))
+        return
+    if args.phase == "severity":
+        result = parse_severity_ratings(args.ratings, args.problems)
+        for warning in result.warnings:
+            print(f"WARNING: {warning}")
+        print("Pipeline severita euristiche completata.")
+        print(resolve_path("reports/heuristics_final_report.md"))
+        return
+    if args.phase == "all":
+        raw_result = import_heuristics_raw_survey(args.input, config=config, mapping_path=args.mapping)
+        for warning in raw_result.warnings:
+            print(f"WARNING: {warning}")
+        ratings = resolve_path(args.ratings)
+        problems = resolve_path(args.problems)
+        if ratings.exists() and problems.exists():
+            severity_result = parse_severity_ratings(ratings, problems)
+            for warning in severity_result.warnings:
+                print(f"WARNING: {warning}")
+            print("Pipeline euristiche completa.")
+        else:
+            write_consolidated_problems_template()
+            print("Pipeline raw completata. Fase 2 saltata: serve il CSV severita e `data/processed/heuristics/consolidated_problems.csv`.")
+        return
 
 
 def validate(config: dict, data: dict[str, pd.DataFrame]) -> str:
@@ -245,6 +320,9 @@ def analyze(config: dict, data: dict[str, pd.DataFrame]) -> None:
 
 
 def main() -> None:
+    if len(sys.argv) > 1 and sys.argv[1] == "heuristics":
+        heuristics_cli(sys.argv[2:])
+        return
     parser = argparse.ArgumentParser(description="HCI project analysis toolkit")
     parser.add_argument(
         "command",
@@ -252,12 +330,15 @@ def main() -> None:
             "validate",
             "validate-users-time",
             "analyze",
+            "generate-report",
+            "generate-slides",
+            "generate-demo-assets",
+            "validate-slide-template",
             "create-templates",
             "all",
             "full-pipeline",
             "import-formbricks",
             "import-formbricks-questionnaire",
-            "import-formbricks-heuristics",
             "import-formbricks-all",
             "all-from-formbricks",
             "import-any-form",
@@ -269,26 +350,28 @@ def main() -> None:
             "analyze-users-time",
             "analyze-heuristics",
             "analyze-questionnaire",
-            "build-heuristics-from-consolidation",
-            "build-heuristics-from-review",
-            "suggest-heuristic-duplicates",
             "build-slide-pack",
             "quality-check",
             "analyze-benchmark",
-            "analyze-dark-patterns",
             "build-asset-manifest",
         ],
     )
     parser.add_argument("--config", default="config.yaml")
     parser.add_argument("--input", help="Path CSV Formbricks da importare")
     parser.add_argument("--output", help="Path CSV normalizzato da generare")
+    parser.add_argument("--template", help="Template PPTX da usare per generate-slides")
     parser.add_argument("--output-dir", help="Cartella output per i CSV finali")
-    parser.add_argument("--mapping", default="config/formbricks_heuristics_mapping.yml", help="Mapping colonne per import euristiche Formbricks")
+    parser.add_argument("--mapping", default="config/heuristics_raw_mapping.yml", help="Mapping colonne per import euristiche raw Formbricks")
     parser.add_argument("--plot-style", choices=["dark", "presentation", "both"], help="Stile grafici da esportare")
     parser.add_argument("--overwrite", action="store_true", help="Sovrascrive template esistenti quando supportato")
+    parser.add_argument("--strict", action="store_true", help="Per generate-slides: fallisce se mancano asset richiesti")
+    parser.add_argument("--auto", action="store_true", help="Per generate-slides: genera prima gli asset report se mancano")
+    parser.add_argument("--timestamp", action="store_true", help="Per generate-slides: aggiunge timestamp al nome output")
+    parser.add_argument("--generate-slides", action="store_true", help="Per full-pipeline: genera anche il PPTX finale")
     parser.add_argument("--include-unfinished", action="store_true", help="Importa anche risposte non completate")
     args = parser.parse_args()
-    config = load_config(args.config)
+    app_config_path = "config.yaml" if args.command == "generate-slides" else args.config
+    config = load_config(app_config_path)
     if args.plot_style:
         config.setdefault("visualization", {})["style"] = args.plot_style
     if args.command == "create-templates":
@@ -306,6 +389,44 @@ def main() -> None:
         print("\n".join(result.messages))
         print(resolve_path("outputs/reports/users_time_validation_report.md"))
         return
+    if args.command == "generate-demo-assets":
+        generate_demo_assets()
+        return
+    if args.command == "validate-slide-template":
+        target = args.template or "slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx"
+        messages = validate_template_structure(target)
+        if messages:
+            print("\n".join(messages))
+            raise SystemExit(1)
+        print(f"OK: template slide valido: {resolve_path(target)}")
+        return
+    if args.command == "generate-report":
+        generate_report(config)
+        return
+    if args.command == "generate-slides":
+        slide_config_path = "slides/config/slide_deck.yml" if args.config == "config.yaml" else args.config
+        missing = validate_slide_assets(slide_config_path, template_path=args.template)
+        if missing and args.auto:
+            print("Asset mancanti: genero prima il report.")
+            generate_report(config)
+            missing = validate_slide_assets(slide_config_path, template_path=args.template)
+        if missing and (args.strict or not args.auto):
+            raise SystemExit(
+                "\n\n".join(missing)
+                + "\n\nFix:\nRun `python main.py generate-report` first, or use `python main.py generate-slides --auto`."
+            )
+        try:
+            result = generate_slides(
+                slide_config_path,
+                template_path=args.template,
+                output_path=args.output,
+                overwrite=args.overwrite,
+                timestamp=args.timestamp,
+            )
+        except SlideGenerationError as exc:
+            raise SystemExit(str(exc)) from exc
+        print(format_slide_generation_summary(result))
+        return
     if args.command == "analyze-users-time":
         path = resolve_path(args.input) if args.input else users_time_file(config)
         if not path.exists():
@@ -318,10 +439,12 @@ def main() -> None:
         return
     if args.command == "full-pipeline":
         full_pipeline(config, include_unfinished=args.include_unfinished)
-        return
-    if args.command == "analyze-dark-patterns":
-        analyze_dark_patterns(config, args.input or "data/raw/dark_patterns.csv")
-        print("Dark pattern pack generato.")
+        if args.generate_slides:
+            try:
+                result = generate_slides(overwrite=args.overwrite, timestamp=args.timestamp)
+            except SlideGenerationError as exc:
+                raise SystemExit(str(exc)) from exc
+            print(format_slide_generation_summary(result))
         return
     if args.command == "analyze-benchmark":
         analyze_ueq_benchmark(config, args.input or "data/raw/ueq_benchmark.csv")
@@ -334,7 +457,6 @@ def main() -> None:
     if args.command == "build-slide-pack":
         data = load_all(config)
         generate_final_assets(config, data)
-        analyze_dark_patterns(config)
         analyze_ueq_benchmark(config)
         generate_text_outputs(config)
         build_slide_pack(config)
@@ -345,19 +467,6 @@ def main() -> None:
         print(resolve_path("outputs/reports/final_quality_check.md"))
         print("STATUS: READY_FOR_SLIDES" if ready else "STATUS: NEEDS_FIXES")
         return
-    if args.command == "build-heuristics-from-consolidation":
-        build_heuristics_from_consolidation(config)
-        return
-    if args.command == "build-heuristics-from-review":
-        build_heuristics_from_review(
-            input_path=args.input or "data/processed/heuristics_review.csv",
-            output_dir=args.output_dir or "data/raw",
-        )
-        print("Euristiche finali generate da review manuale.")
-        return
-    if args.command == "suggest-heuristic-duplicates":
-        print("Suggerimenti duplicati: controllare outputs/heuristic_review/possible_duplicates.md dopo import euristiche.")
-        return
     if args.command == "import-formbricks":
         import_formbricks_available(config, include_unfinished=args.include_unfinished)
         return
@@ -367,31 +476,25 @@ def main() -> None:
         preview = load_formbricks_export(args.input)
         column_text = " ".join(comparable(column) for column in preview.columns)
         if "heuristic" in column_text or "euristic" in column_text or "severita" in column_text or "severity" in column_text:
-            import_formbricks_heuristics(args.input, mapping_path=args.mapping)
-            print("Form rilevato come valutazione euristica e importato come candidati per review manuale.")
+            import_heuristics_raw_survey(args.input, config=config)
+            print("Form rilevato come survey euristica raw e normalizzato.")
         else:
             convert_questionnaire_export(args.input, config, include_unfinished=args.include_unfinished)
             print("Form rilevato come questionario e convertito.")
         return
     if args.command == "all-from-formbricks":
-        heuristic_review_required = import_formbricks_available(config, include_unfinished=args.include_unfinished)
-        if heuristic_review_required:
-            raise SystemExit(
-                "STOP: completa data/processed/heuristics_review.csv e lancia build-heuristics-from-review prima dell'analisi."
-            )
+        import_formbricks_available(config, include_unfinished=args.include_unfinished)
     if args.command in {"import-formbricks-questionnaire", "import-formbricks-all"}:
         convert_questionnaire_export(args.input, config, include_unfinished=args.include_unfinished)
         print("Questionario Formbricks convertito nei CSV del toolkit.")
-    if args.command in {"import-formbricks-heuristics", "import-formbricks-all"}:
-        source = args.input or config["formbricks"]["heuristics"]["export_path"]
-        import_formbricks_heuristics(
-            input_path=source,
-            output_path=args.output or "data/processed/heuristics_candidates.csv",
-            review_path="data/processed/heuristics_review.csv",
-            mapping_path=args.mapping,
-        )
-        print("Euristiche Formbricks importate. Review manuale in data/processed/heuristics_review.csv.")
-    if args.command in {"import-formbricks-questionnaire", "import-formbricks-heuristics", "import-formbricks-all"}:
+    if args.command == "import-formbricks-all":
+        source = args.input or "data/raw/formbricks/heuristics_experts_raw.csv"
+        if resolve_path(source).exists():
+            import_heuristics_raw_survey(source, config=config)
+            print("Survey euristica raw normalizzata.")
+        else:
+            print("WARNING: survey euristica raw non trovata; saltata.")
+    if args.command in {"import-formbricks-questionnaire", "import-formbricks-all"}:
         return
     data = load_all(config)
     if args.command in {"validate", "all", "all-from-formbricks"}:
@@ -405,7 +508,6 @@ def main() -> None:
     if args.command in {"all", "all-from-formbricks", "export-slide-assets"}:
         data = load_all(config)
         generate_final_assets(config, data)
-        analyze_dark_patterns(config)
         analyze_ueq_benchmark(config)
         generate_slide_manifest()
         build_slide_pack(config)

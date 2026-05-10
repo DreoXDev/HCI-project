@@ -19,22 +19,22 @@
 
 # Risultati UEQ
 
-Dall'analisi UEQ emergono differenze tra le scale considerate. Migliori per scala: apprendibilita: Glovo; attrattivita: Deliveroo; controllabilita: Deliveroo; efficienza: Glovo; originalita: Glovo; stimolazione: Deliveroo.
+Dall'analisi UEQ emergono differenze tra le scale considerate. Migliori per scala: apprendibilita: Deliveroo; attrattivita: Deliveroo; controllabilita: Deliveroo; efficienza: Deliveroo; originalita: Deliveroo; stimolazione: Deliveroo.
 
 # Risultati NPS
 
-Il Net Promoter Score non e stato calcolato perche il questionario non contiene una domanda NPS valida.
+Il Net Promoter Score evidenzia una maggiore propensione a consigliare Deliveroo, con valore pari a 37.50.
 
 # Item UEQ piu rilevanti
 
-- Item 19 `conforme alle aspettative-non conforme alle aspettative`: differenza media assoluta 4.00, p=1.0000; differenza non significativa.
-- Item 04 `facile da apprendere-difficile da apprendere`: differenza media assoluta 3.00, p=1.0000; differenza non significativa.
-- Item 11 `ostruttivo-di supporto`: differenza media assoluta 2.00, p=1.0000; differenza non significativa.
-- Item 12 `buono-scarso`: differenza media assoluta 2.00, p=1.0000; differenza non significativa.
-- Item 14 `repellente-attraente`: differenza media assoluta 2.00, p=1.0000; differenza non significativa.
-- Item 20 `inefficiente-efficiente`: differenza media assoluta 2.00, p=1.0000; differenza non significativa.
-- Item 24 `invitante-non invitante`: differenza media assoluta 2.00, p=1.0000; differenza non significativa.
-- Item 25 `congeniale-ostile`: differenza media assoluta 2.00, p=1.0000; differenza non significativa.
+- Item 02 `incomprensibile-comprensibile`: differenza media assoluta 2.12, p=0.0022; differenza significativa.
+- Item 11 `ostruttivo-di supporto`: differenza media assoluta 2.12, p=0.0022; differenza significativa.
+- Item 22 `non pragmatico-pragmatico`: differenza media assoluta 1.75, p=0.0033; differenza significativa.
+- Item 03 `creativo-privo di fantasia`: differenza media assoluta 1.12, p=0.0377; differenza significativa.
+- Item 05 `di grande valore-di poco valore`: differenza media assoluta 1.12, p=0.0377; differenza significativa.
+- Item 06 `noioso-appassionante`: differenza media assoluta 1.12, p=0.0377; differenza significativa.
+- Item 08 `imprevedibile-prevedibile`: differenza media assoluta 1.12, p=0.0377; differenza significativa.
+- Item 12 `buono-scarso`: differenza media assoluta 1.12, p=0.0377; differenza significativa.
 
 
 ## Note da completare manualmente

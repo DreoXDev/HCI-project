@@ -21,21 +21,22 @@ Queste note servono a chi lavora sul progetto come agente automatico.
 ## Workflow dati raccomandato
 
 1. Import questionario Formbricks con `import-formbricks-questionnaire`.
-2. Import euristiche Formbricks con `import-formbricks-heuristics`.
-3. Review manuale di `data/processed/heuristics_review.csv`.
-4. Build finale con `build-heuristics-from-review`.
-5. Validazione e `python -m src.cli all`.
+2. Import survey euristica raw con `python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv`.
+3. Review manuale di `data/processed/heuristics/raw_problems_table.csv`.
+4. Compilazione di `data/processed/heuristics/consolidated_problems.csv`.
+5. Import survey severita con `python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv`.
+6. Validazione e `python -m src.cli all`.
 
 ## Scelte di design
 
 - La deduplicazione euristica resta manuale. Non introdurre AI o matching semantico automatico senza richiesta esplicita.
 - `users_time.csv` e un dataset osservazionale manuale, non un export Formbricks.
-- `config/formbricks_heuristics_mapping.yml` e il punto di estensione per colonne euristiche Formbricks.
+- `config/heuristics_raw_mapping.yml` e il punto di estensione per colonne euristiche Formbricks raw.
 - `config.yaml` resta il punto centrale per nomi sistemi, path e parametri di analisi.
 - I report in `reports/` e gli output in `outputs/` sono generati.
 
 ## Aree da trattare con cautela
 
-- `src/adapters/formbricks/heuristic_adapter.py` contiene il vecchio flusso di consolidamento. Il flusso consigliato e ora `src/formbricks_heuristics_pipeline.py`.
+- `src/formbricks_heuristics_pipeline.py` contiene il flusso euristiche in due fasi. Non reintrodurre deduplicazione automatica senza richiesta esplicita.
 - Esistono modifiche locali possibili nei CSV raw: non ripristinarle senza conferma.
 - Se l'export user-test Formbricks cambia formato, aggiungere un adapter dedicato invece di fare parsing fragile nel notebook.

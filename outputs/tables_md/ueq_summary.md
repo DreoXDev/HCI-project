@@ -1,14 +1,14 @@
 | system    | scale           |   mean |   median |   std |
 |:----------|:----------------|-------:|---------:|------:|
-| Deliveroo | attrattivita    |   4.33 |      4.5 |  1.21 |
-| Deliveroo | apprendibilita  |   3.5  |      3   |  1.73 |
-| Deliveroo | efficienza      |   3.5  |      4   |  1.73 |
-| Deliveroo | controllabilita |   4.75 |      4.5 |  1.71 |
-| Deliveroo | stimolazione    |   3.75 |      3.5 |  0.96 |
-| Deliveroo | originalita     |   4.25 |      4.5 |  0.96 |
-| Glovo     | attrattivita    |   3.83 |      4   |  0.75 |
-| Glovo     | apprendibilita  |   4    |      5   |  2    |
-| Glovo     | efficienza      |   4.75 |      5   |  1.26 |
-| Glovo     | controllabilita |   3.5  |      3.5 |  0.58 |
-| Glovo     | stimolazione    |   3.75 |      4   |  0.5  |
-| Glovo     | originalita     |   4.75 |      4   |  1.5  |
+| Deliveroo | attrattivita    |   5.98 |        6 |  0.84 |
+| Deliveroo | apprendibilita  |   6.03 |        6 |  0.82 |
+| Deliveroo | efficienza      |   5.22 |        5 |  0.91 |
+| Deliveroo | controllabilita |   6.03 |        6 |  0.82 |
+| Deliveroo | stimolazione    |   6    |        6 |  0.84 |
+| Deliveroo | originalita     |   6    |        6 |  0.8  |
+| Glovo     | attrattivita    |   4.98 |        5 |  0.81 |
+| Glovo     | apprendibilita  |   5    |        5 |  0.84 |
+| Glovo     | efficienza      |   4.78 |        5 |  0.91 |
+| Glovo     | controllabilita |   4.5  |        5 |  0.98 |
+| Glovo     | stimolazione    |   4.97 |        5 |  0.82 |
+| Glovo     | originalita     |   5.06 |        5 |  0.84 |

@@ -17,6 +17,12 @@ def _safe_mean(df: pd.DataFrame, column: str) -> float | None:
     return float(df[column].mean()) if not df.empty and column in df else None
 
 
+def _where_system(df: pd.DataFrame, system: str) -> pd.DataFrame:
+    if df.empty or "system" not in df:
+        return pd.DataFrame()
+    return df[df["system"] == system]
+
+
 def compute_final_comparison_score(config: dict) -> pd.DataFrame:
     systems = [config["project"]["system_1"], config["project"]["system_2"]]
     weights = config.get("final_score", {}).get("weights", {})
@@ -27,11 +33,11 @@ def compute_final_comparison_score(config: dict) -> pd.DataFrame:
     heuristics = _read_csv("outputs/tables/heuristics_summary.csv")
     rows = []
     for system in systems:
-        eff_score = _safe_mean(effectiveness[effectiveness["system"] == system], "completion_rate")
-        time_mean = _safe_mean(efficiency[efficiency["system"] == system], "mean_seconds")
-        ueq_score = _safe_mean(ueq[ueq["system"] == system], "mean")
-        nps_score = _safe_mean(nps[nps["system"] == system], "nps")
-        heuristic_penalty = _safe_mean(heuristics[heuristics["system"] == system], "severity_mean")
+        eff_score = _safe_mean(_where_system(effectiveness, system), "completion_rate")
+        time_mean = _safe_mean(_where_system(efficiency, system), "mean_seconds")
+        ueq_score = _safe_mean(_where_system(ueq, system), "mean")
+        nps_score = _safe_mean(_where_system(nps, system), "nps")
+        heuristic_penalty = _safe_mean(_where_system(heuristics, system), "severity_mean")
         rows.append(
             {
                 "system": system,
@@ -109,8 +115,12 @@ def generate_text_outputs(config: dict) -> None:
 
     final_scores = compute_final_comparison_score(config)
     if not final_scores.empty:
-        final_scores.round(config["analysis"].get("round_decimals", 2)).to_csv(resolve_path("outputs/tables/final_comparison.csv"), index=False)
-        resolve_path("outputs/tables_md/final_comparison.md").write_text(final_scores.round(2).to_markdown(index=False), encoding="utf-8")
+        table_path = resolve_path("outputs/tables/final_comparison.csv")
+        md_path = resolve_path("outputs/tables_md/final_comparison.md")
+        table_path.parent.mkdir(parents=True, exist_ok=True)
+        md_path.parent.mkdir(parents=True, exist_ok=True)
+        final_scores.round(config["analysis"].get("round_decimals", 2)).to_csv(table_path, index=False)
+        md_path.write_text(final_scores.round(2).to_markdown(index=False), encoding="utf-8")
 
 
 def _heuristics_text(systems: list[str]) -> str:

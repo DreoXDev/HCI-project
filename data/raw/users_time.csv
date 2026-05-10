@@ -1,0 +1,81 @@
+user_id,app,task_id,task_name,completion_time_sec,success,errors_count,help_requests,notes,observer_id,order
+U01,Deliveroo,T01,Ricerca ristorante,42,true,0,0,demo generated,OBS1,1
+U01,Glovo,T01,Ricerca ristorante,50,true,0,0,demo generated,OBS1,1
+U01,Deliveroo,T02,Aggiunta prodotto al carrello,51,true,0,0,demo generated,OBS1,2
+U01,Glovo,T02,Aggiunta prodotto al carrello,61,true,0,0,demo generated,OBS1,2
+U01,Deliveroo,T03,Modifica carrello,60,true,0,0,demo generated,OBS1,3
+U01,Glovo,T03,Modifica carrello,80,true,1,0,demo generated,OBS1,3
+U01,Deliveroo,T04,Checkout,72,true,0,0,demo generated,OBS1,4
+U01,Glovo,T04,Checkout,91,true,1,0,demo generated,OBS1,4
+U01,Deliveroo,T05,Tracking ordine,78,true,0,0,demo generated,OBS1,5
+U01,Glovo,T05,Tracking ordine,94,true,0,0,demo generated,OBS1,5
+U02,Deliveroo,T01,Ricerca ristorante,43,true,0,0,demo generated,OBS1,1
+U02,Glovo,T01,Ricerca ristorante,51,true,0,0,demo generated,OBS1,1
+U02,Deliveroo,T02,Aggiunta prodotto al carrello,52,true,0,0,demo generated,OBS1,2
+U02,Glovo,T02,Aggiunta prodotto al carrello,62,true,0,0,demo generated,OBS1,2
+U02,Deliveroo,T03,Modifica carrello,61,true,0,0,demo generated,OBS1,3
+U02,Glovo,T03,Modifica carrello,81,true,1,0,demo generated,OBS1,3
+U02,Deliveroo,T04,Checkout,73,true,0,0,demo generated,OBS1,4
+U02,Glovo,T04,Checkout,92,true,1,0,demo generated,OBS1,4
+U02,Deliveroo,T05,Tracking ordine,79,true,0,0,demo generated,OBS1,5
+U02,Glovo,T05,Tracking ordine,95,true,0,0,demo generated,OBS1,5
+U03,Deliveroo,T01,Ricerca ristorante,44,true,0,0,demo generated,OBS1,1
+U03,Glovo,T01,Ricerca ristorante,52,true,0,1,demo generated,OBS1,1
+U03,Deliveroo,T02,Aggiunta prodotto al carrello,53,true,0,0,demo generated,OBS1,2
+U03,Glovo,T02,Aggiunta prodotto al carrello,63,true,0,1,demo generated,OBS1,2
+U03,Deliveroo,T03,Modifica carrello,62,true,0,0,demo generated,OBS1,3
+U03,Glovo,T03,Modifica carrello,82,true,1,1,demo generated,OBS1,3
+U03,Deliveroo,T04,Checkout,74,true,0,0,demo generated,OBS1,4
+U03,Glovo,T04,Checkout,93,false,1,1,demo generated,OBS1,4
+U03,Deliveroo,T05,Tracking ordine,80,true,0,0,demo generated,OBS1,5
+U03,Glovo,T05,Tracking ordine,96,true,0,1,demo generated,OBS1,5
+U04,Deliveroo,T01,Ricerca ristorante,45,true,1,0,demo generated,OBS1,1
+U04,Glovo,T01,Ricerca ristorante,53,true,0,0,demo generated,OBS1,1
+U04,Deliveroo,T02,Aggiunta prodotto al carrello,54,true,1,0,demo generated,OBS1,2
+U04,Glovo,T02,Aggiunta prodotto al carrello,64,true,0,0,demo generated,OBS1,2
+U04,Deliveroo,T03,Modifica carrello,63,true,1,0,demo generated,OBS1,3
+U04,Glovo,T03,Modifica carrello,83,true,1,0,demo generated,OBS1,3
+U04,Deliveroo,T04,Checkout,75,true,1,0,demo generated,OBS1,4
+U04,Glovo,T04,Checkout,94,true,1,0,demo generated,OBS1,4
+U04,Deliveroo,T05,Tracking ordine,81,true,1,0,demo generated,OBS1,5
+U04,Glovo,T05,Tracking ordine,97,true,0,0,demo generated,OBS1,5
+U05,Deliveroo,T01,Ricerca ristorante,46,true,0,0,demo generated,OBS1,1
+U05,Glovo,T01,Ricerca ristorante,54,true,0,0,demo generated,OBS1,1
+U05,Deliveroo,T02,Aggiunta prodotto al carrello,55,true,0,0,demo generated,OBS1,2
+U05,Glovo,T02,Aggiunta prodotto al carrello,65,true,0,0,demo generated,OBS1,2
+U05,Deliveroo,T03,Modifica carrello,64,true,0,0,demo generated,OBS1,3
+U05,Glovo,T03,Modifica carrello,84,true,1,0,demo generated,OBS1,3
+U05,Deliveroo,T04,Checkout,76,true,0,0,demo generated,OBS1,4
+U05,Glovo,T04,Checkout,95,true,1,0,demo generated,OBS1,4
+U05,Deliveroo,T05,Tracking ordine,82,true,0,0,demo generated,OBS1,5
+U05,Glovo,T05,Tracking ordine,98,true,0,0,demo generated,OBS1,5
+U06,Deliveroo,T01,Ricerca ristorante,47,true,0,0,demo generated,OBS1,1
+U06,Glovo,T01,Ricerca ristorante,55,true,0,0,demo generated,OBS1,1
+U06,Deliveroo,T02,Aggiunta prodotto al carrello,56,true,0,0,demo generated,OBS1,2
+U06,Glovo,T02,Aggiunta prodotto al carrello,66,true,0,0,demo generated,OBS1,2
+U06,Deliveroo,T03,Modifica carrello,65,true,0,0,demo generated,OBS1,3
+U06,Glovo,T03,Modifica carrello,85,true,1,0,demo generated,OBS1,3
+U06,Deliveroo,T04,Checkout,77,true,0,0,demo generated,OBS1,4
+U06,Glovo,T04,Checkout,96,true,1,0,demo generated,OBS1,4
+U06,Deliveroo,T05,Tracking ordine,83,true,0,0,demo generated,OBS1,5
+U06,Glovo,T05,Tracking ordine,99,true,0,0,demo generated,OBS1,5
+U07,Deliveroo,T01,Ricerca ristorante,48,true,0,0,demo generated,OBS1,1
+U07,Glovo,T01,Ricerca ristorante,56,true,0,1,demo generated,OBS1,1
+U07,Deliveroo,T02,Aggiunta prodotto al carrello,57,true,0,0,demo generated,OBS1,2
+U07,Glovo,T02,Aggiunta prodotto al carrello,67,true,0,1,demo generated,OBS1,2
+U07,Deliveroo,T03,Modifica carrello,66,true,0,0,demo generated,OBS1,3
+U07,Glovo,T03,Modifica carrello,86,true,1,1,demo generated,OBS1,3
+U07,Deliveroo,T04,Checkout,78,true,0,0,demo generated,OBS1,4
+U07,Glovo,T04,Checkout,97,false,1,1,demo generated,OBS1,4
+U07,Deliveroo,T05,Tracking ordine,84,true,0,0,demo generated,OBS1,5
+U07,Glovo,T05,Tracking ordine,100,true,0,1,demo generated,OBS1,5
+U08,Deliveroo,T01,Ricerca ristorante,49,true,1,0,demo generated,OBS1,1
+U08,Glovo,T01,Ricerca ristorante,57,true,0,0,demo generated,OBS1,1
+U08,Deliveroo,T02,Aggiunta prodotto al carrello,58,true,1,0,demo generated,OBS1,2
+U08,Glovo,T02,Aggiunta prodotto al carrello,68,true,0,0,demo generated,OBS1,2
+U08,Deliveroo,T03,Modifica carrello,67,true,1,0,demo generated,OBS1,3
+U08,Glovo,T03,Modifica carrello,87,true,1,0,demo generated,OBS1,3
+U08,Deliveroo,T04,Checkout,79,true,1,0,demo generated,OBS1,4
+U08,Glovo,T04,Checkout,98,true,1,0,demo generated,OBS1,4
+U08,Deliveroo,T05,Tracking ordine,85,true,1,0,demo generated,OBS1,5
+U08,Glovo,T05,Tracking ordine,101,true,0,0,demo generated,OBS1,5

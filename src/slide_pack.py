@@ -26,7 +26,7 @@ def build_slide_pack(config: dict) -> None:
     sections = [
         ("00_index.md", "Indice asset slide", "general", "Usare questo file come mappa iniziale degli output generati.", ["outputs/slide_pack/assets_manifest.csv"]),
         ("01_intro.md", "Introduzione", "intro", _read("outputs/text_snippets/intro_summary.md") + "\n\n" + _read("outputs/text_snippets/sample_description.md"), []),
-        ("02_heuristics.md", "Valutazione euristica", "heuristics", _read("outputs/text_snippets/heuristic_conclusions.md") + "\n\n" + _read("outputs/text_snippets/heuristics_problem_coverage.md") + "\n\n" + _read("outputs/text_snippets/dark_patterns_summary.md"), []),
+        ("02_heuristics.md", "Valutazione euristica", "heuristics", _read("outputs/text_snippets/heuristic_conclusions.md") + "\n\n" + _read("outputs/text_snippets/heuristics_problem_coverage.md"), []),
         ("03_user_tests.md", "User test", "user_tests", _read("outputs/text_snippets/user_test_effectiveness_conclusions.md") + "\n\n" + _read("outputs/text_snippets/user_test_efficiency_conclusions.md"), []),
         ("04_questionnaire.md", "Questionario UEQ e NPS", "questionnaire", _read("outputs/text_snippets/questionnaire_conclusions.md") + "\n\n" + _read("outputs/text_snippets/nps_conclusions.md") + "\n\n" + _read("outputs/text_snippets/questionnaire_selected_items.md"), []),
         ("05_conclusions.md", "Conclusioni", "conclusions", _read("outputs/text_snippets/final_comparative_conclusions.md") + "\n\n" + _read("outputs/text_snippets/redesign_recommendations.md") + "\n\n" + _read("outputs/text_snippets/limitations.md"), []),

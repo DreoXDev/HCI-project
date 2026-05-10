@@ -34,31 +34,59 @@ Codici esito:
 - `A`: completato con aiuto
 - `F`: fallito
 
-## Valutazione euristica
+## Valutazione euristica Formbricks
 
-File predefiniti:
+La pipeline euristica nuova parte dall'export grezzo della prima survey esperti:
 
-- `data/raw/heuristics_deliveroo.csv`
-- `data/raw/heuristics_glovo.csv`
-
-Colonne chiave:
-
-- `Problema`
-- `Expert 1`, `Expert 2`, ...
-- `Euristiche`, nel formato `E1-E3-E10`
-- `Id valutatori`, nel formato `EU1-ED1`
-
-Se i dati arrivano da Formbricks, non creare questi file a mano. Usa:
-
-```powershell
-python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
+```txt
+data/raw/formbricks/heuristics_experts_raw.csv
 ```
 
-Poi revisiona `data/processed/heuristics_review.csv` e genera i CSV finali con:
+Il CSV puo essere wide, con fino a 10 slot problema. Il toolkit lo normalizza in:
+
+```txt
+data/processed/heuristics/raw_problems_long.csv
+data/processed/heuristics/raw_problems_table.csv
+```
+
+Colonne principali di `raw_problems_table.csv`:
+
+```csv
+raw_problem_id,evaluator_id,problem_slot,app,short_description,long_description,heuristics,notes,completion_status
+```
+
+Le euristiche sono normalizzate come `E1;E6;E10`. I blocchi vuoti vengono ignorati, quelli parziali restano nel file con `completion_status`.
+
+Comando:
 
 ```powershell
-python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
 ```
+
+Dopo la review manuale, il file consolidato atteso e:
+
+```txt
+data/processed/heuristics/consolidated_problems.csv
+```
+
+Formato:
+
+```csv
+final_problem_id,app,short_description,long_description,heuristics,source_raw_problem_ids,notes
+```
+
+Quando la seconda survey e disponibile, i rating 0-4 vengono normalizzati in:
+
+```txt
+data/processed/heuristics/severity_ratings_long.csv
+data/processed/heuristics/final_problem_summary.csv
+```
+
+```powershell
+python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
+```
+
+I vecchi file `data/raw/heuristics_deliveroo.csv` e `data/raw/heuristics_glovo.csv` restano supportati dalla pipeline storica, ma non sono il formato di ingresso consigliato per nuovi dati Formbricks.
 
 ## Questionario
 

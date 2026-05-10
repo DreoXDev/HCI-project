@@ -27,13 +27,6 @@ Dalla valutazione euristica sono emersi 37 problemi per Deliveroo e 27 problemi 
 - Glovo: stima grezza Nielsen con EU1 e EU2 = 27.5 problemi totali. Interpretare come indicazione euristica, non come verita assoluta.
 
 
-# Dark pattern
-
-
-
-Il file manuale `data/raw/dark_patterns.csv` non contiene ancora evidenze. La pipeline non identifica dark pattern automaticamente.
-
-
 ## Note da completare manualmente
 
 - Inserire screenshot dei flussi Deliveroo/Glovo dove rilevanti.

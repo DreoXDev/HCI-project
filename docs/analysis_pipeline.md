@@ -31,9 +31,10 @@ python -m src.cli create-templates
 ```powershell
 python -m src.cli validate-users-time
 python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/export_questionario.csv
-python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
-# review manuale di data/processed/heuristics_review.csv
-python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
+# review manuale di data/processed/heuristics/raw_problems_table.csv
+# compilare data/processed/heuristics/consolidated_problems.csv
+python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
 python -m src.cli validate
 python -m src.cli all --plot-style both
 python -m src.cli build-slide-pack
@@ -61,14 +62,13 @@ python -m src.cli full-pipeline --plot-style both
 ## Comandi extra per slide finali
 
 ```powershell
-python -m src.cli analyze-dark-patterns
 python -m src.cli analyze-benchmark
 python -m src.cli build-asset-manifest
 python -m src.cli build-slide-pack
 python -m src.cli quality-check
 ```
 
-`analyze-dark-patterns` crea e legge `data/raw/dark_patterns.csv`: la scoperta resta manuale, la pipeline esporta solo la tabella e il testo. `analyze-benchmark` usa `data/raw/ueq_benchmark.csv` se presente; se manca, emette un warning non bloccante.
+I dark pattern possono essere discussi manualmente nelle slide, ma non sono piu una pipeline automatica. `analyze-benchmark` usa `data/raw/ueq_benchmark.csv` se presente; se manca, emette un warning non bloccante.
 
 ## Nota di architettura
 

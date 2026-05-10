@@ -1,119 +1,67 @@
-# Architettura import dinamico
+# Architettura import Formbricks
 
-Il toolkit separa la logica analitica dalla struttura dei form. Gli export CSV vengono convertiti da adapter configurabili in dataset normalizzati, poi la pipeline esistente continua a lavorare sui CSV in `data/raw/`.
+Il toolkit usa Formbricks per due aree:
+
+- questionari UEQ/NPS;
+- valutazione euristica in due survey.
+
+## Questionari
+
+Il questionario usa adapter schema/tag driven:
 
 ```txt
-Formbricks CSV
-  -> Adapter layer
-  -> Oggetti interni normalizzati
-  -> CSV toolkit
-  -> Validazione
-  -> Analisi
-  -> Grafici, tabelle, report
+src/adapters/formbricks/questionnaire_adapter.py
+src/adapters/formbricks/mapping_engine.py
+src/schemas/questionnaire_schema.yaml
+config.yaml
 ```
 
-## Adapter layer
-
-La nuova struttura vive in:
+I titoli Formbricks possono contenere tag come:
 
 ```txt
-src/adapters/formbricks/
-```
-
-Moduli principali:
-
-- `models.py`: dataclass interne (`QuestionnaireResponse`, `HeuristicProblem`, `UserTestResult`)
-- `normalization.py`: normalizzazione testo, accenti, item UEQ, codici euristici
-- `detection.py`: parsing tag e matching colonne
-- `mapping_engine.py`: filtro risposte finite, demographics dinamiche, report import
-- `questionnaire_adapter.py`: import questionari Formbricks
-- `heuristic_adapter.py`: import valutazioni euristiche Formbricks
-
-Il vecchio modulo `src/formbricks_adapter.py` rimane come wrapper compatibile per CLI e import esistenti.
-
-## Schema YAML
-
-Gli schemi si trovano in:
-
-```txt
-src/schemas/
-```
-
-File disponibili:
-
-- `questionnaire_schema.yaml`
-- `heuristic_schema.yaml`
-- `user_test_schema.yaml`
-
-Gli schemi definiscono alias, campi opzionali, campi richiesti e item attesi. Se cambiano i testi delle domande, aggiornare gli alias nello schema o usare tag nei titoli del form.
-
-## Tag consigliati nei form
-
-Per rendere i form robusti a ordine, testo e domande aggiunte, usare tag machine-readable nei titoli.
-
-Questionario utenti:
-
-```txt
-[DEMOGRAPHIC] Gender
-[DEMOGRAPHIC] Age
-[DEMOGRAPHIC] Delivery familiarity
-[DEMOGRAPHIC] Preferred App
-
+[DEMOGRAPHIC] Eta
 [UEQ][Deliveroo] Fastidioso/Piacevole
-[UEQ][Deliveroo] Incomprensibile/Comprensibile
-
 [UEQ][Glovo] Fastidioso/Piacevole
-[UEQ][Glovo] Incomprensibile/Comprensibile
-
-[NPS][Deliveroo]
-[NPS][Glovo]
+[NPS][Deliveroo] Quanto consiglieresti Deliveroo?
 ```
 
-Form euristico:
+Comando:
 
-```txt
-[HEURISTIC] Evaluator ID
-[HEURISTIC] Evaluator Type
-[HEURISTIC] System
-[HEURISTIC] Problem Title
-[HEURISTIC] Problem Description
-[HEURISTIC] Violated Heuristics
-[HEURISTIC] Severity
-[HEURISTIC] Notes
+```powershell
+python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/export_questionario.csv
 ```
-
-## Demographics dinamiche
-
-Le domande demografiche non sono piu una lista chiusa. Il toolkit:
-
-- legge campi `[DEMOGRAPHIC]`
-- prova a mapparli sugli alias dello schema
-- mantiene campi custom come `preferred_app`
-- li esclude dagli item UEQ anche se non sono previsti in `config.yaml`
-- genera subgroup analysis per i campi demografici disponibili
 
 ## Euristiche
 
-Le valutazioni euristiche restano semi-strutturate. Il toolkit normalizza i problemi in `HeuristicProblem`, genera CSV compatibili e crea anche una cartella di review:
+Le euristiche non usano piu un adapter candidato/review automatico. Il flusso attivo e in:
 
 ```txt
-outputs/heuristic_review/
+src/formbricks_heuristics_pipeline.py
+config/heuristics_raw_mapping.yml
 ```
 
-Contiene:
-
-- `all_problems.md`
-- `grouped_problems.md`
-- `possible_duplicates.md`
-
-La deduplicazione resta una decisione umana.
-
-## Comando generico
-
-Per un CSV Formbricks taggato:
+Fase 1:
 
 ```powershell
-python -m src.cli import-any-form --input data/formbricks_raw/export.csv
+python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
 ```
 
-Il comando rileva se il form sembra un questionario o una valutazione euristica e usa l'adapter corretto.
+Fase manuale:
+
+```txt
+data/processed/heuristics/raw_problems_table.csv
+data/processed/heuristics/consolidated_problems.csv
+```
+
+Fase 2:
+
+```powershell
+python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
+```
+
+## Design
+
+- La normalizzazione e configurabile via YAML.
+- La deduplicazione semantica dei problemi resta manuale.
+- Gli export reali Formbricks sono ignorati da git.
+- Gli output normalizzati sono rigenerabili in `data/processed/`.

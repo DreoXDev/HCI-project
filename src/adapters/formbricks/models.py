@@ -14,20 +14,6 @@ class QuestionnaireResponse:
 
 
 @dataclass
-class HeuristicProblem:
-    evaluator_id: str
-    evaluator_type: str | None
-    system_name: str
-    title: str
-    description: str
-    heuristics: list[str]
-    severity: float
-    notes: str | None = None
-    problem_id: str | None = None
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
 class TaskResult:
     task_id: str
     seconds: int
@@ -41,4 +27,3 @@ class UserTestResult:
     tasks: list[TaskResult]
     demographics: dict[str, Any] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
-

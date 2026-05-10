@@ -1,7 +1,7 @@
 # Executive Summary
 
 ## Risultato principale
-La sintesi quantitativa interna favorisce Glovo, da leggere come supporto alla discussione e non come verdetto automatico.
+La sintesi quantitativa interna favorisce Deliveroo, da leggere come supporto alla discussione e non come verdetto automatico.
 
 ## Deliveroo
 Punti di forza:
@@ -19,8 +19,8 @@ Criticita:
 
 ## Evidenze statistiche principali
 - User test: Glovo mostra il tasso medio di completamento piu alto. Il divario medio osservato e pari a 5.67%.
-- UEQ: Dall'analisi UEQ emergono differenze tra le scale considerate. Migliori per scala: apprendibilita: Glovo; attrattivita: Deliveroo; controllabilita: Deliveroo; efficienza: Glovo; originalita: Glovo; stimolazione: Deliveroo.
-- NPS: Il Net Promoter Score non e stato calcolato perche il questionario non contiene una domanda NPS valida.
+- UEQ: Dall'analisi UEQ emergono differenze tra le scale considerate. Migliori per scala: apprendibilita: Deliveroo; attrattivita: Deliveroo; controllabilita: Deliveroo; efficienza: Deliveroo; originalita: Deliveroo; stimolazione: Deliveroo.
+- NPS: Il Net Promoter Score evidenzia una maggiore propensione a consigliare Deliveroo, con valore pari a 37.50.
 - Euristiche: Dalla valutazione euristica sono emersi 37 problemi per Deliveroo e 27 problemi per Glovo. Le tabelle esportate riportano severita media, mediana e priorita dei problemi.
 
 ## Raccomandazioni

@@ -1,1 +1,0 @@
-Pipeline completata per Deliveroo vs Glovo. Consultare outputs/figures e outputs/tables_md.

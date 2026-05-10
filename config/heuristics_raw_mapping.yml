@@ -1,0 +1,52 @@
+heuristics_raw:
+  evaluator_fields:
+    evaluator_id:
+      - "ID valutatore"
+      - "1. ID valutatore:"
+      - "evaluator_id"
+    gender:
+      - "Genere"
+      - "2. Genere"
+      - "gender"
+    age_group:
+      - "Eta"
+      - "Fascia eta"
+      - "age_group"
+    occupation:
+      - "Occupazione"
+      - "3. Occupazione"
+      - "occupation"
+    familiarity:
+      - "Familiarita con app di food delivery"
+      - "4. Familiarita con app di food delivery"
+      - "familiarity"
+    usability_experience:
+      - "Esperienza di usabilita"
+      - "5. Esperienza di usabilita"
+      - "usability_experience"
+    domain_experience:
+      - "Esperienza di dominio"
+      - "6. Esperienza di dominio"
+      - "domain_experience"
+
+  problem_slots:
+    count: 10
+    fields:
+      app:
+        - "Di quale app hai riscontrato il problema"
+        - "problem_{slot}_app"
+      short_description:
+        - "Dai una descrizione breve"
+        - "titolo"
+        - "problem_{slot}_short_description"
+      long_description:
+        - "descrizione piu dettagliata"
+        - "descrizione dettagliata"
+        - "problem_{slot}_long_description"
+      heuristics:
+        - "Seleziona le euristiche violate"
+        - "euristiche violate"
+        - "problem_{slot}_heuristics"
+      notes:
+        - "note"
+        - "problem_{slot}_notes"

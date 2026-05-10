@@ -1,18 +1,21 @@
-# Manuale: da Formbricks all'analisi completa
+# Manuale operativo
 
-Segui questi step quando arrivi con i file raccolti per l'analisi completa.
-
-## 1. Metti i file al posto giusto
+## 1. Metti i file qui
 
 ```txt
 data/formbricks_raw/questionnaire/export_questionario.csv
-data/formbricks_raw/heuristics/export_esperti.csv
+data/raw/formbricks/heuristics_experts_raw.csv
 data/raw/users_time.csv
 ```
 
-Nota: questionario ed euristiche vengono importati da Formbricks. Gli user test non sono una survey: vanno compilati manualmente nel formato osservazionale `users_time.csv`.
+Se hai gia la survey severita:
 
-## 2. Attiva l'ambiente
+```txt
+data/raw/formbricks/heuristics_severity_ratings.csv
+data/processed/heuristics/consolidated_problems.csv
+```
+
+## 2. Avvia l'ambiente
 
 ```powershell
 cd "D:\Projects\IUM\Improved Notebooks\HCI-project"
@@ -20,123 +23,39 @@ cd "D:\Projects\IUM\Improved Notebooks\HCI-project"
 python -m pip install -r requirements.txt
 ```
 
-## 3. Controlla configurazione e mapping
-
-Apri `config.yaml` e verifica nomi app e path.
-
-Se le colonne del form euristico hanno nomi diversi da quelli attesi, aggiorna `config/formbricks_heuristics_mapping.yml`.
-
-## 4. Prepara o valida users_time
-
-Per generare il template:
-
-```powershell
-python -m src.cli create-templates
-```
-
-Compila `data/examples/users_time_template.xlsx`, poi salva il file finale come:
-
-```txt
-data/raw/users_time.csv
-```
-
-Valida:
-
-```powershell
-python -m src.cli validate-users-time
-```
-
-## 5. Importa il questionario
+## 3. Esegui
 
 ```powershell
 python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/export_questionario.csv
+python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
+python -m src.cli validate-users-time
+python -m src.cli validate
+python -m src.cli all --plot-style both
 ```
 
-## 6. Importa le euristiche come candidati
-
-```powershell
-python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
-```
-
-Controlla:
-
-```txt
-reports/heuristics_import_report.md
-reports/heuristics_import_errors.csv
-```
-
-## 7. Raggruppa manualmente i problemi euristici
+## 4. Passaggio manuale euristiche
 
 Apri:
 
 ```txt
-data/processed/heuristics_review.csv
+data/processed/heuristics/raw_problems_table.csv
+data/templates/heuristics_consolidated_problems_template.csv
 ```
 
-Modifica solo le colonne di review:
-
-- `problem_group_id`: stesso valore per problemi equivalenti
-- `include`: `true` se il problema va tenuto, `false` se va escluso
-- `review_notes`: note libere del team
-
-## 8. Genera i file euristici finali
-
-```powershell
-python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
-```
-
-## 9. Valida i dati
-
-```powershell
-python -m src.cli validate
-```
-
-Non andare avanti con errori di validazione.
-
-## 10. Genera analisi, grafici, tabelle e testi
-
-```powershell
-python -m src.cli all --plot-style both
-```
-
-Se vuoi rigenerare solo gli output del dataset osservazionale:
-
-```powershell
-python -m src.cli analyze-users-time
-```
-
-## 11. Consegna gli output
-
-Genera il pacchetto slide finale:
-
-```powershell
-python -m src.cli build-slide-pack
-python -m src.cli quality-check
-```
-
-Usa:
+Compila e salva:
 
 ```txt
-outputs/figures/
-outputs/tables/
-outputs/tables_md/
-outputs/text_snippets/
-outputs/text/
-outputs/generated_report_sections/
-outputs/slide_manifest.md
-outputs/slide_pack/
-outputs/reports/final_quality_check.md
+data/processed/heuristics/consolidated_problems.csv
 ```
 
-## 12. Checklist finale
+Poi, se hai il CSV severita:
 
-- `python -m pytest` passa
-- `python -m src.cli validate` non mostra errori
-- `data/raw/users_time.csv` contiene tutti i task previsti
-- `data/raw/questionnaire_deliveroo.csv` e `data/raw/questionnaire_glovo.csv` sono aggiornati
-- `data/raw/heuristics_deliveroo.csv` e `data/raw/heuristics_glovo.csv` derivano dal file di review
-- `outputs/tables/users_time_summary.md` esiste se `users_time.csv` e presente
-- `outputs/slide_manifest.md` esiste
-- `outputs/slide_pack/executive_summary.md` esiste
-- `outputs/slide_pack/assets_manifest.csv` esiste
-- `outputs/reports/final_quality_check.md` chiude con `STATUS: READY_FOR_SLIDES`
+```powershell
+python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
+```
+
+## 5. Slide opzionali
+
+```powershell
+python main.py generate-slides --strict
+```

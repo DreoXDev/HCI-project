@@ -8,17 +8,17 @@ Salva i file in:
 
 ```txt
 data/formbricks_raw/questionnaire/export_questionario.csv
-data/formbricks_raw/heuristics/export_esperti.csv
+data/raw/formbricks/heuristics_experts_raw.csv
 data/raw/users_time.csv
 ```
 
 `users_time.csv` non arriva da Formbricks: e il formato osservazionale compilato dagli osservatori durante i test utenti.
 
-## 2. Importa questionario ed euristiche
+## 2. Importa questionario e survey euristica raw
 
 ```powershell
 python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/export_questionario.csv
-python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuristics/export_esperti.csv
+python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
 ```
 
 ## 3. Revisiona le euristiche
@@ -26,15 +26,16 @@ python -m src.cli import-formbricks-heuristics --input data/formbricks_raw/heuri
 Apri:
 
 ```txt
-data/processed/heuristics_review.csv
+data/processed/heuristics/raw_problems_table.csv
+data/templates/heuristics_consolidated_problems_template.csv
 ```
 
-Assegna lo stesso `problem_group_id` alle righe che descrivono lo stesso problema.
+Accorpa manualmente i problemi simili e crea `data/processed/heuristics/consolidated_problems.csv`.
 
-## 4. Genera i CSV finali
+## 4. Survey severita
 
 ```powershell
-python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
 ```
 
 ## 5. Valida e analizza
@@ -48,8 +49,7 @@ python -m src.cli all
 
 ```txt
 outputs/import_report.md
-reports/heuristics_import_report.md
-reports/heuristics_import_errors.csv
-reports/heuristics_build_report.md
+reports/heuristics_raw_report.md
+reports/heuristics_final_report.md
 outputs/slide_manifest.md
 ```

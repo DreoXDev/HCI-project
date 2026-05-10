@@ -1,59 +1,86 @@
 # Review manuale delle euristiche
 
-La valutazione euristica non viene deduplicata automaticamente. Il toolkit importa ogni riga Formbricks come problema candidato e lascia al team la decisione su quali segnalazioni descrivono lo stesso problema.
+La deduplicazione dei problemi euristici resta manuale. Il toolkit normalizza l'export Formbricks grezzo e produce tabelle, grafici e report per aiutare il gruppo a leggere i problemi raccolti; non prova ad accorpare automaticamente descrizioni simili.
 
-## File generati dall'import
+## Fase 1: problemi grezzi
+
+Input consigliato:
 
 ```txt
-data/processed/heuristics_candidates.csv
-data/processed/heuristics_review.csv
-reports/heuristics_import_report.md
-reports/heuristics_import_errors.csv
+data/raw/formbricks/heuristics_experts_raw.csv
 ```
 
-`heuristics_candidates.csv` e una fotografia normalizzata dell'export. `heuristics_review.csv` e il file da modificare manualmente.
-
-## Colonne da modificare
-
-- `problem_group_id`: stesso valore per problemi simili o duplicati
-- `include`: `true` per tenere la riga, `false` per escluderla dalla build finale
-- `review_notes`: annotazioni libere
-
-Le altre colonne dovrebbero restare derivate dall'import, salvo correzioni motivate.
-
-## Regole di gruppo
-
-Esempio:
-
-| candidate_id | short_description | evaluator_id | problem_group_id |
-| --- | --- | --- | --- |
-| C001 | Home troppo piena | EU1 | PG001 |
-| C002 | Troppe informazioni nella home | EU2 | PG001 |
-| C003 | Mancanza feedback checkout | EU1 | PG002 |
-
-## Build finale
+Comando:
 
 ```powershell
-python -m src.cli build-heuristics-from-review --input data/processed/heuristics_review.csv --output-dir data/raw
+python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
 ```
 
-Il comando genera un problema finale per ogni `problem_group_id` e calcola:
-
-- ID problema per app (`PD1`, `PG1`, ...)
-- descrizione breve e lunga dalla riga con severita piu alta
-- euristiche violate senza duplicati
-- popolarita come numero di valutatori distinti
-- media, deviazione standard, mediana e IQR della severita
-- priorita `A/B/C` da `top5` con test binomiale
-
-Output:
+Output principali:
 
 ```txt
-data/raw/heuristics_deliveroo.csv
-data/raw/heuristics_glovo.csv
-reports/heuristics_build_report.md
+data/processed/heuristics/raw_problems_long.csv
+data/processed/heuristics/raw_problems_table.csv
+data/processed/heuristics/expert_profiles.csv
+data/processed/heuristics/problem_counts_by_app.csv
+data/processed/heuristics/problem_counts_by_evaluator.csv
+data/processed/heuristics/heuristic_counts.csv
+data/processed/heuristics/evaluator_problem_matrix.csv
+outputs/figures/heuristics/
+reports/heuristics_raw_report.md
 ```
 
-## Flusso legacy
+La configurazione delle colonne Formbricks e in:
 
-Il vecchio `heuristics_consolidation_template.csv` puo ancora essere presente in alcune doc o output storici, ma il flusso consigliato per nuovi dati e `heuristics_review.csv` + `build-heuristics-from-review`.
+```txt
+config/heuristics_raw_mapping.yml
+```
+
+## Consolidamento manuale
+
+Dopo la Fase 1, aprire:
+
+```txt
+data/processed/heuristics/raw_problems_table.csv
+data/templates/heuristics_consolidated_problems_template.csv
+```
+
+Creare manualmente:
+
+```txt
+data/processed/heuristics/consolidated_problems.csv
+```
+
+Colonne:
+
+```csv
+final_problem_id,app,short_description,long_description,heuristics,source_raw_problem_ids,notes
+```
+
+Usare ID chiari, per esempio `D-PB01` per Deliveroo e `G-PB01` per Glovo. `source_raw_problem_ids` deve mantenere il legame con i problemi grezzi, per esempio `RAW001;RAW007`.
+
+## Fase 2: severita
+
+Quando e disponibile la seconda survey Formbricks con rating 0-4:
+
+```powershell
+python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
+```
+
+Output previsti:
+
+```txt
+data/processed/heuristics/severity_ratings_long.csv
+data/processed/heuristics/final_problem_summary.csv
+data/processed/heuristics/final_evaluator_problem_matrix.csv
+data/processed/heuristics/problem_priority_bands.csv
+reports/heuristics_final_report.md
+```
+
+La priorita e trasparente:
+
+- `A`: severita media >= 3.25
+- `B`: severita media >= 2.00 e < 3.25
+- `C`: severita media < 2.00
+
+I dark pattern possono essere discussi manualmente nella presentazione, ma non fanno piu parte della pipeline automatica del toolkit.
