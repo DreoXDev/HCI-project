@@ -164,6 +164,8 @@ def import_heuristics_raw_survey(
             _write_csv_return(problem_counts_by_evaluator, output_root / "problem_counts_by_evaluator.csv"),
             _write_csv_return(heuristic_counts, output_root / "heuristic_counts.csv"),
             _write_csv_return(evaluator_matrix.reset_index(names="evaluator_id"), output_root / "evaluator_problem_matrix.csv"),
+            _write_csv_return(raw_table, resolve_path("data/processed/heuristics_candidates.csv")),
+            _write_csv_return(build_review_template(raw_table), resolve_path("data/processed/heuristics_review.csv")),
             write_consolidated_problems_template(template_path),
         ]
     )
@@ -312,6 +314,34 @@ def write_consolidated_problems_template(path: str | Path = "data/templates/heur
     return target
 
 
+def build_review_template(raw_table: pd.DataFrame) -> pd.DataFrame:
+    columns = [
+        "problem_group_id",
+        "raw_problem_id",
+        "app",
+        "problem_title",
+        "problem_description",
+        "heuristic",
+        "evaluator_id",
+        "review_notes",
+    ]
+    if raw_table.empty:
+        return pd.DataFrame(columns=columns)
+    review = pd.DataFrame(
+        {
+            "problem_group_id": "",
+            "raw_problem_id": raw_table.get("raw_problem_id", ""),
+            "app": raw_table.get("app", ""),
+            "problem_title": raw_table.get("short_description", ""),
+            "problem_description": raw_table.get("long_description", ""),
+            "heuristic": raw_table.get("heuristics", ""),
+            "evaluator_id": raw_table.get("evaluator_id", ""),
+            "review_notes": "",
+        }
+    )
+    return review[columns]
+
+
 def parse_severity_ratings(
     ratings_path: str | Path,
     problems_path: str | Path,
@@ -343,7 +373,9 @@ def parse_severity_ratings(
 def normalize_severity_ratings(ratings: pd.DataFrame, problems: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     warnings: list[str] = []
     evaluator_col = _find_column(list(ratings.columns), ["evaluator_id", "id valutatore", "ID valutatore"])
-    problem_col = _find_column(list(ratings.columns), ["final_problem_id", "problem_id", "problema", "id problema"])
+    if "final_problem_id" not in problems.columns and "problem_group_id" in problems.columns:
+        problems = problems.rename(columns={"problem_group_id": "final_problem_id"})
+    problem_col = _find_column(list(ratings.columns), ["final_problem_id", "problem_group_id", "problem_id", "problema", "id problema"])
     severity_col = _find_column(list(ratings.columns), ["severity", "severita", "severità", "rating"])
     valid_problem_ids = set(problems.get("final_problem_id", pd.Series(dtype=str)).astype(str))
     rows: list[dict[str, Any]] = []

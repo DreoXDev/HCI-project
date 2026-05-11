@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from ..config import resolve_path
 
 
@@ -11,6 +13,7 @@ def generate_slide_manifest() -> None:
         "",
         "## Uso Grafici",
         "- `outputs/figures/presentation/`: grafici senza sfondo.",
+        "- `outputs/figures/clean/`: copia pulita dei grafici scuri per export/report.",
         "- `outputs/figures/dark/`: grafici con sfondo scuro.",
         "",
         "## 1. Introduzione",
@@ -61,3 +64,60 @@ def generate_slide_manifest() -> None:
         "- Le euristiche importate da Formbricks richiedono review manuale in `data/processed/heuristics/consolidated_problems.csv` prima della survey severita.",
     ]
     manifest.write_text("\n".join(lines), encoding="utf-8")
+    manifest_json = resolve_path("outputs/slide_manifest.json")
+    manifest_json.write_text(
+        json.dumps(
+            {
+                "slides": [
+                    {"slide_number": 1, "section": "Introduzione", "variant": "neutral", "text": ["outputs/text_snippets/intro.md"]},
+                    {
+                        "slide_number": 2,
+                        "section": "Valutazione euristica",
+                        "variant": "neutral",
+                        "charts": [
+                            "outputs/figures/clean/heuristics/heuristics_distribution.png",
+                            "outputs/figures/presentation/heuristics/heuristics_distribution.png",
+                        ],
+                    },
+                    {
+                        "slide_number": 3,
+                        "section": "User test",
+                        "variant": "neutral",
+                        "charts": [
+                            "outputs/figures/clean/user_tests/effectiveness_deliveroo_vs_glovo.png",
+                            "outputs/figures/presentation/user_tests/effectiveness_deliveroo_vs_glovo.png",
+                        ],
+                    },
+                    {
+                        "slide_number": 4,
+                        "section": "Questionario UEQ e NPS",
+                        "variant": "neutral",
+                        "charts": [
+                            "outputs/figures/clean/questionnaire/ueq_scales.png",
+                            "outputs/figures/presentation/questionnaire/ueq_scales.png",
+                        ],
+                    },
+                ],
+                "warnings": [],
+            },
+            indent=2,
+            ensure_ascii=True,
+        ),
+        encoding="utf-8",
+    )
+    report = resolve_path("outputs/reports/slide_generation_report.md")
+    report.parent.mkdir(parents=True, exist_ok=True)
+    if not report.exists():
+        report.write_text(
+            "\n".join(
+                [
+                    "# Slide generation report",
+                    "",
+                    "- Manifest Markdown: `outputs/slide_manifest.md`",
+                    "- Manifest JSON: `outputs/slide_manifest.json`",
+                    "- Output PPTX: `outputs/slides/final_report.pptx`",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )

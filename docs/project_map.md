@@ -16,9 +16,9 @@ Comandi principali:
 ```powershell
 python -m src.cli validate
 python -m src.cli all --plot-style both
-python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
-python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
-python main.py generate-slides --strict
+python -m src.cli import-formbricks-heuristics-discovery --input data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv
+python -m src.cli import-formbricks-heuristics-ratings --input data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv
+python -m src.cli generate-slides --auto --overwrite
 ```
 
 ## Configurazione
@@ -26,6 +26,9 @@ python main.py generate-slides --strict
 ```txt
 config.yaml
 config/heuristics_raw_mapping.yml
+config/formbricks_questionnaire_mapping.yml
+config/formbricks_heuristics_mapping.yml
+config/slide_export.yml
 ```
 
 - `config.yaml`: nomi progetto, sistemi confrontati, path principali, tema grafici e parametri analisi.
@@ -42,8 +45,9 @@ data/examples/
 
 - `data/raw/users_time.csv`: dataset osservazionale manuale dei test.
 - `data/raw/users-time.csv`: dataset legacy ancora supportato dalla pipeline storica.
-- `data/raw/formbricks/`: export Formbricks euristiche raw e severita. I CSV reali sono ignorati da git.
 - `data/formbricks_raw/questionnaire/`: export Formbricks questionario. I CSV reali sono ignorati da git.
+- `data/formbricks_raw/heuristics_discovery/`: survey discovery problemi euristici.
+- `data/formbricks_raw/heuristics_ratings/`: survey rating dei problemi consolidati.
 - `data/templates/`: template da compilare.
 - `data/examples/`: esempi leggeri versionabili.
 
@@ -77,7 +81,7 @@ slides/config/
 slides/assets/
 ```
 
-- `slides/templates/Deliveroo_vs_Glovo_python_ready_template.pptx`: template attivo per generazione PPTX.
+- `slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx`: template attivo per generazione PPTX.
 - `slides/config/slide_deck.yml`: deck reale.
 - `slides/config/demo_slide_deck.yml`: deck demo.
 - `slides/assets/`: asset del template.
@@ -109,12 +113,11 @@ data/processed/heuristics/
 
 ```txt
 README.md
-Manuale.md
 docs/
 ```
 
 - `README.md`: panoramica breve e indice.
-- `Manuale.md`: istruzioni minime per eseguire il progetto.
+- `docs/manual.md`: istruzioni minime per eseguire il progetto.
 - `docs/`: spiegazioni dettagliate per singola area.
 
 ## Regole di Pulizia
@@ -122,5 +125,5 @@ docs/
 - Non versionare output generati.
 - Non versionare export reali Formbricks.
 - Non aggiungere nuovi entry point se non strettamente necessario: estendere `src/cli.py`.
-- Se cambia un comando, aggiornare `README.md`, `Manuale.md` e la pagina docs corrispondente.
+- Se cambia un comando, aggiornare `README.md`, `docs/manual.md`, `docs/cli_api.md` e la pagina docs corrispondente.
 - Se cambia un formato CSV, aggiornare `docs/data_format.md` e i test.

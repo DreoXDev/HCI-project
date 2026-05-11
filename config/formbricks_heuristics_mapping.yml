@@ -1,0 +1,8 @@
+heuristics:
+  discovery_input_example: data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv
+  ratings_input_example: data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv
+  candidates_output: data/processed/heuristics_candidates.csv
+  review_output: data/processed/heuristics_review.csv
+  final_system_1: data/raw/heuristics_deliveroo.csv
+  final_system_2: data/raw/heuristics_glovo.csv
+

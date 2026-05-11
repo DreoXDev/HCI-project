@@ -1,0 +1,7 @@
+questionnaire:
+  input_example: data/formbricks_raw/questionnaire/formbricks_questionnaire_demo_12_users.csv
+  output_system_1: data/raw/questionnaire_deliveroo.csv
+  output_system_2: data/raw/questionnaire_glovo.csv
+  system_1_column_contains: Deliveroo
+  system_2_column_contains: Glovo
+

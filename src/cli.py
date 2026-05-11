@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
 from pathlib import Path
 
@@ -61,7 +62,7 @@ def _existing(path: str | Path | None) -> Path | None:
 def import_formbricks_available(config: dict, include_unfinished: bool = False) -> bool:
     paths = config.get("paths", {})
     q_path = _existing(paths.get("questionnaire_raw")) or _existing(config.get("formbricks", {}).get("questionnaire", {}).get("export_path"))
-    h_path = _existing("data/raw/formbricks/heuristics_experts_raw.csv")
+    h_path = _existing(paths.get("heuristics_raw")) or _existing("data/raw/formbricks/heuristics_experts_raw.csv")
     if q_path:
         convert_questionnaire_export(q_path, config, include_unfinished=include_unfinished)
         print(f"OK: questionario importato da {q_path}")
@@ -85,6 +86,7 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     print(validate(config, data))
     print("\n[3/7] Analisi, grafici e tabelle...")
     analyze(config, data)
+    sync_clean_figure_alias()
     print("OK: analisi completata")
     print("\n[4/8] Asset finali granulari...")
     data = load_all(config)
@@ -134,6 +136,7 @@ def generate_report(config: dict) -> None:
     data = load_all(config)
     print(validate(config, data))
     analyze(config, data)
+    sync_clean_figure_alias()
     generate_final_assets(config, data)
     analyze_ueq_benchmark(config)
     generate_text_outputs(config)
@@ -319,6 +322,20 @@ def analyze(config: dict, data: dict[str, pd.DataFrame]) -> None:
             print("[users-time] Analisi saltata. Usa create-templates per generare un template.")
 
 
+def sync_clean_figure_alias() -> None:
+    dark_root = resolve_path("outputs/figures/dark")
+    clean_root = resolve_path("outputs/figures/clean")
+    if not dark_root.exists():
+        return
+    clean_root.mkdir(parents=True, exist_ok=True)
+    for source in dark_root.rglob("*"):
+        if not source.is_file():
+            continue
+        target = clean_root / source.relative_to(dark_root)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+
+
 def main() -> None:
     if len(sys.argv) > 1 and sys.argv[1] == "heuristics":
         heuristics_cli(sys.argv[2:])
@@ -339,6 +356,11 @@ def main() -> None:
             "full-pipeline",
             "import-formbricks",
             "import-formbricks-questionnaire",
+            "import-formbricks-heuristics",
+            "import-formbricks-heuristics-discovery",
+            "import-formbricks-heuristics-ratings",
+            "build-heuristics-review",
+            "build-heuristics-from-review",
             "import-formbricks-all",
             "all-from-formbricks",
             "import-any-form",
@@ -470,6 +492,35 @@ def main() -> None:
     if args.command == "import-formbricks":
         import_formbricks_available(config, include_unfinished=args.include_unfinished)
         return
+    if args.command in {"import-formbricks-heuristics", "import-formbricks-heuristics-discovery"}:
+        source = args.input or config.get("paths", {}).get("heuristics_raw") or "data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv"
+        result = import_heuristics_raw_survey(source, config=config, mapping_path=args.mapping)
+        for warning in result.warnings:
+            print(f"WARNING: {warning}")
+        print("Survey euristica discovery importata.")
+        print(resolve_path("data/processed/heuristics_candidates.csv"))
+        print(resolve_path("data/processed/heuristics_review.csv"))
+        return
+    if args.command in {"build-heuristics-review", "build-heuristics-from-review"}:
+        review_path = resolve_path(args.input or "data/processed/heuristics_review.csv")
+        if not review_path.exists():
+            raise SystemExit(f"File review non trovato: {review_path}. Lancia prima import-formbricks-heuristics-discovery.")
+        review = pd.read_csv(review_path)
+        if "problem_group_id" not in review.columns:
+            raise SystemExit("Il file review deve contenere la colonna problem_group_id.")
+        print("Review euristiche pronta per la survey ratings.")
+        print(review_path)
+        return
+    if args.command == "import-formbricks-heuristics-ratings":
+        ratings = args.input or config.get("paths", {}).get("heuristics_ratings") or "data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv"
+        demo_problems = resolve_path("data/templates/heuristics_consolidated_problems_demo.csv")
+        problems = args.output or (demo_problems if demo_problems.exists() else "data/templates/heuristics_consolidated_problems_template.csv")
+        result = parse_severity_ratings(ratings, problems)
+        for warning in result.warnings:
+            print(f"WARNING: {warning}")
+        print("Survey euristica ratings importata.")
+        print(resolve_path("data/processed/heuristics/final_problem_summary.csv"))
+        return
     if args.command == "import-any-form":
         if not args.input:
             raise SystemExit("import-any-form richiede --input per rilevare il tipo di form.")
@@ -501,6 +552,7 @@ def main() -> None:
         print(validate(config, data))
     if args.command in {"analyze", "all", "all-from-formbricks", "analyze-user-tests", "analyze-heuristics", "analyze-questionnaire", "export-tables", "export-figures"}:
         analyze(config, data)
+        sync_clean_figure_alias()
         print("Analisi completata. Output salvati in outputs/.")
     if args.command in {"all", "all-from-formbricks", "export-text"}:
         generate_text_outputs(config)

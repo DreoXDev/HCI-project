@@ -5,7 +5,7 @@ Usare questa guida ogni volta che si modifica codice, pipeline, formati dati o o
 ## Regola Base
 
 - `README.md`: breve, con link.
-- `Manuale.md`: solo dove mettere i file e quali comandi eseguire.
+- `docs/manual.md`: solo dove mettere i file e quali comandi eseguire.
 - `docs/project_map.md`: struttura del progetto.
 - `docs/data_format.md`: formati CSV.
 - `docs/analysis_pipeline.md`: sequenza comandi.
@@ -14,7 +14,7 @@ Usare questa guida ogni volta che si modifica codice, pipeline, formati dati o o
 ## Checklist Prima di Finire
 
 1. Il comando nuovo o modificato compare in `README.md` solo se e un comando principale.
-2. Il comando compare in `Manuale.md` solo se serve nel flusso operativo minimo.
+2. Il comando compare in `docs/manual.md` solo se serve nel flusso operativo minimo.
 3. Il dettaglio tecnico e in un file `docs/`.
 4. I path citati esistono o vengono generati dalla pipeline.
 5. Non ci sono riferimenti a comandi rimossi.
