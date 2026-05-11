@@ -22,7 +22,7 @@ data/templates/heuristics_consolidated_problems_template.csv
 
 Questa fase resta manuale per evitare deduplicazioni opache.
 
-## Survey 2: severita
+## Survey 2: severità
 
 La seconda survey chiede agli esperti di valutare ogni problema consolidato con scala 0-4.
 
@@ -30,8 +30,8 @@ La seconda survey chiede agli esperti di valutare ogni problema consolidato con 
 python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
 ```
 
-Il toolkit calcola media, mediana, deviazione standard, IQR e fascia priorita A/B/C.
+Il toolkit calcola media, mediana, deviazione standard, IQR e fascia priorità A/B/C.
 
 ## Dark pattern
 
-I dark pattern non sono piu un comando automatico. Possono essere trattati come discussione qualitativa manuale nelle slide o nel report.
+I dark pattern non sono più un comando automatico. Possono essere trattati come discussione qualitativa manuale nelle slide o nel report.

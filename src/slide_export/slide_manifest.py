@@ -61,7 +61,7 @@ def generate_slide_manifest() -> None:
         "",
         "## Note",
         "- Se un asset non compare, significa che il dato corrispondente manca o non e stato generato.",
-        "- Le euristiche importate da Formbricks richiedono review manuale in `data/processed/heuristics/consolidated_problems.csv` prima della survey severita.",
+        "- Le euristiche importate da Formbricks richiedono review manuale in `data/processed/heuristics/consolidated_problems.csv` prima della survey severità.",
     ]
     manifest.write_text("\n".join(lines), encoding="utf-8")
     manifest_json = resolve_path("outputs/slide_manifest.json")

@@ -1,4 +1,4 @@
-| system    |   task |   mean_seconds |   median_seconds |   std_seconds |   min_seconds |   max_seconds |
+| App       |   Task |   Mean seconds |   Median seconds |   Std seconds |   Min seconds |   Max seconds |
 |:----------|-------:|---------------:|-----------------:|--------------:|--------------:|--------------:|
 | Deliveroo |      1 |          64.25 |             50   |         36.07 |            25 |           155 |
 | Deliveroo |      2 |          90.83 |             91.5 |         31.79 |            57 |           149 |

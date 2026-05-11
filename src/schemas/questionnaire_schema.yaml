@@ -17,7 +17,7 @@ questionnaire:
       aliases: ["familiarita", "familiarità", "delivery familiarity", "familiarita delivery"]
     - id: preferred_app
       required: false
-      aliases: ["app preferita", "preferred app", "sistema usato piu spesso"]
+      aliases: ["app preferita", "preferred app", "sistema usato più spesso"]
     - id: frequency_usage
       required: false
       aliases: ["frequenza utilizzo", "frequency usage", "uso delivery"]

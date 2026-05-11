@@ -52,6 +52,6 @@ def analyze_ueq_benchmark(config: dict, input_path: str | Path = "data/raw/ueq_b
     best = merged.sort_values("mean_project", ascending=False).head(1)
     note = "Benchmark importato e confrontato con le scale UEQ del progetto."
     if not best.empty:
-        note += f" Scala con media piu alta: {best.iloc[0]['scale']} ({best.iloc[0]['system']})."
+        note += f" Scala con media più alta: {best.iloc[0]['scale']} ({best.iloc[0]['system']})."
     text_path.write_text("# Benchmark UEQ\n\n" + note + "\n", encoding="utf-8")
     return merged

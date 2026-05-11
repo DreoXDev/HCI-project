@@ -41,7 +41,7 @@ python -m src.cli build-slide-pack
 python -m src.cli quality-check
 ```
 
-Per una pipeline piu automatica, quando le euristiche sono gia consolidate:
+Per una pipeline più automatica, quando le euristiche sono gia consolidate:
 
 ```powershell
 python -m src.cli full-pipeline --plot-style both
@@ -68,7 +68,7 @@ python -m src.cli build-slide-pack
 python -m src.cli quality-check
 ```
 
-I dark pattern possono essere discussi manualmente nelle slide, ma non sono piu una pipeline automatica. `analyze-benchmark` usa `data/raw/ueq_benchmark.csv` se presente; se manca, emette un warning non bloccante.
+I dark pattern possono essere discussi manualmente nelle slide, ma non sono più una pipeline automatica. `analyze-benchmark` usa `data/raw/ueq_benchmark.csv` se presente; se manca, emette un warning non bloccante.
 
 ## Nota di architettura
 

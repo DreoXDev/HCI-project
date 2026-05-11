@@ -19,7 +19,7 @@
 
 # Risultati valutazione euristica
 
-Dalla valutazione euristica sono emersi 37 problemi per Deliveroo e 27 problemi per Glovo. Le tabelle esportate riportano severita media, mediana e priorita dei problemi.
+Dalla valutazione euristica sono emersi 37 problemi per Deliveroo e 27 problemi per Glovo. Le tabelle esportate riportano severità media, mediana e priorità dei problemi.
 
 # Copertura problemi euristici
 

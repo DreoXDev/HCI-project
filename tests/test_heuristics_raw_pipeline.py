@@ -23,15 +23,15 @@ def _raw_formbricks_df() -> pd.DataFrame:
                 "2. Genere": "Maschio",
                 "3. Occupazione": "Studente",
                 "4. Familiarita con app di food delivery": "3",
-                "5. Esperienza di usabilita": "6",
+                "5. Esperienza di usabilità": "6",
                 "6. Esperienza di dominio": "6",
                 "7. Di quale app hai riscontrato il problema?": "Deliveroo",
                 "8. Dai una descrizione breve (come fosse un titolo) del problema riscontrato:": "Feedback assente",
-                "9. Dai una descrizione piu dettagliata del problema:": "Il checkout non conferma l'azione.",
+                "9. Dai una descrizione più dettagliata del problema:": "Il checkout non conferma l'azione.",
                 "10. Seleziona le euristiche violate:": "E1 - Visibilita; E6 - Riconoscimento",
                 "11. Di quale app hai riscontrato il problema?": "Glovo",
                 "12. Dai una descrizione breve (come fosse un titolo) del problema riscontrato:": "Filtro ambiguo",
-                "13. Dai una descrizione piu dettagliata del problema:": "",
+                "13. Dai una descrizione più dettagliata del problema:": "",
                 "14. Seleziona le euristiche violate:": "",
             }
         ]
@@ -59,7 +59,7 @@ def test_raw_wide_to_long_keeps_partial_and_skips_empty_slots() -> None:
         "gender": "2. Genere",
         "occupation": "3. Occupazione",
         "familiarity": "4. Familiarita con app di food delivery",
-        "usability_experience": "5. Esperienza di usabilita",
+        "usability_experience": "5. Esperienza di usabilità",
         "domain_experience": "6. Esperienza di dominio",
     }
 

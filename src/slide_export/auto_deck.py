@@ -130,7 +130,7 @@ def _reference_order_specs(
             "template_id": "cover",
             "fields": {
                 "PROJECT_TITLE": metadata.get("project_title", f"{systems[0]} vs {systems[1]}"),
-                "PROJECT_SUBTITLE": metadata.get("subtitle", "Analisi trasversale di usabilita"),
+                "PROJECT_SUBTITLE": metadata.get("subtitle", "Analisi trasversale di usabilità"),
                 "AUTHORS": metadata.get("authors", "Gruppo HCI"),
                 "YEAR/DATE": metadata.get("date", ""),
                 "AUTHORS_DATE": f"{metadata.get('authors', 'Gruppo HCI')} - {metadata.get('date', '')}".strip(" -"),
@@ -149,7 +149,7 @@ def _reference_order_specs(
     add(_text_spec("Obiettivo", texts, "heuristic_objective", available_templates))
     add(_text_spec("Set di euristiche", texts, "nielsen_heuristics", available_templates))
     add(_text_spec("Valutatori", texts, "heuristic_evaluators", available_templates))
-    add(_table_or_blank("Tabella dei valutatori", "outputs/tables/sample_composition.csv", texts, "manual_evaluator_table", available_templates))
+    add(_table_or_blank("Tabella dei valutatori", "outputs/tables/heuristics_evaluators_slide.csv", texts, "manual_evaluator_table", available_templates))
     add(_comparison_or_blank(
         "Composizione del campione",
         "outputs/figures/dark/sample/age_distribution.png",
@@ -169,8 +169,8 @@ def _reference_order_specs(
     add(_blank_spec("Matrice di expertise", texts, "manual_expertise_matrix", available_templates))
     add(_text_spec("Problemi riscontrati", texts, "heuristic_problems_intro", available_templates))
     add(_text_spec("Criteri di prioritizzazione", texts, "priority_criteria", available_templates))
-    add(_text_spec("Classificazione in fasce di priorita", texts, "priority_bands", available_templates))
-    add(_table_or_blank(f"Problemi {systems[0]}", "outputs/tables/problem_evaluator_matrix_deliveroo.csv", texts, "manual_problem_list", available_templates, theme="deliveroo"))
+    add(_text_spec("Classificazione in fasce di priorità", texts, "priority_bands", available_templates))
+    add(_table_or_blank("Problemi rilevati", "outputs/tables/heuristics_problems_slide.csv", texts, "manual_problem_list", available_templates))
     add(_graph_or_blank(
         f"Matrice problemi-valutatori {systems[0]}",
         "outputs/figures/dark/heuristics/problem_evaluator_matrix_deliveroo.png",
@@ -179,7 +179,6 @@ def _reference_order_specs(
         available_templates,
         theme="deliveroo",
     ))
-    add(_table_or_blank(f"Problemi {systems[1]}", "outputs/tables/problem_evaluator_matrix_glovo.csv", texts, "manual_problem_list", available_templates, theme="glovo"))
     add(_graph_or_blank(
         f"Matrice problemi-valutatori {systems[1]}",
         "outputs/figures/dark/heuristics/problem_evaluator_matrix_glovo.png",
@@ -561,7 +560,16 @@ def _table_or_blank(
                 "TABLE_TITLE": title,
                 "TABLE_FOOTNOTE": texts.get("table_footnote", "Tabella generata dalla pipeline di analisi."),
             },
-            "table": {"placeholder": "TABLE_MAIN", "source": _rel(table_path), "max_rows": 12},
+            "table": {
+                "placeholder": "TABLE_MAIN",
+                "source": _rel(table_path),
+                "max_rows": 6 if "problems_slide" in table_path.name else 12,
+                "paginate": "problems_slide" in table_path.name,
+                "title_prefix": title,
+                "font_size": 7.2,
+                "header_font_size": 7.5,
+                "max_cell_chars": 72,
+            },
         }
     return _blank_spec(title, texts, fallback_key, available_templates, theme=theme)
 
@@ -634,11 +642,11 @@ def _appendix_titles(systems: tuple[str, str]) -> list[str]:
     titles.extend(
         [
             "Appendice - Modulo autorizzazione foto e video",
-            f"Appendice - Valutazione dei problemi di usabilita {systems[0]}",
-            f"Appendice - Valutazione dei problemi di usabilita {systems[1]}",
+            f"Appendice - Valutazione dei problemi di usabilità {systems[0]}",
+            f"Appendice - Valutazione dei problemi di usabilità {systems[1]}",
             f"{systems[0]} vs {systems[1]}",
             "Appendice - Presentazione task user test",
-            "Appendice - Risultati questionario di usabilita",
+            "Appendice - Risultati questionario di usabilità",
             "Grazie",
         ]
     )

@@ -4,13 +4,13 @@ deck:
 
 metadata:
   project_title: "Deliveroo vs Glovo"
-  subtitle: "Analisi trasversale di usabilita"
+  subtitle: "Analisi trasversale di usabilità"
   authors: "Gruppo HCI"
   date: "2026"
 
 auto_slides:
   enabled: true
-  # Modalita che segue l'ordine del PDF di riferimento:
+  # modalità che segue l'ordine del PDF di riferimento:
   # introduzione, valutazione euristica, user test, questionario,
   # conclusioni e appendici. I testi statici sono in
   # slides/content/reference_static_texts.md.
@@ -33,7 +33,7 @@ slides:
   - template_id: cover
     fields:
       PROJECT_TITLE: "Deliveroo vs Glovo"
-      PROJECT_SUBTITLE: "Analisi trasversale di usabilita"
+      PROJECT_SUBTITLE: "Analisi trasversale di usabilità"
       AUTHORS: "Gruppo HCI"
       YEAR/DATE: "2026"
 
@@ -51,7 +51,7 @@ slides:
   - template_id: comparison
     fields:
       COMPARISON_TITLE: "Confronto euristiche"
-      SUMMARY_TEXT: "Il confronto visualizza la distribuzione delle euristiche violate e le categorie piu ricorrenti."
+      SUMMARY_TEXT: "Il confronto visualizza la distribuzione delle euristiche violate e le categorie più ricorrenti."
     images:
       LEFT_GRAPH: outputs/figures/dark/heuristics/heuristics_distribution.png
       RIGHT_GRAPH: outputs/figures/dark/heuristics/heuristics_by_category.png
@@ -78,7 +78,7 @@ slides:
       FINAL_TITLE: "Sintesi finale"
       STRENGTH 1: "Percorso utente competitivo"
       STRENGTH 2: "Buona riconoscibilita visiva"
-      WEAKNESS: "Criticita da verificare nei task piu lunghi"
+      WEAKNESS: "criticità da verificare nei task più lunghi"
       WINNER_LABEL: "Lettura comparativa, non verdetto automatico"
     images:
       SUMMARY_GRAPH: outputs/figures/dark/questionnaire/ueq_scales.png

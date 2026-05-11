@@ -19,11 +19,11 @@
 
 # Efficacia user test
 
-Glovo mostra il tasso medio di completamento piu alto. Il divario medio osservato e pari a 5.67%.
+Glovo mostra il tasso medio di completamento più alto. Il divario medio osservato e pari a 5.67%.
 
 # Efficienza user test
 
-Glovo risulta mediamente piu rapido sui task osservati. Consultare gli asset task-by-task per verificare dove la differenza e piu marcata.
+Glovo risulta mediamente più rapido sui task osservati. Consultare gli asset task-by-task per verificare dove la differenza e più marcata.
 
 ## Note da completare manualmente
 

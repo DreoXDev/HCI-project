@@ -66,7 +66,7 @@ src/visualization/
 - `src/data_loading.py`: caricamento CSV normalizzati.
 - `src/validation.py`: validazioni input.
 - `src/formbricks_adapter.py`: wrapper import Formbricks.
-- `src/formbricks_heuristics_pipeline.py`: survey euristica raw, template consolidamento, survey severita.
+- `src/formbricks_heuristics_pipeline.py`: survey euristica raw, template consolidamento, survey severità.
 - `src/user_tests.py`, `src/users_time.py`: analisi user test legacy e osservazionale.
 - `src/questionnaire.py`: UEQ, NPS e sottogruppi.
 - `src/heuristics.py`: analisi dei file euristici consolidati legacy.

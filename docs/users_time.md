@@ -14,9 +14,9 @@ Il dataset `users_time` raccoglie metriche osservazionali dei test utenti:
 
 Va compilato durante i test utenti, mentre il partecipante esegue task definite. Ogni riga rappresenta un utente che esegue una task su una app.
 
-## Perche non usare Formbricks
+## perché non usare Formbricks
 
-Questi dati sono misurazioni e osservazioni, non risposte soggettive. Sono piu adatti a un foglio CSV/XLSX compilato live da un osservatore.
+Questi dati sono misurazioni e osservazioni, non risposte soggettive. Sono più adatti a un foglio CSV/XLSX compilato live da un osservatore.
 
 ## File ufficiale
 

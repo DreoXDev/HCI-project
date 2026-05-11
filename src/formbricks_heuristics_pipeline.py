@@ -164,6 +164,7 @@ def import_heuristics_raw_survey(
             _write_csv_return(problem_counts_by_evaluator, output_root / "problem_counts_by_evaluator.csv"),
             _write_csv_return(heuristic_counts, output_root / "heuristic_counts.csv"),
             _write_csv_return(evaluator_matrix.reset_index(names="evaluator_id"), output_root / "evaluator_problem_matrix.csv"),
+            _write_csv_return(build_evaluators_slide_table(expert_profiles, raw_table), resolve_path("outputs/tables/heuristics_evaluators_slide.csv")),
             _write_csv_return(raw_table, resolve_path("data/processed/heuristics_candidates.csv")),
             _write_csv_return(build_review_template(raw_table), resolve_path("data/processed/heuristics_review.csv")),
             write_consolidated_problems_template(template_path),
@@ -245,6 +246,7 @@ def normalize_raw_heuristic_problems(
     columns = [
         "raw_problem_id",
         "evaluator_id",
+        "expert_group",
         "gender",
         "age_group",
         "occupation",
@@ -275,7 +277,7 @@ def find_problem_slot_column(columns: list[str], slot: int, field: str, aliases:
                 return column
             if field == "short_description" and any(token in comp for token in ["descrizione breve", "titolo"]):
                 return column
-            if field == "long_description" and any(token in comp for token in ["dettagliata", "dettagliato", "descrizione piu"]):
+            if field == "long_description" and any(token in comp for token in ["dettagliata", "dettagliato", "descrizione più"]):
                 return column
             if field == "heuristics" and any(token in comp for token in ["euristiche", "heuristic"]):
                 return column
@@ -342,6 +344,26 @@ def build_review_template(raw_table: pd.DataFrame) -> pd.DataFrame:
     return review[columns]
 
 
+def build_evaluators_slide_table(expert_profiles: pd.DataFrame, raw_table: pd.DataFrame) -> pd.DataFrame:
+    columns = ["Valutatore", "Gruppo", "App valutata", "Problemi segnalati"]
+    if expert_profiles.empty:
+        return pd.DataFrame(columns=columns)
+    rows = []
+    for profile in expert_profiles.itertuples(index=False):
+        evaluator_id = str(getattr(profile, "evaluator_id", ""))
+        subset = raw_table[raw_table["evaluator_id"].astype(str) == evaluator_id] if not raw_table.empty else pd.DataFrame()
+        apps = " e ".join(sorted(app for app in subset.get("app", pd.Series(dtype=str)).dropna().astype(str).unique() if app))
+        rows.append(
+            {
+                "Valutatore": evaluator_id,
+                "Gruppo": getattr(profile, "expert_group", ""),
+                "App valutata": apps or "Deliveroo e Glovo",
+                "Problemi segnalati": int(len(subset)),
+            }
+        )
+    return pd.DataFrame(rows, columns=columns)
+
+
 def parse_severity_ratings(
     ratings_path: str | Path,
     problems_path: str | Path,
@@ -361,13 +383,29 @@ def parse_severity_ratings(
     paths = [
         _write_csv_return(ratings_long, output_root / "severity_ratings_long.csv"),
         _write_csv_return(summary, output_root / "final_problem_summary.csv"),
+        _write_csv_return(build_problems_slide_table(summary), resolve_path("outputs/tables/heuristics_problems_slide.csv")),
         _write_csv_return(matrix.reset_index(names="evaluator_id"), output_root / "final_evaluator_problem_matrix.csv"),
         _write_csv_return(bands, output_root / "problem_priority_bands.csv"),
     ]
-    _plot_count_bar(bands, "priority_band", "Fasce priorita problemi", figures_root / "final_priority_bands.png")
+    _plot_count_bar(bands, "priority_band", "Fasce priorità problemi", figures_root / "final_priority_bands.png")
     _plot_matrix(matrix, "Matrice finale valutatore-problema", figures_root / "final_evaluator_problem_matrix.png")
     _write_final_report(report_path, summary, warnings, paths)
     return HeuristicsSeverityResult(ratings_long, summary, warnings, paths)
+
+
+def build_problems_slide_table(summary: pd.DataFrame) -> pd.DataFrame:
+    source_columns = ["final_problem_id", "app", "short_description", "heuristics", "severity_mean", "priority_band"]
+    display_columns = ["ID problema", "App", "Problema", "Euristiche", "Severità media", "Priorità"]
+    if summary.empty:
+        return pd.DataFrame(columns=display_columns)
+    table = summary.copy()
+    for column in source_columns:
+        if column not in table.columns:
+            table[column] = ""
+    table = table[source_columns].copy()
+    table["short_description"] = table["short_description"].astype(str).map(lambda text: text if len(text) <= 105 else text[:102].rstrip() + "...")
+    table.columns = display_columns
+    return table
 
 
 def normalize_severity_ratings(ratings: pd.DataFrame, problems: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
@@ -376,7 +414,7 @@ def normalize_severity_ratings(ratings: pd.DataFrame, problems: pd.DataFrame) ->
     if "final_problem_id" not in problems.columns and "problem_group_id" in problems.columns:
         problems = problems.rename(columns={"problem_group_id": "final_problem_id"})
     problem_col = _find_column(list(ratings.columns), ["final_problem_id", "problem_group_id", "problem_id", "problema", "id problema"])
-    severity_col = _find_column(list(ratings.columns), ["severity", "severita", "severità", "rating"])
+    severity_col = _find_column(list(ratings.columns), ["severity", "severità", "severità", "rating"])
     valid_problem_ids = set(problems.get("final_problem_id", pd.Series(dtype=str)).astype(str))
     rows: list[dict[str, Any]] = []
     if evaluator_col and problem_col and severity_col:
@@ -384,14 +422,14 @@ def normalize_severity_ratings(ratings: pd.DataFrame, problems: pd.DataFrame) ->
             severity = normalize_severity(row[severity_col])
             problem_id = _clean_text(row[problem_col])
             if severity is None:
-                warnings.append(f"Severita fuori scala riga {index + 2}: {row[severity_col]}")
+                warnings.append(f"severità fuori scala riga {index + 2}: {row[severity_col]}")
                 continue
             if problem_id not in valid_problem_ids:
                 warnings.append(f"Rating riferito a problem_id inesistente: {problem_id}")
             rows.append({"evaluator_id": _clean_text(row[evaluator_col]), "final_problem_id": problem_id, "severity": severity})
     else:
         if not evaluator_col:
-            warnings.append("Colonna evaluator_id non trovata nel CSV severita.")
+            warnings.append("Colonna evaluator_id non trovata nel CSV severità.")
         for index, row in ratings.iterrows():
             evaluator = _clean_text(row[evaluator_col]) if evaluator_col else f"EU{index + 1:02d}"
             for problem_id in sorted(valid_problem_ids):
@@ -400,7 +438,7 @@ def normalize_severity_ratings(ratings: pd.DataFrame, problems: pd.DataFrame) ->
                     continue
                 severity = normalize_severity(row[column])
                 if severity is None and _clean_text(row[column]):
-                    warnings.append(f"Severita fuori scala per {problem_id}, riga {index + 2}: {row[column]}")
+                    warnings.append(f"severità fuori scala per {problem_id}, riga {index + 2}: {row[column]}")
                     continue
                 if severity is not None:
                     rows.append({"evaluator_id": evaluator, "final_problem_id": problem_id, "severity": severity})
@@ -476,7 +514,7 @@ def _heuristic_counts(raw_table: pd.DataFrame) -> pd.DataFrame:
 def _write_csv_return(df: pd.DataFrame, path: str | Path) -> Path:
     target = resolve_path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(target, index=False)
+    df.to_csv(target, index=False, encoding="utf-8-sig")
     return target
 
 
@@ -547,9 +585,9 @@ def _write_raw_report(
         f"- Numero totale problemi grezzi: {len(raw_table)}",
         f"- Problemi per app: {counts_text(problem_counts_by_app, 'app')}",
         f"- Problemi per valutatore: {counts_text(problem_counts_by_evaluator, 'evaluator_id')}",
-        f"- Euristiche piu violate: {counts_text(heuristic_counts.head(5), 'heuristic')}",
+        f"- Euristiche più violate: {counts_text(heuristic_counts.head(5), 'heuristic')}",
         "",
-        "## Qualita dati",
+        "## qualità dati",
         f"- Blocchi vuoti ignorati: {ignored_empty}",
         f"- Problemi senza app: {int((raw_table['completion_status'] == 'missing_app').sum()) if not raw_table.empty else 0}",
         f"- Problemi senza descrizione: {int((raw_table['completion_status'] == 'missing_description').sum()) if not raw_table.empty else 0}",
@@ -569,7 +607,7 @@ def _write_raw_report(
 
 def _write_final_report(report_path: str | Path, summary: pd.DataFrame, warnings: list[str], output_paths: list[Path]) -> None:
     lines = [
-        "# Report valutazione euristica - severita problemi consolidati",
+        "# Report valutazione euristica - severità problemi consolidati",
         "",
         f"- Problemi consolidati: {len(summary)}",
         f"- Problemi senza rating: {int((summary['priority_band'] == 'unrated').sum()) if not summary.empty else 0}",

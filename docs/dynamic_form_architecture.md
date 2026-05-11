@@ -33,7 +33,7 @@ python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/qu
 
 ## Euristiche
 
-Le euristiche non usano piu un adapter candidato/review automatico. Il flusso attivo e in:
+Le euristiche non usano più un adapter candidato/review automatico. Il flusso attivo e in:
 
 ```txt
 src/formbricks_heuristics_pipeline.py

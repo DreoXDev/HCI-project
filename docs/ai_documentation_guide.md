@@ -1,6 +1,6 @@
 # Guida manutenzione documentazione per AI
 
-Usare questa guida ogni volta che si modifica codice, pipeline, formati dati o output. L'obiettivo e mantenere la documentazione coerente senza duplicare spiegazioni lunghe in piu file.
+Usare questa guida ogni volta che si modifica codice, pipeline, formati dati o output. L'obiettivo e mantenere la documentazione coerente senza duplicare spiegazioni lunghe in più file.
 
 ## Regola Base
 

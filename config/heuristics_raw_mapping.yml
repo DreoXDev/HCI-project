@@ -4,6 +4,10 @@ heuristics_raw:
       - "ID valutatore"
       - "1. ID valutatore:"
       - "evaluator_id"
+    expert_group:
+      - "expert_group"
+      - "Gruppo"
+      - "Gruppo esperto"
     gender:
       - "Genere"
       - "2. Genere"

@@ -23,18 +23,18 @@ Dall'analisi UEQ emergono differenze tra le scale considerate. Migliori per scal
 
 # Risultati NPS
 
-Il Net Promoter Score evidenzia una maggiore propensione a consigliare Deliveroo, con valore pari a 37.50.
+Il Net Promoter Score evidenzia una maggiore propensione a consigliare Deliveroo, con valore pari a 33.33.
 
-# Item UEQ piu rilevanti
+# Item UEQ più rilevanti
 
-- Item 02 `incomprensibile-comprensibile`: differenza media assoluta 2.12, p=0.0022; differenza significativa.
-- Item 11 `ostruttivo-di supporto`: differenza media assoluta 2.12, p=0.0022; differenza significativa.
-- Item 22 `non pragmatico-pragmatico`: differenza media assoluta 1.75, p=0.0033; differenza significativa.
-- Item 03 `creativo-privo di fantasia`: differenza media assoluta 1.12, p=0.0377; differenza significativa.
-- Item 05 `di grande valore-di poco valore`: differenza media assoluta 1.12, p=0.0377; differenza significativa.
-- Item 06 `noioso-appassionante`: differenza media assoluta 1.12, p=0.0377; differenza significativa.
-- Item 08 `imprevedibile-prevedibile`: differenza media assoluta 1.12, p=0.0377; differenza significativa.
-- Item 12 `buono-scarso`: differenza media assoluta 1.12, p=0.0377; differenza significativa.
+- Item 01 `fastidioso-piacevole`: differenza media assoluta 1.00, p=0.0173; differenza significativa.
+- Item 02 `incomprensibile-comprensibile`: differenza media assoluta 1.00, p=0.0173; differenza significativa.
+- Item 03 `creativo-privo di fantasia`: differenza media assoluta 1.00, p=0.0173; differenza significativa.
+- Item 04 `facile da apprendere-difficile da apprendere`: differenza media assoluta 1.00, p=0.0173; differenza significativa.
+- Item 05 `di grande valore-di poco valore`: differenza media assoluta 1.00, p=0.0173; differenza significativa.
+- Item 06 `noioso-appassionante`: differenza media assoluta 1.00, p=0.0173; differenza significativa.
+- Item 07 `non interessante-interessante`: differenza media assoluta 1.00, p=0.0173; differenza significativa.
+- Item 08 `imprevedibile-prevedibile`: differenza media assoluta 1.00, p=0.0173; differenza significativa.
 
 
 ## Note da completare manualmente

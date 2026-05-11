@@ -59,7 +59,7 @@ final_problem_id,app,short_description,long_description,heuristics,source_raw_pr
 
 Usare ID chiari, per esempio `D-PB01` per Deliveroo e `G-PB01` per Glovo. `source_raw_problem_ids` deve mantenere il legame con i problemi grezzi, per esempio `RAW001;RAW007`.
 
-## Fase 2: severita
+## Fase 2: severità
 
 Quando e disponibile la seconda survey Formbricks con rating 0-4:
 
@@ -77,10 +77,10 @@ data/processed/heuristics/problem_priority_bands.csv
 reports/heuristics_final_report.md
 ```
 
-La priorita e trasparente:
+La priorità e trasparente:
 
-- `A`: severita media >= 3.25
-- `B`: severita media >= 2.00 e < 3.25
-- `C`: severita media < 2.00
+- `A`: severità media >= 3.25
+- `B`: severità media >= 2.00 e < 3.25
+- `C`: severità media < 2.00
 
-I dark pattern possono essere discussi manualmente nella presentazione, ma non fanno piu parte della pipeline automatica del toolkit.
+I dark pattern possono essere discussi manualmente nella presentazione, ma non fanno più parte della pipeline automatica del toolkit.

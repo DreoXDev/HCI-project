@@ -1,55 +1,63 @@
 # Workflow Formbricks
 
-Questo e il workflow raccomandato per nuovi progetti.
+> [!Info]
+> Questa pagina separa questionario utenti, valutazione euristica e dati osservazionali.
 
-## 1. Esporta i dati
+## 1. Questionario utenti
 
-Salva i file in:
+```powershell
+python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/formbricks_questionnaire_demo_12_users.csv
+```
 
-```txt
-data/formbricks_raw/questionnaire/export_questionario.csv
-data/raw/formbricks/heuristics_experts_raw.csv
+Output:
+
+```text
+data/raw/questionnaire_deliveroo.csv
+data/raw/questionnaire_glovo.csv
+```
+
+## 2. Discovery euristica
+
+```powershell
+python -m src.cli import-formbricks-heuristics-discovery --input data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv
+```
+
+Output:
+
+```text
+data/processed/heuristics_candidates.csv
+data/processed/heuristics_review.csv
+```
+
+## 3. Review manuale
+
+> [!Warning]
+> La deduplicazione non è automatica: apri `heuristics_review.csv` e compila `problem_group_id`.
+
+Checklist:
+
+- [ ] Problemi simili raggruppati
+- [ ] `problem_group_id` coerente
+- [ ] Titoli leggibili
+- [ ] App corretta
+
+## 4. Rating severità/priorità
+
+```powershell
+python -m src.cli import-formbricks-heuristics-ratings --input data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv --output data/templates/heuristics_consolidated_problems_demo.csv
+```
+
+## 5. Dati osservazionali
+
+`users_time.csv` non viene da Formbricks. Va compilato dagli osservatori:
+
+```text
 data/raw/users_time.csv
 ```
 
-`users_time.csv` non arriva da Formbricks: e il formato osservazionale compilato dagli osservatori durante i test utenti.
+## Collegamenti
 
-## 2. Importa questionario e survey euristica raw
+- [Manuale](manual.md)
+- [Formato dati](data_format.md)
+- [Mappa CLI](cli_api.md)
 
-```powershell
-python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/export_questionario.csv
-python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
-```
-
-## 3. Revisiona le euristiche
-
-Apri:
-
-```txt
-data/processed/heuristics/raw_problems_table.csv
-data/templates/heuristics_consolidated_problems_template.csv
-```
-
-Accorpa manualmente i problemi simili e crea `data/processed/heuristics/consolidated_problems.csv`.
-
-## 4. Survey severita
-
-```powershell
-python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
-```
-
-## 5. Valida e analizza
-
-```powershell
-python -m src.cli validate
-python -m src.cli all
-```
-
-## Report da controllare
-
-```txt
-outputs/import_report.md
-reports/heuristics_raw_report.md
-reports/heuristics_final_report.md
-outputs/slide_manifest.md
-```

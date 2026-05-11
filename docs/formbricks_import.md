@@ -34,7 +34,7 @@ python -m src.cli import-formbricks-questionnaire --include-unfinished
 
 ## Euristiche
 
-Il nuovo flusso euristico e in due survey: raccolta grezza dei problemi, review manuale, survey severita.
+Il nuovo flusso euristico e in due survey: raccolta grezza dei problemi, review manuale, survey severità.
 
 Input consigliato:
 
@@ -59,7 +59,7 @@ reports/heuristics_raw_report.md
 
 Poi si modifica manualmente il template `data/templates/heuristics_consolidated_problems_template.csv` e si salva il risultato come `data/processed/heuristics/consolidated_problems.csv`.
 
-Survey severita:
+Survey severità:
 
 ```powershell
 python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv

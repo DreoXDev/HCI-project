@@ -42,6 +42,7 @@ from .slide_export.pptx_generator import (
     validate_slide_assets,
     validate_template_structure,
 )
+from .slide_export.pdf_export import PdfExportError, export_pptx_to_pdf
 from .user_tests import compute_effectiveness, compute_efficiency, compute_user_test_statistics
 from .users_time import analyze_users_time, users_time_enabled, users_time_file, validate_users_time_file
 from .validation import (
@@ -63,6 +64,7 @@ def import_formbricks_available(config: dict, include_unfinished: bool = False) 
     paths = config.get("paths", {})
     q_path = _existing(paths.get("questionnaire_raw")) or _existing(config.get("formbricks", {}).get("questionnaire", {}).get("export_path"))
     h_path = _existing(paths.get("heuristics_raw")) or _existing("data/raw/formbricks/heuristics_experts_raw.csv")
+    ratings_path = _existing(paths.get("heuristics_ratings"))
     if q_path:
         convert_questionnaire_export(q_path, config, include_unfinished=include_unfinished)
         print(f"OK: questionario importato da {q_path}")
@@ -70,9 +72,13 @@ def import_formbricks_available(config: dict, include_unfinished: bool = False) 
         print("WARNING: CSV questionario Formbricks non trovato, uso eventuali file data/raw esistenti.")
     if h_path:
         import_heuristics_raw_survey(h_path, config=config)
-        print(f"OK: survey euristica raw importata da {h_path}. Completa data/processed/heuristics/consolidated_problems.csv prima della survey severita.")
+        print(f"OK: survey euristica raw importata da {h_path}. Completa data/processed/heuristics/consolidated_problems.csv prima della survey severità.")
     else:
         print("WARNING: CSV euristiche raw Formbricks non trovato, uso eventuali file euristiche gia consolidati.")
+    demo_problems = resolve_path("data/templates/heuristics_consolidated_problems_demo.csv")
+    if ratings_path and demo_problems.exists():
+        parse_severity_ratings(ratings_path, demo_problems)
+        print(f"OK: survey rating euristiche importata da {ratings_path}")
     return False
 
 
@@ -187,7 +193,7 @@ def heuristics_cli(argv: list[str]) -> None:
     raw.add_argument("--config", default="config.yaml")
     raw.add_argument("--mapping", default="config/heuristics_raw_mapping.yml")
 
-    severity = sub.add_parser("severity", help="Importa survey severita sui problemi consolidati")
+    severity = sub.add_parser("severity", help="Importa survey severità sui problemi consolidati")
     severity.add_argument("--ratings", default="data/raw/formbricks/heuristics_severity_ratings.csv")
     severity.add_argument("--problems", default="data/processed/heuristics/consolidated_problems.csv")
 
@@ -211,7 +217,7 @@ def heuristics_cli(argv: list[str]) -> None:
         result = parse_severity_ratings(args.ratings, args.problems)
         for warning in result.warnings:
             print(f"WARNING: {warning}")
-        print("Pipeline severita euristiche completata.")
+        print("Pipeline severità euristiche completata.")
         print(resolve_path("reports/heuristics_final_report.md"))
         return
     if args.phase == "all":
@@ -227,7 +233,7 @@ def heuristics_cli(argv: list[str]) -> None:
             print("Pipeline euristiche completa.")
         else:
             write_consolidated_problems_template()
-            print("Pipeline raw completata. Fase 2 saltata: serve il CSV severita e `data/processed/heuristics/consolidated_problems.csv`.")
+            print("Pipeline raw completata. Fase 2 saltata: serve il CSV severità e `data/processed/heuristics/consolidated_problems.csv`.")
         return
 
 
@@ -336,6 +342,14 @@ def sync_clean_figure_alias() -> None:
         shutil.copy2(source, target)
 
 
+def export_pdf_or_exit(pptx_path: str | Path) -> None:
+    try:
+        result = export_pptx_to_pdf(pptx_path)
+    except PdfExportError as exc:
+        raise SystemExit(str(exc)) from exc
+    print(f"PDF generato: {result.pdf_path}")
+
+
 def main() -> None:
     if len(sys.argv) > 1 and sys.argv[1] == "heuristics":
         heuristics_cli(sys.argv[2:])
@@ -351,6 +365,7 @@ def main() -> None:
             "generate-slides",
             "generate-demo-assets",
             "validate-slide-template",
+            "validate-slide-assets",
             "create-templates",
             "all",
             "full-pipeline",
@@ -390,6 +405,8 @@ def main() -> None:
     parser.add_argument("--auto", action="store_true", help="Per generate-slides: genera prima gli asset report se mancano")
     parser.add_argument("--timestamp", action="store_true", help="Per generate-slides: aggiunge timestamp al nome output")
     parser.add_argument("--generate-slides", action="store_true", help="Per full-pipeline: genera anche il PPTX finale")
+    parser.add_argument("--export-pdf", action="store_true", help="Esporta anche il PDF della presentazione finale")
+    parser.add_argument("--no-export-pdf", action="store_true", help="Salta esplicitamente l'export PDF")
     parser.add_argument("--include-unfinished", action="store_true", help="Importa anche risposte non completate")
     args = parser.parse_args()
     app_config_path = "config.yaml" if args.command == "generate-slides" else args.config
@@ -422,6 +439,13 @@ def main() -> None:
             raise SystemExit(1)
         print(f"OK: template slide valido: {resolve_path(target)}")
         return
+    if args.command == "validate-slide-assets":
+        messages = validate_slide_assets("slides/config/slide_deck.yml", template_path=args.template)
+        if messages:
+            print("\n".join(messages))
+            raise SystemExit(1)
+        print("OK: asset slide validi")
+        return
     if args.command == "generate-report":
         generate_report(config)
         return
@@ -448,6 +472,8 @@ def main() -> None:
         except SlideGenerationError as exc:
             raise SystemExit(str(exc)) from exc
         print(format_slide_generation_summary(result))
+        if args.export_pdf and not args.no_export_pdf:
+            export_pdf_or_exit(result.output)
         return
     if args.command == "analyze-users-time":
         path = resolve_path(args.input) if args.input else users_time_file(config)
@@ -461,12 +487,14 @@ def main() -> None:
         return
     if args.command == "full-pipeline":
         full_pipeline(config, include_unfinished=args.include_unfinished)
-        if args.generate_slides:
+        if args.generate_slides or args.export_pdf:
             try:
                 result = generate_slides(overwrite=args.overwrite, timestamp=args.timestamp)
             except SlideGenerationError as exc:
                 raise SystemExit(str(exc)) from exc
             print(format_slide_generation_summary(result))
+            if args.export_pdf and not args.no_export_pdf:
+                export_pdf_or_exit(result.output)
         return
     if args.command == "analyze-benchmark":
         analyze_ueq_benchmark(config, args.input or "data/raw/ueq_benchmark.csv")
@@ -483,6 +511,13 @@ def main() -> None:
         generate_text_outputs(config)
         build_slide_pack(config)
         print("Slide pack generato in outputs/slide_pack/.")
+        if args.export_pdf and not args.no_export_pdf:
+            try:
+                result = generate_slides(overwrite=True, timestamp=args.timestamp)
+            except SlideGenerationError as exc:
+                raise SystemExit(str(exc)) from exc
+            print(format_slide_generation_summary(result))
+            export_pdf_or_exit(result.output)
         return
     if args.command == "quality-check":
         ready = run_quality_check(config)
@@ -526,7 +561,7 @@ def main() -> None:
             raise SystemExit("import-any-form richiede --input per rilevare il tipo di form.")
         preview = load_formbricks_export(args.input)
         column_text = " ".join(comparable(column) for column in preview.columns)
-        if "heuristic" in column_text or "euristic" in column_text or "severita" in column_text or "severity" in column_text:
+        if "heuristic" in column_text or "euristic" in column_text or "severità" in column_text or "severity" in column_text:
             import_heuristics_raw_survey(args.input, config=config)
             print("Form rilevato come survey euristica raw e normalizzato.")
         else:

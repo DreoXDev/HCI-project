@@ -50,7 +50,7 @@ reports/heuristics_raw_report.md
 reports/heuristics_final_report.md
 ```
 
-Gli errori piu comuni sono colonne Formbricks non riconosciute, euristiche non normalizzabili, problemi parziali o severita fuori scala 0-4.
+Gli errori più comuni sono colonne Formbricks non riconosciute, euristiche non normalizzabili, problemi parziali o severità fuori scala 0-4.
 
 ## Rigenerare gli output
 

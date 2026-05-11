@@ -84,7 +84,7 @@ def generate_problem_evaluator_outputs(config: dict, data: dict[str, pd.DataFram
         top_count = int(problem_counts.iloc[0]) if not problem_counts.empty else 0
         top_evaluators = ", ".join(evaluator_counts.head(2).index.astype(str)) if not evaluator_counts.empty else "n.d."
         resolve_path(f"outputs/text_snippets/problem_evaluator_matrix_{slug}.md").write_text(
-            f"# Matrice problemi-valutatori {system}\n\nIl problema piu ricorrente e `{top_problem}`, segnalato da {top_count} valutatori. I valutatori piu produttivi sono {top_evaluators}.\n",
+            f"# Matrice problemi-valutatori {system}\n\nIl problema più ricorrente e `{top_problem}`, segnalato da {top_count} valutatori. I valutatori più produttivi sono {top_evaluators}.\n",
             encoding="utf-8",
         )
 
@@ -147,7 +147,7 @@ def generate_questionnaire_item_outputs(config: dict, data: dict[str, pd.DataFra
     export_table(summary.drop(columns=["rank_score"]), "outputs/tables/questionnaire_items_summary.csv", 2)
     export_table(summary.drop(columns=["rank_score"]), "outputs/tables_md/questionnaire_items_summary.md", 2)
     export_table(relevant.drop(columns=["rank_score"]), "outputs/tables/questionnaire_most_relevant_items.csv", 2)
-    lines = ["# Item UEQ piu rilevanti", ""]
+    lines = ["# Item UEQ più rilevanti", ""]
     for row in relevant.itertuples():
         significance = "significativa" if pd.notna(row.p_value) and row.p_value < 0.05 else "non significativa"
         lines.append(f"- Item {row.item_number:02d} `{row.item}`: differenza media assoluta {row.mean_difference_abs:.2f}, p={row.p_value:.4f}; differenza {significance}.")

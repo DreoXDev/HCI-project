@@ -92,7 +92,7 @@ def _write_dataframe_if_needed(path: Path, df: pd.DataFrame, overwrite: bool) ->
     if path.suffix == ".xlsx":
         df.to_excel(path, index=False)
     else:
-        df.to_csv(path, index=False)
+        df.to_csv(path, index=False, encoding="utf-8-sig")
     return True
 
 

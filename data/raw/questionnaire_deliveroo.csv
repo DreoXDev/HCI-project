@@ -1,32 +1,32 @@
-item,Utente 1,Utente 2,Utente 3,Utente 4,Utente 5,Utente 6,Utente 7,Utente 8
-genere,Femmina,Maschio,Femmina,Maschio,Non binario,Femmina,Maschio,Femmina
-eta,18-24,25-34,18-24,35-44,25-34,18-24,25-34,35-44
-situazione lavorativa,Studente,Studente,Lavoratore,Lavoratore,Studente,Studente,Lavoratore,Studente
-familiarita delivery,Alta,Media,Alta,Bassa,Media,Alta,Media,Alta
-fastidioso-piacevole,5,6,7,5,6,7,5,6
-incomprensibile-comprensibile,6,7,5,6,7,5,6,7
-creativo-privo di fantasia,7,5,6,7,5,6,7,5
-facile da apprendere-difficile da apprendere,5,6,7,5,6,7,5,6
-di grande valore-di poco valore,6,7,5,6,7,5,6,7
-noioso-appassionante,7,5,6,7,5,6,7,5
-non interessante-interessante,5,6,7,5,6,7,5,6
-imprevedibile-prevedibile,6,7,5,6,7,5,6,7
-veloce-lento,6,4,5,6,4,5,6,4
-originale-convenzionale,5,6,7,5,6,7,5,6
-ostruttivo-di supporto,6,7,5,6,7,5,6,7
-buono-scarso,7,5,6,7,5,6,7,5
-complicato-facile,4,5,6,4,5,6,4,5
-repellente-attraente,6,7,5,6,7,5,6,7
-usuale-moderno,7,5,6,7,5,6,7,5
-sgradevole-gradevole,5,6,7,5,6,7,5,6
-sicuro-insicuro,6,7,5,6,7,5,6,7
-attivante-soporifero,7,5,6,7,5,6,7,5
-conforme alle aspettative-non conforme alle aspettative,5,6,7,5,6,7,5,6
-inefficiente-efficiente,5,6,4,5,6,4,5,6
-chiaro-confuso,7,5,6,7,5,6,7,5
-non pragmatico-pragmatico,5,6,7,5,6,7,5,6
-ordinato-sovraccarico,6,7,5,6,7,5,6,7
-invitante-non invitante,7,5,6,7,5,6,7,5
-congeniale-ostile,5,6,7,5,6,7,5,6
-conservativo-innovativo,6,7,5,6,7,5,6,7
-NPS,9,8,8,9,8,8,9,8
+item,Utente 1,Utente 2,Utente 3,Utente 4,Utente 5,Utente 6,Utente 7,Utente 8,Utente 9,Utente 10,Utente 11,Utente 12
+genere,Femmina,Maschio,Femmina,Maschio,Non binario,Femmina,Maschio,Femmina,Maschio,Femmina,Maschio,Femmina
+eta,18-24,25-34,18-24,35-44,25-34,18-24,25-34,35-44,25-34,18-24,35-44,25-34
+situazione lavorativa,Studente,Studente,Studente,Lavoratore,Studente,Studente,Lavoratore,Studente,Lavoratore,Studente,Lavoratore,Lavoratore
+familiarita delivery,Alta,Media,Alta,Bassa,Media,Alta,Media,Alta,Bassa,Media,Alta,Media
+fastidioso-piacevole,5,6,4,5,6,4,5,6,4,5,6,4
+incomprensibile-comprensibile,6,4,5,6,4,5,6,4,5,6,4,5
+creativo-privo di fantasia,4,5,6,4,5,6,4,5,6,4,5,6
+facile da apprendere-difficile da apprendere,5,6,4,5,6,4,5,6,4,5,6,4
+di grande valore-di poco valore,6,4,5,6,4,5,6,4,5,6,4,5
+noioso-appassionante,4,5,6,4,5,6,4,5,6,4,5,6
+non interessante-interessante,5,6,4,5,6,4,5,6,4,5,6,4
+imprevedibile-prevedibile,6,4,5,6,4,5,6,4,5,6,4,5
+veloce-lento,4,5,6,4,5,6,4,5,6,4,5,6
+originale-convenzionale,5,6,4,5,6,4,5,6,4,5,6,4
+ostruttivo-di supporto,6,4,5,6,4,5,6,4,5,6,4,5
+buono-scarso,4,5,6,4,5,6,4,5,6,4,5,6
+complicato-facile,5,6,4,5,6,4,5,6,4,5,6,4
+repellente-attraente,6,4,5,6,4,5,6,4,5,6,4,5
+usuale-moderno,4,5,6,4,5,6,4,5,6,4,5,6
+sgradevole-gradevole,5,6,4,5,6,4,5,6,4,5,6,4
+sicuro-insicuro,6,4,5,6,4,5,6,4,5,6,4,5
+attivante-soporifero,4,5,6,4,5,6,4,5,6,4,5,6
+conforme alle aspettative-non conforme alle aspettative,5,6,4,5,6,4,5,6,4,5,6,4
+inefficiente-efficiente,6,4,5,6,4,5,6,4,5,6,4,5
+chiaro-confuso,4,5,6,4,5,6,4,5,6,4,5,6
+non pragmatico-pragmatico,5,6,4,5,6,4,5,6,4,5,6,4
+ordinato-sovraccarico,6,4,5,6,4,5,6,4,5,6,4,5
+invitante-non invitante,4,5,6,4,5,6,4,5,6,4,5,6
+congeniale-ostile,5,6,4,5,6,4,5,6,4,5,6,4
+conservativo-innovativo,6,4,5,6,4,5,6,4,5,6,4,5
+NPS,8,9,7,8,9,7,8,9,7,8,9,7

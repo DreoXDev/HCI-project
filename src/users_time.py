@@ -304,12 +304,12 @@ def write_users_time_interpretation(summary: pd.DataFrame, output_text_dir: str 
             wins[faster] += 1
             differences.append((abs(row[systems[0]] - row[systems[1]]), task_id, task_name, faster))
         lines.append(
-            f"Sui tempi medi, {systems[0]} risulta piu rapido in {wins.get(systems[0], 0)} task, "
-            f"mentre {systems[1]} risulta piu rapido in {wins.get(systems[1], 0)} task."
+            f"Sui tempi medi, {systems[0]} risulta più rapido in {wins.get(systems[0], 0)} task, "
+            f"mentre {systems[1]} risulta più rapido in {wins.get(systems[1], 0)} task."
         )
         if differences:
             diff, task_id, task_name, faster = max(differences, key=lambda item: item[0])
-            lines.append(f"La differenza maggiore e sulla task {task_id} ({task_name}), dove {faster} e piu rapido di {diff:.2f} secondi.")
+            lines.append(f"La differenza maggiore e sulla task {task_id} ({task_name}), dove {faster} e più rapido di {diff:.2f} secondi.")
         low_success = summary[summary["success_rate"] < 0.8]
         if not low_success.empty:
             items = ", ".join(f"{row.app} {row.task_id}" for row in low_success.itertuples())

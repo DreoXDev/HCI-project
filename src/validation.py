@@ -51,7 +51,7 @@ def validate_heuristics_csv(df: pd.DataFrame) -> list[ValidationMessage]:
     for column in expert_columns:
         values = pd.to_numeric(df[column], errors="coerce")
         if values.isna().any() or ~values.between(0, 4).all():
-            messages.append(ValidationMessage("ERROR", f"Valori severita fuori range 0-4 in {column}"))
+            messages.append(ValidationMessage("ERROR", f"Valori severità fuori range 0-4 in {column}"))
     if "Euristiche" in df:
         invalid = df["Euristiche"].dropna().astype(str).loc[lambda s: ~s.str.match(HEURISTIC_RE)]
         if not invalid.empty:

@@ -1,19 +1,58 @@
 # Mappa notebook
 
-## Notebook production
+> [!Info]
+> I notebook sono wrapper didattici sopra i moduli `src/`. Per produzione usare la CLI.
 
-| Notebook | Scopo | Input principali | Output principali | Quando usarlo |
-|---|---|---|---|---|
-| `notebooks/00_run_all.ipynb` | Esecuzione guidata della pipeline completa | `config.yaml`, CSV in `data/raw/` e `data/formbricks_raw/` | Output completi in `outputs/` | Demo o riproduzione end-to-end |
-| `notebooks/01_user_test_analysis.ipynb` | Analisi user test e tempi osservazionali | `data/raw/users_time.csv` | Tabelle e grafici user test | Ispezione didattica dei tempi/task |
-| `notebooks/02_heuristic_analysis.ipynb` | Analisi euristiche consolidate | `data/raw/heuristics_deliveroo.csv`, `data/raw/heuristics_glovo.csv` | Tabelle e grafici euristiche | Lettura dei problemi dopo review |
-| `notebooks/03_questionnaire_ueq_nps.ipynb` | Analisi questionario UEQ/NPS | `data/raw/questionnaire_deliveroo.csv`, `data/raw/questionnaire_glovo.csv` | Tabelle UEQ/NPS | Esplorazione dei questionari |
-| `notebooks/04_slide_generation.ipynb` | Generazione/validazione slide | `slides/config/slide_deck.yml`, asset in `outputs/` | PPTX in `outputs/slides/` | Controllo manuale del deck |
+## `notebooks/00_run_all.ipynb`
+
+| Campo | Valore |
+|---|---|
+| Scopo | Eseguire la pipeline completa |
+| Input | CSV in `data/` |
+| Output | Tutti gli output principali |
+| Usa moduli | `src.cli`, `src.config` |
+| Produzione | No, usare `python -m src.cli full-pipeline` |
+
+## `notebooks/01_user_test_analysis.ipynb`
+
+| Campo | Valore |
+|---|---|
+| Scopo | Analizzare tempi, errori e successo dei task |
+| Input | `data/raw/users_time.csv` |
+| Output | Tabelle e grafici user test |
+| Produzione | No |
+
+## `notebooks/02_heuristic_analysis.ipynb`
+
+| Campo | Valore |
+|---|---|
+| Scopo | Esplorare le euristiche consolidate |
+| Input | `data/raw/heuristics_deliveroo.csv`, `data/raw/heuristics_glovo.csv` |
+| Output | Tabelle e grafici euristici |
+| Produzione | No |
+
+## `notebooks/03_questionnaire_ueq_nps.ipynb`
+
+| Campo | Valore |
+|---|---|
+| Scopo | Analizzare UEQ e NPS |
+| Input | `data/raw/questionnaire_deliveroo.csv`, `data/raw/questionnaire_glovo.csv` |
+| Output | Tabelle UEQ/NPS |
+| Produzione | No |
+
+## `notebooks/04_slide_generation.ipynb`
+
+| Campo | Valore |
+|---|---|
+| Scopo | Verificare template e generazione slide |
+| Input | `slides/config/slide_deck.yml`, asset in `outputs/` |
+| Output | PPTX in `outputs/slides/` |
+| Produzione | No |
 
 ## Notebook legacy
 
-| Notebook | Stato | Note |
-|---|---|---|
-| `notebooks/original/stats_ium.ipynb` | legacy | Conservato solo come riferimento storico |
-| `notebooks/original/Stats quest utente.ipynb` | legacy | Conservato solo come riferimento storico |
+| Notebook | Stato |
+|---|---|
+| `notebooks/original/stats_ium.ipynb` | Solo riferimento |
+| `notebooks/original/Stats quest utente.ipynb` | Solo riferimento |
 

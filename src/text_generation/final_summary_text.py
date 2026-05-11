@@ -5,12 +5,14 @@ from pathlib import Path
 import pandas as pd
 
 from ..config import resolve_path
+from .display_labels import prepare_display_table
+from .italian import italian_display_text
 from .templates import INTRO_TEMPLATE, METHODS_TEMPLATE
 
 
 def _read_csv(path: str | Path) -> pd.DataFrame:
     target = resolve_path(path)
-    return pd.read_csv(target) if target.exists() else pd.DataFrame()
+    return pd.read_csv(target, encoding="utf-8-sig") if target.exists() else pd.DataFrame()
 
 
 def _safe_mean(df: pd.DataFrame, column: str) -> float | None:
@@ -101,7 +103,7 @@ def generate_text_outputs(config: dict) -> None:
         "limitations.md": _limitations_text(),
     }
     for name, text in outputs.items():
-        (snippets_dir / name).write_text(text, encoding="utf-8")
+        (snippets_dir / name).write_text(italian_display_text(text), encoding="utf-8")
 
     sections = {
         "01_introduzione.md": intro,
@@ -111,7 +113,7 @@ def generate_text_outputs(config: dict) -> None:
         "05_conclusioni.md": final,
     }
     for name, text in sections.items():
-        (sections_dir / name).write_text(text, encoding="utf-8")
+        (sections_dir / name).write_text(italian_display_text(text), encoding="utf-8")
 
     final_scores = compute_final_comparison_score(config)
     if not final_scores.empty:
@@ -119,8 +121,8 @@ def generate_text_outputs(config: dict) -> None:
         md_path = resolve_path("outputs/tables_md/final_comparison.md")
         table_path.parent.mkdir(parents=True, exist_ok=True)
         md_path.parent.mkdir(parents=True, exist_ok=True)
-        final_scores.round(config["analysis"].get("round_decimals", 2)).to_csv(table_path, index=False)
-        md_path.write_text(final_scores.round(2).to_markdown(index=False), encoding="utf-8")
+        final_scores.round(config["analysis"].get("round_decimals", 2)).to_csv(table_path, index=False, encoding="utf-8-sig")
+        md_path.write_text(prepare_display_table(final_scores.round(2)).to_markdown(index=False), encoding="utf-8")
 
 
 def _heuristics_text(systems: list[str]) -> str:
@@ -131,8 +133,8 @@ def _heuristics_text(systems: list[str]) -> str:
     return (
         "# Risultati valutazione euristica\n\n"
         f"Dalla valutazione euristica sono emersi {counts.get(systems[0], 0)} problemi per {systems[0]} "
-        f"e {counts.get(systems[1], 0)} problemi per {systems[1]}. Le tabelle esportate riportano severita media, "
-        "mediana e priorita dei problemi."
+        f"e {counts.get(systems[1], 0)} problemi per {systems[1]}. Le tabelle esportate riportano severità media, "
+        "mediana e priorità dei problemi."
     )
 
 
@@ -155,8 +157,8 @@ def _user_tests_text(systems: list[str]) -> str:
     fastest = mean_time.idxmin()
     return (
         "# Risultati user test\n\n"
-        f"Per quanto riguarda l'efficacia, {best} ottiene il tasso medio di completamento piu alto. "
-        f"L'analisi dei tempi mostra invece che {fastest} risulta mediamente piu rapido nel completamento dei task."
+        f"Per quanto riguarda l'efficacia, {best} ottiene il tasso medio di completamento più alto. "
+        f"L'analisi dei tempi mostra invece che {fastest} risulta mediamente più rapido nel completamento dei task."
     )
 
 
@@ -167,7 +169,7 @@ def _user_test_effectiveness_text(systems: list[str]) -> str:
     completion = eff.groupby("system")["completion_rate"].mean().sort_values(ascending=False)
     best = completion.index[0]
     gap = completion.iloc[0] - completion.iloc[-1] if len(completion) > 1 else 0
-    return f"# Efficacia user test\n\n{best} mostra il tasso medio di completamento piu alto. Il divario medio osservato e pari a {gap:.2%}."
+    return f"# Efficacia user test\n\n{best} mostra il tasso medio di completamento più alto. Il divario medio osservato e pari a {gap:.2%}."
 
 
 def _user_test_efficiency_text(systems: list[str]) -> str:
@@ -176,7 +178,7 @@ def _user_test_efficiency_text(systems: list[str]) -> str:
         return "# Efficienza user test\n\nDati non disponibili."
     means = speed.groupby("system")["mean_seconds"].mean().sort_values()
     fastest = means.index[0]
-    return f"# Efficienza user test\n\n{fastest} risulta mediamente piu rapido sui task osservati. Consultare gli asset task-by-task per verificare dove la differenza e piu marcata."
+    return f"# Efficienza user test\n\n{fastest} risulta mediamente più rapido sui task osservati. Consultare gli asset task-by-task per verificare dove la differenza e più marcata."
 
 
 def _questionnaire_text(systems: list[str]) -> str:
@@ -193,7 +195,7 @@ def _questionnaire_text(systems: list[str]) -> str:
 def _nps_text(systems: list[str]) -> str:
     nps = _read_csv("outputs/tables/nps_summary.csv")
     if nps.empty or nps.get("total", pd.Series(dtype=float)).fillna(0).sum() == 0:
-        return "# Risultati NPS\n\nIl Net Promoter Score non e stato calcolato perche il questionario non contiene una domanda NPS valida."
+        return "# Risultati NPS\n\nIl Net Promoter Score non e stato calcolato perché il questionario non contiene una domanda NPS valida."
     best = nps.sort_values("nps", ascending=False).iloc[0]
     return f"# Risultati NPS\n\nIl Net Promoter Score evidenzia una maggiore propensione a consigliare {best['system']}, con valore pari a {best['nps']:.2f}."
 
@@ -214,8 +216,8 @@ def _final_text(config: dict) -> str:
 def _redesign_text() -> str:
     return (
         "# Raccomandazioni di redesign\n\n"
-        "1. Prioritizzare i problemi euristici con severita alta e alta ricorrenza tra valutatori.\n"
-        "2. Ridurre passaggi, ambiguita e richieste di aiuto nei task con successo piu basso.\n"
+        "1. Prioritizzare i problemi euristici con severità alta e alta ricorrenza tra valutatori.\n"
+        "2. Ridurre passaggi, ambiguità e richieste di aiuto nei task con successo più basso.\n"
         "3. Migliorare gli item UEQ con differenza maggiore tra i due sistemi, verificando con screenshot e osservazioni qualitative."
     )
 

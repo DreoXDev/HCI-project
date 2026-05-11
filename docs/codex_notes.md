@@ -24,7 +24,7 @@ Queste note servono a chi lavora sul progetto come agente automatico.
 2. Import survey euristica raw con `python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv`.
 3. Review manuale di `data/processed/heuristics/raw_problems_table.csv`.
 4. Compilazione di `data/processed/heuristics/consolidated_problems.csv`.
-5. Import survey severita con `python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv`.
+5. Import survey severità con `python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv`.
 6. Validazione e `python -m src.cli all`.
 
 ## Scelte di design

@@ -1,4 +1,4 @@
-| system    |   detractors |   passives |   promoters |   total |   nps |
-|:----------|-------------:|-----------:|------------:|--------:|------:|
-| Deliveroo |            0 |          5 |           3 |       8 |  37.5 |
-| Glovo     |            0 |          8 |           0 |       8 |   0   |
+| App       |   Detractors |   Passives |   Promoters |   Total |    Nps |
+|:----------|-------------:|-----------:|------------:|--------:|-------:|
+| Deliveroo |            0 |          8 |           4 |      12 |  33.33 |
+| Glovo     |            4 |          8 |           0 |      12 | -33.33 |

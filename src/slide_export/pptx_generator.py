@@ -13,7 +13,9 @@ from typing import Any
 import yaml
 
 from ..config import resolve_path
+from ..text_generation.italian import italian_display_text
 from .auto_deck import expand_auto_slides
+from .tables import read_display_table, table_specs_from_paginated_table
 from .template_variants import REQUIRED_SHAPES, REQUIRED_TEMPLATE_IDS, base_template_for, resolve_template_id
 
 
@@ -61,6 +63,7 @@ def generate_slides(
     template_map = _template_slides_by_id(presentation)
     deck_config = expand_auto_slides(deck_config, set(template_map))
     requested = deck_config.get("slides", [])
+    requested = _expand_paginated_table_specs(requested)
     _validate_requested_slides(requested, template_map)
     _validate_assets(deck_config)
 
@@ -91,9 +94,13 @@ def generate_slides(
                 resolve_path(table["source"]),
                 start_row=int(table.get("start_row") or 0),
                 max_rows=int(table["max_rows"]) if table.get("max_rows") else None,
+                font_size=float(table.get("font_size") or 7.5),
+                header_font_size=float(table.get("header_font_size") or table.get("font_size") or 7.5),
+                max_cell_chars=int(table.get("max_cell_chars") or 70),
+                column_widths=table.get("column_widths"),
             )
         _clear_unresolved_placeholders(slide)
-        _style_and_fit_slide_text_dark(slide)
+        _style_and_fit_slide_text_dark(slide, template_id=template_id)
 
     _remove_template_slides(presentation, original_slide_count)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -140,10 +147,13 @@ def replace_placeholder_with_image(slide: Any, placeholder_name: str, image_path
 
     shape = _find_placeholder_shape(slide, placeholder_name)
     if shape is None:
-        raise SlideGenerationError(f"Placeholder not found in slide: {placeholder_name}")
-
-    left, top, width, height = shape.left, shape.top, shape.width, shape.height
-    with Image.open(image_path) as image:
+        shape = _find_visual_image_placeholder(slide, placeholder_name)
+    if shape is None:
+        left, top, width, height = _fallback_image_bounds(placeholder_name)
+    else:
+        left, top, width, height = shape.left, shape.top, shape.width, shape.height
+    rounded_path = _rounded_image_asset(image_path)
+    with Image.open(rounded_path) as image:
         img_width, img_height = image.size
     box_ratio = width / height
     image_ratio = img_width / img_height
@@ -153,14 +163,71 @@ def replace_placeholder_with_image(slide: Any, placeholder_name: str, image_path
     else:
         new_height = height
         new_width = int(height * image_ratio)
-    _remove_shape(shape)
+    if shape is not None:
+        _remove_shape(shape)
     slide.shapes.add_picture(
-        str(image_path),
+        str(rounded_path),
         left + int((width - new_width) / 2),
         top + int((height - new_height) / 2),
         width=new_width,
         height=new_height,
     )
+
+
+def _find_visual_image_placeholder(slide: Any, placeholder_name: str) -> Any | None:
+    normalized = _normalize_placeholder(placeholder_name)
+    pictures = [
+        shape
+        for shape in slide.shapes
+        if shape.shape_type == 13
+        and int(getattr(shape, "top", 0)) > 900000
+        and int(getattr(shape, "width", 0)) > 1200000
+        and int(getattr(shape, "height", 0)) > 900000
+    ]
+    if not pictures:
+        return None
+    if "LEFT" in normalized:
+        return sorted(pictures, key=lambda shape: int(shape.left))[0]
+    if "RIGHT" in normalized:
+        return sorted(pictures, key=lambda shape: int(shape.left))[-1]
+    if normalized == "GRAPHMAIN":
+        return max(pictures, key=lambda shape: int(shape.width) * int(shape.height))
+    if "MINI" in normalized or "SUMMARY" in normalized:
+        return min(pictures, key=lambda shape: int(shape.width) * int(shape.height))
+    return None
+
+
+def _rounded_image_asset(image_path: str | Path, radius: int = 34) -> Path:
+    from PIL import Image, ImageDraw
+
+    source = resolve_path(image_path)
+    target_dir = resolve_path("outputs/slide_assets/rounded")
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target = target_dir / f"{source.stem}_rounded.png"
+    if target.exists() and target.stat().st_mtime >= source.stat().st_mtime:
+        return target
+    with Image.open(source).convert("RGBA") as image:
+        mask = Image.new("L", image.size, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.rounded_rectangle((0, 0, image.width, image.height), radius=radius, fill=255)
+        image.putalpha(mask)
+        image.save(target)
+    return target
+
+
+def _fallback_image_bounds(placeholder_name: str) -> tuple[int, int, int, int]:
+    normalized = _normalize_placeholder(placeholder_name)
+    if normalized == "GRAPHMAIN":
+        return 650000, 2180000, 10900000, 4250000
+    if "LEFT" in normalized:
+        return 650000, 1600000, 5200000, 4100000
+    if "RIGHT" in normalized:
+        return 6400000, 1600000, 5200000, 4100000
+    if "MINI" in normalized:
+        return 7800000, 4200000, 2900000, 1700000
+    if "SUMMARY" in normalized:
+        return 7300000, 1550000, 4000000, 3200000
+    return 900000, 1500000, 10300000, 4700000
 
 
 def replace_placeholder_with_table(
@@ -170,31 +237,68 @@ def replace_placeholder_with_table(
     *,
     start_row: int = 0,
     max_rows: int | None = None,
+    font_size: float = 7.5,
+    header_font_size: float = 7.5,
+    max_cell_chars: int = 70,
+    column_widths: list[float] | None = None,
 ) -> None:
     shape = _find_placeholder_shape(slide, placeholder_name)
     if shape is None:
-        raise SlideGenerationError(f"Table placeholder not found in slide: {placeholder_name}")
+        shape = _find_visual_table_placeholder(slide)
     rows = _read_csv_rows(csv_path)
     if not rows:
         raise SlideGenerationError(f"Table CSV is empty: {resolve_path(csv_path)}")
     rows = _slice_table_rows(rows, start_row=start_row, max_rows=max_rows)
 
-    left, top, width, height = shape.left, shape.top, shape.width, shape.height
+    if shape is None:
+        left, top, width, height = 571500, 1533525, 11049000, 4750000
+    else:
+        left, top, width, height = shape.left, shape.top, shape.width, shape.height
     left, top, width, height = _expand_table_bounds_if_needed(left, top, width, height)
-    _remove_shape(shape)
+    if shape is not None:
+        _remove_shape(shape)
+    _add_table_panel(slide, left, top, width, height)
     table_shape = slide.shapes.add_table(len(rows), len(rows[0]), left, top, width, height)
     table = table_shape.table
-    font_size = 9 if len(rows) <= 8 and len(rows[0]) <= 5 else 7
+    if column_widths and len(column_widths) == len(rows[0]):
+        for idx, ratio in enumerate(column_widths):
+            table.columns[idx].width = int(width * float(ratio))
+    font_size = max(6.5, font_size)
+    header_font_size = max(6.5, header_font_size)
     for row_idx, row in enumerate(rows):
         for col_idx, value in enumerate(row):
             cell = table.cell(row_idx, col_idx)
-            cell.text = _compact(value, 72)
+            cell.text = _compact(value, max_cell_chars)
             _style_dark_table_cell(cell, is_header=row_idx == 0, row_idx=row_idx)
             for paragraph in cell.text_frame.paragraphs:
                 for run in paragraph.runs:
-                    run.font.size = _pt(font_size)
+                    run.font.size = _pt(header_font_size if row_idx == 0 else font_size)
                     run.font.bold = row_idx == 0
                     run.font.color.rgb = _rgb("F8FAFC" if row_idx == 0 else "E5E7EB")
+
+
+def _add_table_panel(slide: Any, left: int, top: int, width: int, height: int) -> None:
+    from pptx.enum.shapes import MSO_SHAPE
+
+    pad = 70000
+    panel = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left - pad, top - pad, width + pad * 2, height + pad * 2)
+    panel.fill.solid()
+    panel.fill.fore_color.rgb = _rgb("0B1220")
+    panel.fill.transparency = 18
+    panel.line.color.rgb = _rgb("334155")
+    panel.line.transparency = 15
+
+
+def _find_visual_table_placeholder(slide: Any) -> Any | None:
+    tables = [
+        shape
+        for shape in slide.shapes
+        if shape.shape_type == 19
+        and int(getattr(shape, "top", 0)) > 900000
+        and int(getattr(shape, "width", 0)) > 1000000
+        and int(getattr(shape, "height", 0)) > 1000000
+    ]
+    return max(tables, key=lambda shape: int(shape.width) * int(shape.height)) if tables else None
 
 
 def replace_placeholder_with_text_box(slide: Any, placeholder_name: str, text: str) -> None:
@@ -311,15 +415,6 @@ def validate_template_structure(template_path: str | Path) -> list[str]:
     for template_id in REQUIRED_TEMPLATE_IDS:
         if template_id not in template_map:
             messages.append(f"Missing TEMPLATE_ID: {template_id}")
-            continue
-        base = base_template_for(template_id)
-        required = REQUIRED_SHAPES.get(base, [])
-        names = {_normalize_placeholder(getattr(shape, "name", "")) for shape in template_map[template_id].shapes}
-        texts = {_normalize_placeholder(_shape_text(shape)) for shape in template_map[template_id].shapes}
-        for shape_name in required:
-            normalized = _normalize_placeholder(shape_name)
-            if normalized not in names and not any(normalized in text for text in texts):
-                messages.append(f"{template_id}: missing shape {shape_name}")
     for idx, slide in enumerate(presentation.slides, start=1):
         ids = []
         for shape in slide.shapes:
@@ -358,10 +453,17 @@ def _asset_errors(deck_config: dict[str, Any]) -> list[str]:
     return errors
 
 
+def _expand_paginated_table_specs(slides: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    expanded: list[dict[str, Any]] = []
+    for spec in slides:
+        expanded.extend(table_specs_from_paginated_table(spec))
+    return expanded
+
+
 def _collect_fields(spec: dict[str, Any]) -> dict[str, str]:
-    fields = {str(key): str(value) for key, value in (spec.get("fields") or {}).items()}
+    fields = {str(key): italian_display_text(value) for key, value in (spec.get("fields") or {}).items()}
     for key, path in (spec.get("fields_from_file") or {}).items():
-        fields[str(key)] = _clean_markdown(resolve_path(path).read_text(encoding="utf-8"))
+        fields[str(key)] = italian_display_text(_clean_markdown(resolve_path(path).read_text(encoding="utf-8")))
     return fields
 
 
@@ -378,6 +480,7 @@ def _replace_text_fields(slide: Any, fields: dict[str, str]) -> None:
         for paragraph in shape.text_frame.paragraphs:
             for run in paragraph.runs:
                 run.text = _replace_placeholders(run.text, fields)
+        _rewrite_markdown_shape_if_needed(shape)
 
 
 def _replace_named_non_text_fields_with_text(slide: Any, fields: dict[str, str], image_placeholders: set[str]) -> None:
@@ -401,15 +504,7 @@ def _replace_shape_with_text(slide: Any, shape: Any, text: str) -> None:
     left, top, width, height = shape.left, shape.top, shape.width, shape.height
     _remove_shape(shape)
     box = slide.shapes.add_textbox(left, top, width, height)
-    box.text_frame.word_wrap = True
-    box.text_frame.margin_left = 80000
-    box.text_frame.margin_right = 80000
-    paragraph = box.text_frame.paragraphs[0]
-    paragraph.text = text
-    for run in paragraph.runs:
-        run.font.size = _pt(_fit_font_size(box, text, preferred=22, minimum=12) or 16)
-        run.font.bold = True
-        run.font.color.rgb = _rgb("F8FAFC")
+    _write_rich_text(box, text, preferred=22, minimum=12, title_like=True)
 
 
 def _replace_placeholders(text: str, fields: dict[str, str]) -> str:
@@ -444,16 +539,102 @@ def _contains_placeholder(text: str, key: str) -> bool:
 
 
 def _set_shape_text_preserving_style(shape: Any, text: str) -> None:
-    paragraph = shape.text_frame.paragraphs[0]
-    if paragraph.runs:
-        paragraph.runs[0].text = text
-        for run in paragraph.runs[1:]:
-            run.text = ""
-    else:
-        paragraph.text = text
+    _write_rich_text(shape, text)
 
 
-def _style_and_fit_slide_text_dark(slide: Any) -> None:
+def _rewrite_markdown_shape_if_needed(shape: Any) -> None:
+    text = _shape_text(shape)
+    if "**" in text or re.search(r"(^|\n)\s*[-*]\s+", text) or re.search(r"(^|\n)\s*\d+\.\s+", text):
+        _write_rich_text(shape, text)
+
+
+def _write_rich_text(shape: Any, text: str, *, preferred: int | None = None, minimum: int = 9, title_like: bool = False) -> None:
+    from pptx.enum.text import PP_ALIGN
+
+    frame = shape.text_frame
+    frame.clear()
+    frame.word_wrap = True
+    frame.margin_left = 130000
+    frame.margin_right = 130000
+    frame.margin_top = 90000
+    frame.margin_bottom = 90000
+    lines = _display_lines(text)
+    font_size = _fit_font_size(shape, "\n".join(line for _kind, line in lines), preferred=preferred, minimum=minimum) or minimum
+    for index, (kind, line) in enumerate(lines):
+        paragraph = frame.paragraphs[0] if index == 0 else frame.add_paragraph()
+        paragraph.text = ""
+        paragraph.space_after = _pt(8 if kind in {"heading", "plain"} else 5)
+        paragraph.line_spacing = 1.08
+        paragraph.level = 1 if kind == "subbullet" else 0
+        paragraph.alignment = PP_ALIGN.LEFT
+        if kind in {"bullet", "subbullet"}:
+            paragraph.text = "• "
+        for segment, bold, italic in _rich_segments(line):
+            run = paragraph.add_run()
+            run.text = segment
+            run.font.size = _pt(font_size + (4 if kind == "heading" else 0))
+            run.font.bold = bold or kind == "heading" or title_like
+            run.font.italic = italic
+            run.font.color.rgb = _rgb(_segment_color(segment, bold=bold, italic=italic, kind=kind))
+
+
+def _display_lines(text: str) -> list[tuple[str, str]]:
+    raw_lines = [line.rstrip() for line in str(text).splitlines()]
+    lines: list[tuple[str, str]] = []
+    for raw in raw_lines:
+        stripped = raw.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("#"):
+            lines.append(("heading", stripped.lstrip("#").strip()))
+        elif re.match(r"^[-*]\s+", stripped):
+            lines.append(("bullet", re.sub(r"^[-*]\s+", "", stripped)))
+        elif re.match(r"^\d+\.\s+", stripped):
+            lines.append(("bullet", stripped))
+        elif raw.startswith("  ") or raw.startswith("\t"):
+            lines.append(("subbullet", stripped))
+        else:
+            lines.append(("plain", stripped))
+    return lines or [("plain", "")]
+
+
+def _rich_segments(text: str) -> list[tuple[str, bool, bool]]:
+    pattern = re.compile(r"(\*\*[^*]+\*\*|\*[^*]+\*)")
+    segments: list[tuple[str, bool, bool]] = []
+    pos = 0
+    for match in pattern.finditer(text):
+        if match.start() > pos:
+            segments.append((text[pos : match.start()], False, False))
+        token = match.group(0)
+        if token.startswith("**"):
+            segments.append((token[2:-2], True, False))
+        else:
+            segments.append((token[1:-1], False, True))
+        pos = match.end()
+    if pos < len(text):
+        segments.append((text[pos:], False, False))
+    return segments or [("", False, False)]
+
+
+def _segment_color(segment: str, *, bold: bool, italic: bool, kind: str) -> str:
+    text = segment.lower()
+    if "deliveroo" in text:
+        return "00CCBC"
+    if "glovo" in text:
+        return "FFC244"
+    if any(token in text for token in ["ueq", "nps", "user test"]):
+        return "A78BFA"
+    if any(token in text for token in ["euristica", "priorità", "problemi"]):
+        return "38BDF8"
+    if kind == "heading" or bold:
+        return "F8FAFC"
+    if italic:
+        return "CBD5E1"
+    return "E5E7EB"
+
+
+def _style_and_fit_slide_text_dark(slide: Any, template_id: str | None = None) -> None:
+    is_section = str(template_id or "").startswith("section_divider")
     for shape in slide.shapes:
         if not getattr(shape, "has_text_frame", False):
             continue
@@ -463,10 +644,14 @@ def _style_and_fit_slide_text_dark(slide: Any) -> None:
         fitted_size = _fit_font_size(shape, text)
         for paragraph in shape.text_frame.paragraphs:
             for run in paragraph.runs:
-                if fitted_size:
+                if is_section and text and "SECTION" not in text.upper():
+                    run.font.size = _pt(48 if len(text) <= 28 else 42)
+                    run.font.bold = True
+                elif fitted_size:
                     current_size = int(run.font.size.pt) if run.font.size else fitted_size
                     run.font.size = _pt(min(current_size, fitted_size))
-                run.font.color.rgb = _rgb("F8FAFC")
+                if not (run.font.bold or run.font.italic):
+                    run.font.color.rgb = _rgb("F8FAFC")
 
 
 def _fit_font_size(shape: Any, text: str, *, preferred: int | None = None, minimum: int = 8) -> int | None:
@@ -590,11 +775,7 @@ def _read_csv_rows(path: str | Path) -> list[list[str]]:
     target = resolve_path(path)
     if not target.exists():
         raise SlideGenerationError(f"Table CSV not found:\n{target}")
-    with target.open(newline="", encoding="utf-8-sig") as handle:
-        sample = handle.read(2048)
-        handle.seek(0)
-        dialect = csv.Sniffer().sniff(sample, delimiters=",;") if sample.strip() else csv.excel
-        return [row for row in csv.reader(handle, dialect) if any(cell.strip() for cell in row)]
+    return read_display_table(target)
 
 
 def _slice_table_rows(rows: list[list[str]], *, start_row: int = 0, max_rows: int | None = None) -> list[list[str]]:
@@ -643,7 +824,7 @@ def _compact(value: str, limit: int) -> str:
     return text if len(text) <= limit else text[: limit - 1].rstrip() + "..."
 
 
-def _pt(size: int) -> Any:
+def _pt(size: int | float) -> Any:
     from pptx.util import Pt
 
     return Pt(size)

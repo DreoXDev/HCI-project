@@ -22,7 +22,7 @@ def gorilla_ttest(system_1: str, system_2: str, label: str, pvalue: float, mean_
         better = system_1 if mean_1 < mean_2 else system_2
         return (
             f"Il test evidenzia una differenza statisticamente significativa tra {system_1} e {system_2} "
-            f"per {label} (p = {pvalue:.3f}), con {better} mediamente piu rapido."
+            f"per {label} (p = {pvalue:.3f}), con {better} mediamente più rapido."
         )
     return (
         f"Il test non evidenzia una differenza statisticamente significativa tra {system_1} e {system_2} "

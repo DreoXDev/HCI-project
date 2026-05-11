@@ -1,98 +1,87 @@
 # Formato dati
 
-La configurazione del progetto vive in `config.yaml`. Per cambiare progetto o sistemi confrontati, aggiornare i nomi e i path in quel file.
+> [!Info]
+> I file Markdown sono UTF-8. I CSV generati dalla pipeline usano `utf-8-sig` per essere leggibili anche in Excel su Windows.
 
-## User test
+## Questionario utenti
 
-Nuovo file osservazionale consigliato: `data/raw/users_time.csv`.
+| Campo | Descrizione |
+|---|---|
+| Demografiche | Genere, età, professione, familiarità |
+| UEQ | Item numerici su scala 1-7 |
+| NPS | Valore 0-10, se presente |
 
-Ogni riga rappresenta un utente che esegue una task su una app. Vedi `docs/users_time.md`.
+Input Formbricks:
 
-Colonne obbligatorie:
-
-```txt
-user_id,app,task_id,task_name,completion_time_sec,success,errors_count,help_requests
+```text
+data/formbricks_raw/questionnaire/
 ```
 
-Il vecchio formato wide resta supportato come input legacy:
+Output normalizzati:
 
-```txt
-data/raw/users-time.csv
+```text
+data/raw/questionnaire_deliveroo.csv
+data/raw/questionnaire_glovo.csv
 ```
 
-Colonne attese:
+## Valutazione euristica
 
-```txt
-User;Task 1 Deliveroo;Task 2 Deliveroo;Task 3 Deliveroo;Task 1 Glovo;Task 2 Glovo;Task 3 Glovo;Sesso;Eta;Lavoro;Istruzione
+> [!Important]
+> Il flusso supportato è quello completo: discovery, review manuale, rating, aggregazione severità/priorità.
+
+### 1. Discovery problemi
+
+Campi minimi:
+
+| Campo | Uso |
+|---|---|
+| `expert_id` / `ID valutatore` | ID stabile dell'esperto |
+| `expert_group` | `ED` o `EU` |
+| `app` | Deliveroo o Glovo |
+| `problem_title` | Titolo del problema |
+| `problem_description` | Descrizione sintetica |
+| `heuristic` | Euristiche violate |
+
+### 2. Review manuale
+
+La pipeline genera:
+
+```text
+data/processed/heuristics_candidates.csv
+data/processed/heuristics_review.csv
 ```
 
-Ogni cella task usa il formato `minuti.secondi-esito`, per esempio `1.23-C`.
+Compilare `problem_group_id` per raggruppare problemi simili.
 
-Codici esito:
+### 3. Rating severità/priorità
 
-- `C`: completato
-- `A`: completato con aiuto
-- `F`: fallito
+Campi minimi:
 
-## Valutazione euristica Formbricks
+| Campo | Uso |
+|---|---|
+| `evaluator_id` | Esperto che valuta |
+| `expert_group` | Gruppo ED/EU |
+| `problem_group_id` | Problema consolidato |
+| `severity` | Valore 0-4 |
+| `frequency` | Frequenza |
+| `impact` | Impatto |
+| `priority` | Priorità |
 
-La pipeline euristica nuova parte dall'export grezzo della prima survey esperti:
+## Dati osservazionali
 
-```txt
-data/raw/formbricks/heuristics_experts_raw.csv
+`users_time.csv` non viene da Formbricks: è compilato dagli osservatori durante i test.
+
+```text
+data/raw/users_time.csv
 ```
 
-Il CSV puo essere wide, con fino a 10 slot problema. Il toolkit lo normalizza in:
+| Campo | Descrizione |
+|---|---|
+| `user_id` | ID utente anonimo |
+| `app` | App testata |
+| `task_id` | Task |
+| `completion_time_sec` | Tempo in secondi |
+| `success` | Esito |
+| `errors_count` | Errori osservati |
+| `help_requests` | Richieste di aiuto |
 
-```txt
-data/processed/heuristics/raw_problems_long.csv
-data/processed/heuristics/raw_problems_table.csv
-```
-
-Colonne principali di `raw_problems_table.csv`:
-
-```csv
-raw_problem_id,evaluator_id,problem_slot,app,short_description,long_description,heuristics,notes,completion_status
-```
-
-Le euristiche sono normalizzate come `E1;E6;E10`. I blocchi vuoti vengono ignorati, quelli parziali restano nel file con `completion_status`.
-
-Comando:
-
-```powershell
-python -m src.cli heuristics raw --input data/raw/formbricks/heuristics_experts_raw.csv
-```
-
-Dopo la review manuale, il file consolidato atteso e:
-
-```txt
-data/processed/heuristics/consolidated_problems.csv
-```
-
-Formato:
-
-```csv
-final_problem_id,app,short_description,long_description,heuristics,source_raw_problem_ids,notes
-```
-
-Quando la seconda survey e disponibile, i rating 0-4 vengono normalizzati in:
-
-```txt
-data/processed/heuristics/severity_ratings_long.csv
-data/processed/heuristics/final_problem_summary.csv
-```
-
-```powershell
-python -m src.cli heuristics severity --ratings data/raw/formbricks/heuristics_severity_ratings.csv --problems data/processed/heuristics/consolidated_problems.csv
-```
-
-I vecchi file `data/raw/heuristics_deliveroo.csv` e `data/raw/heuristics_glovo.csv` restano supportati dalla pipeline storica, ma non sono il formato di ingresso consigliato per nuovi dati Formbricks.
-
-## Questionario
-
-File predefiniti:
-
-- `data/raw/questionnaire_deliveroo.csv`
-- `data/raw/questionnaire_glovo.csv`
-
-La prima colonna contiene il nome della riga, le colonne successive gli utenti. Le prime righe sono demografiche; le righe UEQ devono avere valori 1-7; `NPS` deve avere valori 0-10.

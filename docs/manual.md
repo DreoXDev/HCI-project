@@ -1,68 +1,98 @@
-# Manuale operativo HCI-project
+# Manuale operativo
 
-## 1. Setup
+> [!Info]
+> Guida rapida per generare tutti gli output finali: analisi, grafici, tabelle, testi, slide PPTX e PDF.
+
+## Indice
+
+- [Prerequisiti](#prerequisiti)
+- [Step 1 - Inserire i CSV](#step-1---inserire-i-csv)
+- [Step 2 - Importare i dati Formbricks](#step-2---importare-i-dati-formbricks)
+- [Step 3 - Completare la review euristica](#step-3---completare-la-review-euristica)
+- [Step 4 - Lanciare la pipeline completa](#step-4---lanciare-la-pipeline-completa)
+- [Step 5 - Controllare gli output](#step-5---controllare-gli-output)
+
+## Prerequisiti
 
 ```powershell
-cd "D:\Projects\IUM\Improved Notebooks\HCI-project"
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
 
-## 2. Dove mettere i CSV
+> [!Warning]
+> Per generare anche il PDF installa LibreOffice e verifica che `soffice` sia nel `PATH`.
 
-- Questionario Formbricks: `data/formbricks_raw/questionnaire/`
-- Euristiche discovery Formbricks: `data/formbricks_raw/heuristics_discovery/`
-- Euristiche ratings Formbricks: `data/formbricks_raw/heuristics_ratings/`
-- Tempi osservazionali: `data/raw/users_time.csv`
+## Step 1 - Inserire i CSV
 
-I file demo inventati sono gia presenti in `data/formbricks_raw/` e `data/examples/`.
+| Dato | Cartella |
+|---|---|
+| Questionario Formbricks | `data/formbricks_raw/questionnaire/` |
+| Euristiche discovery | `data/formbricks_raw/heuristics_discovery/` |
+| Euristiche ratings | `data/formbricks_raw/heuristics_ratings/` |
+| Tempi osservazionali | `data/raw/users_time.csv` |
 
-## 3. Pipeline completa
+> [!Info]
+> I dati demo inclusi sono inventati: 12 utenti e 6 esperti, con split 3 ED e 3 EU.
 
-```powershell
-python -m src.cli full-pipeline --plot-style both
-```
-
-Per generare anche il PPTX:
-
-```powershell
-python -m src.cli full-pipeline --plot-style both --generate-slides
-```
-
-## 4. Review manuale euristiche
-
-1. Importa la discovery:
+## Step 2 - Importare i dati Formbricks
 
 ```powershell
+python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/formbricks_questionnaire_demo_12_users.csv
 python -m src.cli import-formbricks-heuristics-discovery --input data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv
 ```
 
-2. Apri `data/processed/heuristics_review.csv`.
-3. Compila `problem_group_id` raggruppando problemi uguali o molto simili.
-4. Usa il file review per preparare la survey ratings.
-5. Importa i ratings:
+## Step 3 - Completare la review euristica
+
+- [ ] Aprire `data/processed/heuristics_review.csv`
+- [ ] Compilare `problem_group_id`
+- [ ] Preparare o verificare il file problemi consolidati
+- [ ] Importare i ratings
 
 ```powershell
 python -m src.cli import-formbricks-heuristics-ratings --input data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv --output data/templates/heuristics_consolidated_problems_demo.csv
 ```
 
-## 5. Generazione slide
+## Step 4 - Lanciare la pipeline completa
+
+> [!Example]
+> Comando consigliato:
+>
+> ```powershell
+> python -m src.cli full-pipeline --plot-style both --export-pdf
+> ```
+
+Se LibreOffice non è disponibile:
 
 ```powershell
-python -m src.cli validate-slide-template
-python -m src.cli generate-slides --auto --overwrite
+python -m src.cli full-pipeline --plot-style both --generate-slides --no-export-pdf
 ```
 
-## 6. Dove trovare gli output
+## Step 5 - Controllare gli output
 
-- Grafici: `outputs/figures/`
-- Tabelle: `outputs/tables/` e `outputs/tables_md/`
-- Testi: `outputs/text/`, `outputs/text_snippets/`, `outputs/generated_report_sections/`
-- Slide: `outputs/slides/`
-- Report: `outputs/reports/`
-- Manifest slide: `outputs/slide_manifest.md`
+| Output | Percorso |
+|---|---|
+| Grafici | `outputs/figures/` |
+| Tabelle | `outputs/tables/`, `outputs/tables_md/` |
+| Snippet utili | `outputs/text_snippets/` |
+| Slide | `outputs/slides/final_report.pptx` |
+| PDF | `outputs/slides/final_report.pdf` |
+| Manifest | `outputs/slide_manifest.md` |
 
-## 7. Problemi comuni
+## Checklist finale
 
-Vedi `docs/troubleshooting.md`.
+- [ ] CSV Formbricks inseriti
+- [ ] `users_time.csv` aggiornato
+- [ ] Review euristiche completata
+- [ ] Pipeline eseguita
+- [ ] PPTX generato
+- [ ] PDF generato o motivazione documentata
+- [ ] `python -m src.cli quality-check` senza errori critici
+
+## Collegamenti
+
+- [Mappa CLI](cli_api.md)
+- [Formato dati](data_format.md)
+- [Generazione slide](slide_generation.md)
+- [Troubleshooting](troubleshooting.md)
+

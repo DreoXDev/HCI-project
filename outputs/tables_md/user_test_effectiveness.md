@@ -1,4 +1,4 @@
-| system    |   task |   completed |   helped |   failed |   total |   completion_rate |   ci_low |   ci_high |
+| App       |   Task |   Completed |   Helped |   Failed |   Total |   Completion rate |   Ci low |   Ci high |
 |:----------|-------:|------------:|---------:|---------:|--------:|------------------:|---------:|----------:|
 | Deliveroo |      1 |          10 |        0 |        2 |      12 |              0.83 |     0.62 |         1 |
 | Deliveroo |      2 |          10 |        2 |        0 |      12 |              0.83 |     0.62 |         1 |
