@@ -2,6 +2,8 @@
 
 ## Asset consigliati
 
+- `outputs/figures/dark/heuristics/expertise_matrix.png` (figure, high)
+- `outputs/figures/dark/heuristics/expertise_matrix.svg` (figure, high)
 - `outputs/figures/dark/heuristics/heuristics_by_category.png` (figure, high)
 - `outputs/figures/dark/heuristics/heuristics_by_category.svg` (figure, high)
 - `outputs/figures/dark/heuristics/heuristics_distribution.png` (figure, high)
@@ -10,10 +12,8 @@
 - `outputs/figures/dark/heuristics/problem_evaluator_matrix_deliveroo.svg` (figure, high)
 - `outputs/figures/dark/heuristics/problem_evaluator_matrix_glovo.png` (figure, high)
 - `outputs/figures/dark/heuristics/problem_evaluator_matrix_glovo.svg` (figure, high)
-- `outputs/figures/presentation/heuristics/heuristics_by_category.png` (figure, high)
-- `outputs/figures/presentation/heuristics/heuristics_by_category.svg` (figure, high)
-- `outputs/figures/presentation/heuristics/heuristics_distribution.png` (figure, high)
-- `outputs/figures/presentation/heuristics/heuristics_distribution.svg` (figure, high)
+- `outputs/figures/presentation/heuristics/expertise_matrix.png` (figure, high)
+- `outputs/figures/presentation/heuristics/expertise_matrix.svg` (figure, high)
 
 ## Testo suggerito
 

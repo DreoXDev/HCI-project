@@ -161,6 +161,23 @@ I task sono stati costruiti per simulare **situazioni d'uso quotidiane**.
 4. **Checkout**.
 5. **Tracking** dell'ordine.
 
+## task_deck_purpose
+Questa presentazione serve a guidarti durante il test utente su **Deliveroo** e **Glovo**.
+
+Ti verranno mostrati alcuni task da svolgere sulle due applicazioni. L'obiettivo non è valutare te, ma capire quanto i flussi siano chiari, efficienti e facili da usare.
+
+Durante l'attività puoi pensare ad alta voce, segnalare dubbi, difficoltà o passaggi poco chiari. Le osservazioni ci aiuteranno a interpretare tempi, errori e soddisfazione d'uso.
+
+## task_deck_before_start
+Prima di iniziare:
+- usa le app come faresti normalmente;
+- leggi un task alla volta;
+- avvisa quando inizi e quando pensi di aver completato il task;
+- se qualcosa non è chiaro, dillo ad alta voce;
+- non inserire dati personali o completare acquisti reali.
+
+Se un task non può essere completato per motivi tecnici, fermati e descrivi cosa ti ha bloccato.
+
 ## user_task_1
 Cerca un ristorante disponibile nella tua zona e apri la scheda di dettaglio.
 
@@ -234,17 +251,36 @@ Individua dove si controlla lo stato dell'ordine e interpreta le informazioni di
 2. Identifica la fase corrente.
 3. Controlla tempo stimato e dettagli della consegna.
 
+## task_deck_survey
+Grazie per aver completato i task.
+
+Prima di concludere, compila il questionario finale: serve a raccogliere la tua percezione d'uso su Deliveroo e Glovo dopo l'esperienza pratica.
+
+Link questionario:
+**INSERIRE QUI IL LINK ALLA SURVEY FORMBRICKS**
+
 ## user_test_sample
 La composizione del campione dei test utente aiuta a leggere **tempi**, **errori** e successo dei task in relazione al profilo dei partecipanti.
 
 ## effectiveness_intro
 L'**efficacia** misura quanto spesso gli utenti riescono a completare correttamente i task assegnati.
 
+## effectiveness_legend
+La lettura delle slide di efficacia distingue tre esiti:
+- **successo**: il task viene completato senza blocchi rilevanti
+- **successo assistito o parziale**: il task viene completato con aiuto, esitazioni o lentezza
+- **insuccesso**: il task non viene completato o produce errori bloccanti
+
+Questa legenda va mantenuta coerente con il file `data/raw/users_time.csv`: successo, errori e richieste di aiuto determinano la classificazione usata nei grafici.
+
 ## efficiency_intro
 L'**efficienza** considera il tempo necessario per completare i task, confrontando le prestazioni tra app e tra attività.
 
 ## task_result_placeholder
 Spazio per commentare il risultato del task con i dati della pipeline.
+
+## task_error_placeholder
+La slide mostra gli errori medi osservati per il task. Usarla insieme alla slide di efficacia per distinguere task completati rapidamente da task completati con frizioni operative.
 
 ## users_time_summary
 La lettura congiunta di **tempi**, successo ed errori permette di distinguere task rapidi ma problematici da task più lunghi ma completati correttamente.

@@ -34,6 +34,8 @@ OPTIONAL_COLUMNS = ["notes", "start_time", "end_time", "device", "observer_id", 
 TEMPLATE_COLUMNS = REQUIRED_COLUMNS + OPTIONAL_COLUMNS
 TRUE_VALUES = {"true", "1", "yes", "si", "sì"}
 FALSE_VALUES = {"false", "0", "no"}
+LEGACY_SUCCESS_VALUES = {"c", "a"}
+LEGACY_FAILURE_VALUES = {"f"}
 
 
 @dataclass
@@ -60,9 +62,9 @@ def normalize_boolean(value: Any) -> bool | None:
     if pd.isna(value):
         return None
     normalized = comparable(value)
-    if normalized in {comparable(item) for item in TRUE_VALUES}:
+    if normalized in {comparable(item) for item in TRUE_VALUES} or normalized in LEGACY_SUCCESS_VALUES:
         return True
-    if normalized in {comparable(item) for item in FALSE_VALUES}:
+    if normalized in {comparable(item) for item in FALSE_VALUES} or normalized in LEGACY_FAILURE_VALUES:
         return False
     return None
 

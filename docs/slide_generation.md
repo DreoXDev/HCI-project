@@ -20,6 +20,14 @@ python -m src.cli validate-slide-assets
 python -m src.cli generate-slides --auto --overwrite
 ```
 
+Per generare la presentazione separata da mostrare ai partecipanti durante i task:
+
+```powershell
+python -m src.cli generate-slides --config slides/config/user_task_deck.yml --overwrite
+```
+
+Il file prodotto è `outputs/slides/user_task_deck.pptx`. I testi delle task e il placeholder del link survey sono in `slides/content/reference_static_texts.md`.
+
 Per esportare anche il PDF:
 
 ```powershell
@@ -40,6 +48,14 @@ python -m src.cli full-pipeline --plot-style both --export-pdf
 | `questionnaire_conclusions.md` | Questionario | Interpretazione UEQ |
 | `nps_conclusions.md` | Questionario | Interpretazione NPS |
 | `final_comparative_conclusions.md` | Conclusioni | Executive summary |
+
+## Cosa resta manuale
+
+Il confronto con il PDF guida e tracciato in [`manual_slides.md`](../manual_slides.md). In breve:
+
+- grafici, tabelle, matrici, testi statici e slide placeholder sono generati dalla pipeline;
+- screenshot reali, allegati amministrativi, appendici individuali complete e conclusioni finali validate dal gruppo restano manuali;
+- se un contenuto manuale diventa strutturato in CSV o immagine, può essere collegato a `slides/config/slide_deck.yml` o alla modalità `reference_order`.
 
 ## Tabelle paginate
 

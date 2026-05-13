@@ -54,6 +54,8 @@ def expand_auto_slides(deck_config: dict[str, Any], available_templates: set[str
     excludes = [str(item).replace("\\", "/").lower() for item in auto.get("exclude") or []]
     if auto.get("mode") == "reference_order":
         generated = _reference_order_specs(auto, available_templates, used_assets, excludes, deck_config)
+    elif auto.get("mode") == "user_tasks":
+        generated = _user_task_specs(auto, available_templates, deck_config)
     else:
         generated = _build_auto_specs(auto, available_templates, used_assets, excludes)
     max_slides = auto.get("max_slides")
@@ -166,7 +168,7 @@ def _reference_order_specs(
         "sample_composition",
         available_templates,
     ))
-    add(_blank_spec("Matrice di expertise", texts, "manual_expertise_matrix", available_templates))
+    add(_graph_or_blank("Matrice di expertise", "outputs/figures/dark/heuristics/expertise_matrix.png", texts, "manual_expertise_matrix", available_templates))
     add(_text_spec("Problemi riscontrati", texts, "heuristic_problems_intro", available_templates))
     add(_text_spec("Criteri di prioritizzazione", texts, "priority_criteria", available_templates))
     add(_text_spec("Classificazione in fasce di priorità", texts, "priority_bands", available_templates))
@@ -206,14 +208,24 @@ def _reference_order_specs(
         for app, theme in ((systems[0], "deliveroo"), (systems[1], "glovo")):
             add(_text_spec(f"{app} - Task {task_idx}", texts, f"{key}_{theme}", available_templates, theme=theme))
     add(_text_spec("Composizione del campione", texts, "user_test_sample", available_templates))
+    add(_text_spec("Legenda efficacia", texts, "effectiveness_legend", available_templates))
     add(_graph_or_blank("Efficacia", "outputs/figures/dark/user_tests/effectiveness_deliveroo_vs_glovo.png", texts, "effectiveness_intro", available_templates))
     for task_idx in range(1, 6):
         task = f"t{task_idx:02d}"
         add(_graph_or_blank(f"Efficacia - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_effectiveness.png", texts, "task_result_placeholder", available_templates))
+        add(_graph_or_blank(f"Errori - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_error_breakdown.png", texts, "task_error_placeholder", available_templates))
     add(_graph_or_blank("Efficienza", "outputs/figures/dark/user_tests/efficiency_boxplot.png", texts, "efficiency_intro", available_templates))
     for task_idx in range(1, 6):
         task = f"t{task_idx:02d}"
         add(_graph_or_blank(f"Efficienza - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_efficiency.png", texts, "task_result_placeholder", available_templates))
+    add(_comparison_or_blank(
+        "Successo e distribuzione tempi",
+        "outputs/figures/dark/users_time_success_rate.png",
+        "outputs/figures/dark/users_time_boxplot_by_task.png",
+        texts,
+        "users_time_summary",
+        available_templates,
+    ))
     add(_comparison_or_blank(
         "Tempi, successo ed errori",
         "outputs/figures/dark/users_time_mean_by_task.png",
@@ -267,6 +279,53 @@ def _reference_order_specs(
         add(_source_specs(available_templates, specs)[0] if _source_specs(available_templates, specs) else None)
 
     return _dedupe_missing_assets(specs, used_assets, excludes)
+
+
+def _user_task_specs(
+    auto: dict[str, Any],
+    available_templates: set[str],
+    deck_config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Build a participant-facing deck with only test instructions.
+
+    This deck is intentionally separate from the analytical final report: it is
+    meant to be shown to participants before/during the test session.
+    """
+
+    texts = _reference_texts(auto)
+    metadata = deck_config.get("metadata") or {}
+    systems = _systems_from_metadata(metadata)
+    specs: list[dict[str, Any]] = []
+
+    def add(spec: dict[str, Any] | None) -> None:
+        if spec is not None:
+            specs.append(spec)
+
+    add(
+        {
+            "template_id": "cover",
+            "fields": {
+                "PROJECT_TITLE": metadata.get("project_title", f"User test {systems[0]} vs {systems[1]}"),
+                "PROJECT_SUBTITLE": metadata.get("subtitle", "Presentazione dei task per i partecipanti"),
+                "AUTHORS": metadata.get("authors", "Gruppo HCI"),
+                "YEAR/DATE": metadata.get("date", ""),
+                "AUTHORS_DATE": f"{metadata.get('authors', 'Gruppo HCI')} - {metadata.get('date', '')}".strip(" -"),
+            },
+        }
+    )
+    add(_text_spec("A cosa serve", texts, "task_deck_purpose", available_templates))
+    add(_text_spec("Prima di iniziare", texts, "task_deck_before_start", available_templates))
+
+    add(_section_slide(systems[0]))
+    for task_idx in range(1, 6):
+        add(_text_spec(f"{systems[0]} - Task {task_idx}", texts, f"user_task_{task_idx}_deliveroo", available_templates, theme="deliveroo"))
+
+    add(_section_slide(systems[1]))
+    for task_idx in range(1, 6):
+        add(_text_spec(f"{systems[1]} - Task {task_idx}", texts, f"user_task_{task_idx}_glovo", available_templates, theme="glovo"))
+
+    add(_text_spec("Conclusione e questionario", texts, "task_deck_survey", available_templates))
+    return specs
 
 
 def _figure_specs(

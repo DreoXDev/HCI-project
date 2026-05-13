@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.config import load_config
+from src.data_loading import users_time_long_to_legacy_wide
 from src.users_time import analyze_users_time, summarize_users_time
 
 
@@ -38,6 +39,14 @@ def test_summary_calculates_mean_and_success_rate() -> None:
     assert deliveroo["success_rate"] == 1
     assert deliveroo["mean_errors"] == 1
     assert glovo["success_rate"] == 0.5
+
+
+def test_long_users_time_can_feed_legacy_pipeline() -> None:
+    wide = users_time_long_to_legacy_wide(_analysis_df())
+
+    assert wide.loc[0, "Task 1 Deliveroo"] == "0.30-C"
+    assert wide.loc[0, "Task 1 Glovo"] == "0.40-F"
+    assert wide.loc[1, "Task 1 Deliveroo"] == "0.50-A"
 
 
 def test_analyze_users_time_writes_outputs(tmp_path: Path) -> None:

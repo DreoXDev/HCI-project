@@ -1,0 +1,18 @@
+deck:
+  output: outputs/slides/user_task_deck.pptx
+  template: slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx
+
+metadata:
+  project_title: "User test Deliveroo vs Glovo"
+  subtitle: "Presentazione dei task per i partecipanti"
+  authors: "Gruppo HCI"
+  date: "2026"
+
+auto_slides:
+  enabled: true
+  mode: user_tasks
+  reference_texts: slides/content/reference_static_texts.md
+  max_slides:
+  exclude: []
+
+slides: []

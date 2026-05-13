@@ -1,4 +1,6 @@
 section,slide_title,asset_type,path,priority,notes
+heuristics,Valutazione euristica,figure,outputs/figures/dark/heuristics/expertise_matrix.png,high,Asset pronto per slide/report; verificare interpretazione manuale.
+heuristics,Valutazione euristica,figure,outputs/figures/dark/heuristics/expertise_matrix.svg,high,Asset pronto per slide/report; verificare interpretazione manuale.
 heuristics,Valutazione euristica,figure,outputs/figures/dark/heuristics/heuristics_by_category.png,high,Asset pronto per slide/report; verificare interpretazione manuale.
 heuristics,Valutazione euristica,figure,outputs/figures/dark/heuristics/heuristics_by_category.svg,high,Asset pronto per slide/report; verificare interpretazione manuale.
 heuristics,Valutazione euristica,figure,outputs/figures/dark/heuristics/heuristics_distribution.png,high,Asset pronto per slide/report; verificare interpretazione manuale.
@@ -121,6 +123,8 @@ user_tests,User test,figure,outputs/figures/dark/users_time_mean_by_task.png,hig
 user_tests,User test,figure,outputs/figures/dark/users_time_mean_by_task.svg,high,Asset pronto per slide/report; verificare interpretazione manuale.
 user_tests,User test,figure,outputs/figures/dark/users_time_success_rate.png,high,Asset pronto per slide/report; verificare interpretazione manuale.
 user_tests,User test,figure,outputs/figures/dark/users_time_success_rate.svg,high,Asset pronto per slide/report; verificare interpretazione manuale.
+heuristics,Valutazione euristica,figure,outputs/figures/presentation/heuristics/expertise_matrix.png,high,Asset pronto per slide/report; verificare interpretazione manuale.
+heuristics,Valutazione euristica,figure,outputs/figures/presentation/heuristics/expertise_matrix.svg,high,Asset pronto per slide/report; verificare interpretazione manuale.
 heuristics,Valutazione euristica,figure,outputs/figures/presentation/heuristics/heuristics_by_category.png,high,Asset pronto per slide/report; verificare interpretazione manuale.
 heuristics,Valutazione euristica,figure,outputs/figures/presentation/heuristics/heuristics_by_category.svg,high,Asset pronto per slide/report; verificare interpretazione manuale.
 heuristics,Valutazione euristica,figure,outputs/figures/presentation/heuristics/heuristics_distribution.png,high,Asset pronto per slide/report; verificare interpretazione manuale.
@@ -256,6 +260,7 @@ conclusions,Conclusioni,text,outputs/text_snippets/conclusions.md,high,Asset pro
 conclusions,Conclusioni,text,outputs/text_snippets/final_comparative_conclusions.md,high,Asset pronto per slide/report; verificare interpretazione manuale.
 heuristics,Valutazione euristica,text,outputs/text_snippets/heuristic_conclusions.md,high,Asset pronto per slide/report; verificare interpretazione manuale.
 heuristics,Valutazione euristica,text,outputs/text_snippets/heuristics.md,high,Asset pronto per slide/report; verificare interpretazione manuale.
+heuristics,Valutazione euristica,text,outputs/text_snippets/heuristics_expertise_matrix.md,high,Asset pronto per slide/report; verificare interpretazione manuale.
 heuristics,Valutazione euristica,text,outputs/text_snippets/heuristics_problem_coverage.md,high,Asset pronto per slide/report; verificare interpretazione manuale.
 intro,Introduzione,text,outputs/text_snippets/intro.md,medium,Asset pronto per slide/report; verificare interpretazione manuale.
 intro,Introduzione,text,outputs/text_snippets/intro_summary.md,medium,Asset pronto per slide/report; verificare interpretazione manuale.

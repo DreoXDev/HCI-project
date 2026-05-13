@@ -191,8 +191,16 @@ def test_reference_order_slide_expansion_follows_reference_sections(tmp_path: Pa
         encoding="utf-8",
     )
     figure = tmp_path / "outputs/figures/dark/questionnaire/ueq_scales.png"
+    expertise = tmp_path / "outputs/figures/dark/heuristics/expertise_matrix.png"
+    errors = tmp_path / "outputs/figures/dark/user_tests/tasks/t01_error_breakdown.png"
+    success = tmp_path / "outputs/figures/dark/users_time_success_rate.png"
+    boxplot = tmp_path / "outputs/figures/dark/users_time_boxplot_by_task.png"
     figure.parent.mkdir(parents=True)
-    figure.write_bytes(b"fake-png")
+    expertise.parent.mkdir(parents=True, exist_ok=True)
+    errors.parent.mkdir(parents=True, exist_ok=True)
+    for path in [figure, expertise, errors, success, boxplot]:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"fake-png")
 
     expanded = auto_deck.expand_auto_slides(
         {
@@ -200,7 +208,15 @@ def test_reference_order_slide_expansion_follows_reference_sections(tmp_path: Pa
             "auto_slides": {"enabled": True, "mode": "reference_order", "reference_texts": "slides/content/reference_static_texts.md"},
             "slides": [{"template_id": "cover", "fields": {"PROJECT_TITLE": "Manuale"}}],
         },
-        {"cover", "section_divider_neutral", "text_only_neutral", "text_only_deliveroo", "text_only_glovo", "graph_full_neutral"},
+        {
+            "cover",
+            "section_divider_neutral",
+            "text_only_neutral",
+            "text_only_deliveroo",
+            "text_only_glovo",
+            "graph_full_neutral",
+            "comparison_neutral",
+        },
     )
 
     slides = expanded["slides"]
@@ -216,7 +232,50 @@ def test_reference_order_slide_expansion_follows_reference_sections(tmp_path: Pa
         "Valutazione euristica",
     ]
     assert any(slide.get("fields", {}).get("GRAPH_TITLE") == "Media risultati UEQ" for slide in slides)
+    assert any(slide.get("fields", {}).get("GRAPH_TITLE") == "Matrice di expertise" for slide in slides)
+    assert any(slide.get("fields", {}).get("GRAPH_TITLE") == "Errori - Task 1" for slide in slides)
+    assert any(slide.get("fields", {}).get("COMPARISON_TITLE") == "Successo e distribuzione tempi" for slide in slides)
     assert all(slide.get("fields", {}).get("PROJECT_TITLE") != "Manuale" for slide in slides)
+
+
+def test_user_task_deck_expansion_creates_participant_deck(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def resolve_in_tmp(path: str | Path, base_dir: Path = tmp_path) -> Path:
+        value = Path(path)
+        return value if value.is_absolute() else tmp_path / value
+
+    monkeypatch.setattr(auto_deck, "resolve_path", resolve_in_tmp)
+    content = tmp_path / "slides/content/reference_static_texts.md"
+    content.parent.mkdir(parents=True)
+    content.write_text(
+        "# Testi\n\n"
+        "## task_deck_purpose\nScopo del test.\n\n"
+        "## task_deck_before_start\nPrima di iniziare.\n\n"
+        "## task_deck_survey\nLink survey.\n\n"
+        + "\n\n".join(
+            f"## user_task_{idx}_{theme}\nTask {idx} {theme}."
+            for theme in ["deliveroo", "glovo"]
+            for idx in range(1, 6)
+        ),
+        encoding="utf-8",
+    )
+
+    expanded = auto_deck.expand_auto_slides(
+        {
+            "metadata": {"project_title": "User test Deliveroo vs Glovo", "subtitle": "Task", "authors": "Team", "date": "2026"},
+            "auto_slides": {"enabled": True, "mode": "user_tasks", "reference_texts": "slides/content/reference_static_texts.md"},
+            "slides": [],
+        },
+        {"cover", "section_divider_neutral", "text_only_neutral", "text_only_deliveroo", "text_only_glovo"},
+    )
+
+    slides = expanded["slides"]
+    titles = [slide.get("fields", {}).get("TEXT_TITLE") or slide.get("fields", {}).get("SECTION_NAME") or slide.get("fields", {}).get("PROJECT_TITLE") for slide in slides]
+    assert len(slides) == 16
+    assert titles[:4] == ["User test Deliveroo vs Glovo", "A cosa serve", "Prima di iniziare", "Deliveroo"]
+    assert titles[4:9] == [f"Deliveroo - Task {idx}" for idx in range(1, 6)]
+    assert titles[9] == "Glovo"
+    assert titles[10:15] == [f"Glovo - Task {idx}" for idx in range(1, 6)]
+    assert titles[15] == "Conclusione e questionario"
 
 
 def test_resolve_template_id_variants() -> None:

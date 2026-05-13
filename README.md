@@ -10,6 +10,12 @@ python -m pip install -r requirements.txt
 python -m src.cli full-pipeline --plot-style both --export-pdf
 ```
 
+Presentazione separata per i partecipanti ai task:
+
+```powershell
+python -m src.cli generate-slides --config slides/config/user_task_deck.yml --overwrite
+```
+
 > [!warning]
 > L'export PDF richiede LibreOffice installato e accessibile come `soffice` o `libreoffice`.
 
@@ -34,6 +40,7 @@ python -m src.cli heuristics severity-pipeline --problems data/processed/heurist
 - [Formato dati](docs/data_format.md)
 - [Workflow Formbricks](docs/formbricks_workflow.md)
 - [Generazione slide](docs/slide_generation.md)
+- [Manuale slide finali](manual_slides.md)
 - [Snippet testuali](docs/text_snippets.md)
 
 I dati demo inclusi sono inventati e servono solo per provare la pipeline.

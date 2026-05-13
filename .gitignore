@@ -25,3 +25,5 @@ data/raw/formbricks/**/*.csv
 notebooks/outputs/*
 
 docs/.obsidian
+
+tmp/**

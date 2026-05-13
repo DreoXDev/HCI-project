@@ -26,6 +26,7 @@ def oet_by_task(config: dict) -> dict[str, float]:
 
 def generate_final_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:
     generate_problem_evaluator_outputs(config, data)
+    generate_expertise_matrix_assets(config)
     generate_questionnaire_item_outputs(config, data)
     generate_nps_breakdown(config, data)
     generate_users_time_task_assets(config)
@@ -107,6 +108,71 @@ def generate_problem_evaluator_outputs(config: dict, data: dict[str, pd.DataFram
     if not coverage.empty:
         export_table(coverage, "outputs/tables/heuristics_problem_coverage.csv", 2)
     resolve_path("outputs/text_snippets/heuristics_problem_coverage.md").write_text("\n".join(text_lines) + "\n", encoding="utf-8")
+
+
+def generate_expertise_matrix_assets(config: dict) -> None:
+    profiles_path = resolve_path("data/processed/heuristics/expert_profiles.csv")
+    if not profiles_path.exists():
+        return
+    profiles = pd.read_csv(profiles_path)
+    required = {"evaluator_id", "expert_group", "usability_experience", "domain_experience"}
+    if profiles.empty or not required.issubset(profiles.columns):
+        return
+
+    slide_columns = [
+        "evaluator_id",
+        "expert_group",
+        "gender",
+        "age_group",
+        "occupation",
+        "familiarity",
+        "usability_experience",
+        "domain_experience",
+    ]
+    export_table(profiles[[column for column in slide_columns if column in profiles.columns]], "outputs/tables/heuristics_expert_profiles.csv", 2)
+
+    levels = {"bassa": 1, "media": 2, "alta": 3}
+
+    def score(value: object) -> float:
+        return float(levels.get(str(value).strip().lower(), 0))
+
+    plot_df = profiles.copy()
+    plot_df["usability_score"] = plot_df["usability_experience"].map(score)
+    plot_df["domain_score"] = plot_df["domain_experience"].map(score)
+    plot_df = plot_df[(plot_df["usability_score"] > 0) & (plot_df["domain_score"] > 0)]
+    if plot_df.empty:
+        return
+
+    fig, ax = plt.subplots(figsize=(7.8, 5.2))
+    palette = {"EU": "#38BDF8", "ED": "#A78BFA"}
+    sns.scatterplot(
+        data=plot_df,
+        x="domain_score",
+        y="usability_score",
+        hue="expert_group",
+        palette=palette,
+        s=180,
+        edgecolor="#E5E7EB",
+        linewidth=1.2,
+        ax=ax,
+    )
+    for row in plot_df.itertuples():
+        ax.text(row.domain_score + 0.04, row.usability_score + 0.04, str(row.evaluator_id), fontsize=10, weight="bold")
+    ax.set_xlim(0.6, 3.5)
+    ax.set_ylim(0.6, 3.5)
+    ax.set_xticks([1, 2, 3], ["Bassa", "Media", "Alta"])
+    ax.set_yticks([1, 2, 3], ["Bassa", "Media", "Alta"])
+    ax.legend(title="Gruppo", frameon=False, loc="lower right")
+    style_axis(ax, "Matrice di expertise", "Esperienza di dominio", "Esperienza di usabilita")
+    save_figure(fig, "outputs/figures/heuristics/expertise_matrix.png", config)
+
+    counts = profiles["expert_group"].fillna("n.d.").value_counts().to_dict()
+    resolve_path("outputs/text_snippets/heuristics_expertise_matrix.md").write_text(
+        "# Matrice di expertise\n\n"
+        f"La matrice posiziona {len(profiles)} valutatori rispetto a esperienza di usabilita ed esperienza di dominio. "
+        f"Distribuzione gruppi: {counts}.\n",
+        encoding="utf-8",
+    )
 
 
 def generate_questionnaire_item_outputs(config: dict, data: dict[str, pd.DataFrame]) -> None:
