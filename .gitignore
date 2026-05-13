@@ -1,5 +1,6 @@
 __pycache__/
 *.py[cod]
+.pytest_cache/
 .venv/
 venv/
 .env
@@ -22,7 +23,7 @@ data/formbricks_raw/**/*.csv
 !data/formbricks_raw/**/*demo*.csv
 data/raw/formbricks/**/*.csv
 
-notebooks/outputs/*
+notebooks/outputs/
 
 docs/.obsidian
 

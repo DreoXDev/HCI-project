@@ -7,7 +7,7 @@ Queste note servono a chi lavora sul progetto come agente automatico.
 - Repo locale: `D:\Projects\IUM\Improved Notebooks\HCI-project`
 - Virtualenv: `D:\Projects\IUM\Improved Notebooks\.venv`
 - Progetto configurato per Deliveroo vs Glovo in `config.yaml`
-- I notebook originali sono in `notebooks/original/`; non usarli come sorgente primaria di logica nuova.
+- I notebook attivi sono wrapper sopra `src/`; non usare notebook legacy come sorgente primaria di logica nuova.
 
 ## Regole operative
 

@@ -24,7 +24,7 @@ Questi dati sono misurazioni e osservazioni, non risposte soggettive. Sono più 
 data/raw/users_time.csv
 ```
 
-Il vecchio `data/raw/users-time.csv` resta supportato dalla pipeline legacy, ma il formato nuovo usa snake_case.
+Il progetto usa il formato snake_case `users_time.csv`.
 
 ## Colonne obbligatorie
 

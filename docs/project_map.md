@@ -28,7 +28,6 @@ config.yaml
 config/heuristics_raw_mapping.yml
 config/formbricks_questionnaire_mapping.yml
 config/formbricks_heuristics_mapping.yml
-config/slide_export.yml
 ```
 
 - `config.yaml`: nomi progetto, sistemi confrontati, path principali, tema grafici e parametri analisi.
@@ -44,7 +43,6 @@ data/examples/
 ```
 
 - `data/raw/users_time.csv`: dataset osservazionale manuale dei test.
-- `data/raw/users-time.csv`: dataset legacy ancora supportato dalla pipeline storica.
 - `data/formbricks_raw/questionnaire/`: export Formbricks questionario. I CSV reali sono ignorati da git.
 - `data/formbricks_raw/heuristics_discovery/`: survey discovery problemi euristici.
 - `data/formbricks_raw/heuristics_ratings/`: survey rating dei problemi consolidati.
@@ -82,8 +80,8 @@ slides/assets/
 ```
 
 - `slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx`: template attivo per generazione PPTX.
-- `slides/config/slide_deck.yml`: deck reale.
-- `slides/config/demo_slide_deck.yml`: deck demo.
+- `slides/config/slide_deck.yml`: report finale.
+- `slides/config/user_task_deck.yml`: presentazione separata per i partecipanti ai task.
 - `slides/assets/`: asset del template.
 
 ## Output Generati

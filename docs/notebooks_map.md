@@ -48,11 +48,3 @@
 | Input | `slides/config/slide_deck.yml`, asset in `outputs/` |
 | Output | PPTX in `outputs/slides/` |
 | Produzione | No |
-
-## Notebook legacy
-
-| Notebook | Stato |
-|---|---|
-| `notebooks/original/stats_ium.ipynb` | Solo riferimento |
-| `notebooks/original/Stats quest utente.ipynb` | Solo riferimento |
-

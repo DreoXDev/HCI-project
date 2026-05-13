@@ -37,7 +37,7 @@ def validate_users_time_csv(df: pd.DataFrame, config: dict) -> list[ValidationMe
         if not invalid.empty:
             messages.append(ValidationMessage("ERROR", f"Formato tempo/esito non valido in {column}: {invalid.iloc[0]}"))
     if not messages:
-        messages.append(ValidationMessage("OK", "users-time.csv valido"))
+        messages.append(ValidationMessage("OK", "users_time.csv valido"))
     return messages
 
 

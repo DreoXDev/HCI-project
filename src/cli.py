@@ -172,39 +172,6 @@ def generate_report(config: dict) -> None:
     print("Report assets generati in outputs/.")
 
 
-def generate_demo_assets() -> None:
-    import matplotlib.pyplot as plt
-
-    graph_dir = resolve_path("outputs/demo/graphs")
-    table_dir = resolve_path("outputs/demo/tables")
-    text_dir = resolve_path("outputs/demo/text")
-    graph_dir.mkdir(parents=True, exist_ok=True)
-    table_dir.mkdir(parents=True, exist_ok=True)
-    text_dir.mkdir(parents=True, exist_ok=True)
-
-    fig, ax = plt.subplots(figsize=(8, 4.5))
-    ax.bar(["Deliveroo", "Glovo"], [82, 76], color=["#00CCBC", "#FFC244"])
-    ax.set_ylabel("Score")
-    ax.set_title("Demo comparison")
-    ax.set_ylim(0, 100)
-    ax.spines[["top", "right"]].set_visible(False)
-    fig.tight_layout()
-    fig.savefig(graph_dir / "demo_graph.png", dpi=180)
-    plt.close(fig)
-
-    pd.DataFrame(
-        [
-            {"Metric": "Task Success Rate", "Deliveroo": "92%", "Glovo": "85%", "p-value": "0.042", "Significance": "Significant"},
-            {"Metric": "Time on Task", "Deliveroo": "45.2", "Glovo": "58.1", "p-value": "0.001", "Significance": "High"},
-        ]
-    ).to_csv(table_dir / "demo_stats.csv", index=False)
-    (text_dir / "demo_findings.md").write_text(
-        "Il deck demo conferma che il generatore legge testo, grafici e tabelle da asset gia prodotti.",
-        encoding="utf-8",
-    )
-    print("Demo assets generati in outputs/demo/.")
-
-
 def heuristics_cli(argv: list[str]) -> None:
     parser = argparse.ArgumentParser(description="HCI heuristics pipeline")
     sub = parser.add_subparsers(dest="phase", required=True)
@@ -445,7 +412,6 @@ def main() -> None:
             "analyze",
             "generate-report",
             "generate-slides",
-            "generate-demo-assets",
             "validate-slide-template",
             "validate-slide-assets",
             "create-templates",
@@ -509,9 +475,6 @@ def main() -> None:
         result = validate_users_time_file(path, required_columns=config.get("users_time", {}).get("required_columns"))
         print("\n".join(result.messages))
         print(resolve_path("outputs/reports/users_time_validation_report.md"))
-        return
-    if args.command == "generate-demo-assets":
-        generate_demo_assets()
         return
     if args.command == "validate-slide-template":
         target = args.template or "slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx"
