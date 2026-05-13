@@ -15,8 +15,13 @@ from .export import create_templates
 from .final_assets import generate_final_assets
 from .formbricks_adapter import comparable, convert_questionnaire_export, load_formbricks_export
 from .formbricks_heuristics_pipeline import (
+    analyze_final_heuristics_dataset,
+    import_severity_formbricks,
     import_heuristics_raw_survey,
+    join_clean_problems_with_ratings,
     parse_severity_ratings,
+    run_severity_pipeline,
+    validate_clean_problems,
     write_consolidated_problems_template,
 )
 from .heuristics import clean_heuristics, priority_table, summarize_heuristics
@@ -99,6 +104,7 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     generate_final_assets(config, data)
     analyze_ueq_benchmark(config)
     print("OK: asset finali generati")
+    run_optional_final_heuristics(strict=False)
     print("\n[5/8] Testi slide/report...")
     generate_text_outputs(config)
     print("OK: testi generati")
@@ -134,6 +140,21 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     print(resolve_path("outputs/reports/final_quality_check.md"))
     print("\nOutput principale:")
     print(resolve_path("outputs/slide_pack/00_index.md"))
+
+
+def run_optional_final_heuristics(strict: bool = False) -> None:
+    problems = resolve_path("data/processed/heuristics/clean_problems.csv")
+    ratings = resolve_path("data/formbricks_raw/heuristics/severity_ratings_export.csv")
+    if problems.exists() and ratings.exists():
+        result = run_severity_pipeline(problems_path=problems, ratings_export_path=ratings, strict=strict)
+        for warning in result.warnings:
+            print(f"WARNING: {warning}")
+        print("OK: pipeline euristiche finale inclusa.")
+        return
+    message = "Pipeline euristiche finale saltata: servono data/processed/heuristics/clean_problems.csv e data/formbricks_raw/heuristics/severity_ratings_export.csv."
+    if strict:
+        raise SystemExit(message)
+    print(f"WARNING: {message}")
 
 
 def generate_report(config: dict) -> None:
@@ -204,6 +225,31 @@ def heuristics_cli(argv: list[str]) -> None:
     all_cmd.add_argument("--config", default="config.yaml")
     all_cmd.add_argument("--mapping", default="config/heuristics_raw_mapping.yml")
 
+    validate_clean = sub.add_parser("validate-clean", help="Valida data/processed/heuristics/clean_problems.csv")
+    validate_clean.add_argument("--problems", default="data/processed/heuristics/clean_problems.csv")
+
+    import_severity = sub.add_parser("import-severity-formbricks", help="Importa export wide Formbricks in formato long")
+    import_severity.add_argument("--input", default="data/formbricks_raw/heuristics/severity_ratings_export.csv")
+    import_severity.add_argument("--output", default="data/processed/heuristics/problem_ratings_long.csv")
+    import_severity.add_argument("--problems", default=None)
+    import_severity.add_argument("--strict", action="store_true")
+
+    join_severity = sub.add_parser("join-severity", help="Unisce clean_problems.csv e problem_ratings_long.csv")
+    join_severity.add_argument("--problems", default="data/processed/heuristics/clean_problems.csv")
+    join_severity.add_argument("--ratings", default="data/processed/heuristics/problem_ratings_long.csv")
+    join_severity.add_argument("--output", default="data/processed/heuristics/heuristic_final_dataset.csv")
+    join_severity.add_argument("--strict", action="store_true")
+
+    analyze_final_cmd = sub.add_parser("analyze-final", help="Genera output finali dalla tabella joined")
+    analyze_final_cmd.add_argument("--dataset", default="data/processed/heuristics/heuristic_final_dataset.csv")
+    analyze_final_cmd.add_argument("--out", default="outputs/heuristics")
+
+    severity_pipeline = sub.add_parser("severity-pipeline", help="Esegue validazione, import Formbricks, join e output finali")
+    severity_pipeline.add_argument("--problems", default="data/processed/heuristics/clean_problems.csv")
+    severity_pipeline.add_argument("--ratings-export", default="data/formbricks_raw/heuristics/severity_ratings_export.csv")
+    severity_pipeline.add_argument("--out", default="outputs/heuristics")
+    severity_pipeline.add_argument("--strict", action="store_true")
+
     args = parser.parse_args(argv)
     config = load_config(getattr(args, "config", "config.yaml"))
     if args.phase == "raw":
@@ -234,6 +280,42 @@ def heuristics_cli(argv: list[str]) -> None:
         else:
             write_consolidated_problems_template()
             print("Pipeline raw completata. Fase 2 saltata: serve il CSV severità e `data/processed/heuristics/consolidated_problems.csv`.")
+        return
+    if args.phase == "validate-clean":
+        result = validate_clean_problems(args.problems)
+        for warning in result.warnings:
+            print(f"WARNING: {warning}")
+        if result.errors:
+            for error in result.errors:
+                print(f"ERROR: {error}")
+            raise SystemExit(1)
+        print("OK: clean_problems.csv valido.")
+        return
+    if args.phase == "import-severity-formbricks":
+        ratings, warnings = import_severity_formbricks(args.input, output_path=args.output, problems_path=args.problems, strict=args.strict)
+        for warning in warnings:
+            print(f"WARNING: {warning}" if not warning.startswith("File generato") else warning)
+        print(f"OK: importate {len(ratings)} valutazioni.")
+        return
+    if args.phase == "join-severity":
+        final, warnings = join_clean_problems_with_ratings(args.problems, args.ratings, output_path=args.output, strict=args.strict)
+        for warning in warnings:
+            print(f"WARNING: {warning}" if not warning.startswith("File generato") else warning)
+        print(f"OK: dataset finale generato con {len(final)} righe.")
+        return
+    if args.phase == "analyze-final":
+        result = analyze_final_heuristics_dataset(args.dataset, out_dir=args.out)
+        for warning in result.warnings:
+            print(f"WARNING: {warning}")
+        print("OK: output finali euristiche generati.")
+        print(resolve_path(args.out))
+        return
+    if args.phase == "severity-pipeline":
+        result = run_severity_pipeline(problems_path=args.problems, ratings_export_path=args.ratings_export, out_dir=args.out, strict=args.strict)
+        for warning in result.warnings:
+            print(f"WARNING: {warning}")
+        print("OK: pipeline severità euristiche completata.")
+        print(resolve_path(args.out))
         return
 
 
@@ -588,6 +670,8 @@ def main() -> None:
     if args.command in {"analyze", "all", "all-from-formbricks", "analyze-user-tests", "analyze-heuristics", "analyze-questionnaire", "export-tables", "export-figures"}:
         analyze(config, data)
         sync_clean_figure_alias()
+        if args.command in {"all", "all-from-formbricks"}:
+            run_optional_final_heuristics(strict=args.strict)
         print("Analisi completata. Output salvati in outputs/.")
     if args.command in {"all", "all-from-formbricks", "export-text"}:
         generate_text_outputs(config)

@@ -1,6 +1,6 @@
 # Workflow Formbricks
 
-> [!Info]
+> [!info]
 > Questa pagina separa questionario utenti, valutazione euristica e dati osservazionali.
 
 ## 1. Questionario utenti
@@ -31,7 +31,7 @@ data/processed/heuristics_review.csv
 
 ## 3. Review manuale
 
-> [!Warning]
+> [!warning]
 > La deduplicazione non è automatica: apri `heuristics_review.csv` e compila `problem_group_id`.
 
 Checklist:
@@ -61,3 +61,22 @@ data/raw/users_time.csv
 - [Formato dati](data_format.md)
 - [Mappa CLI](cli_api.md)
 
+## Workflow severità deduplicato
+
+> [!info]
+> Per il workflow nuovo usare `clean_problems.csv` e una survey Formbricks con domande tipo `[P001] Titolo problema`.
+
+Percorsi consigliati:
+
+```text
+data/processed/heuristics/clean_problems.csv
+data/formbricks_raw/heuristics/severity_ratings_export.csv
+```
+
+Comando unico:
+
+```powershell
+python -m src.cli heuristics severity-pipeline --problems data/processed/heuristics/clean_problems.csv --ratings-export data/formbricks_raw/heuristics/severity_ratings_export.csv --out outputs/heuristics --strict
+```
+
+Il parser ignora `No.`, `Response ID`, `Timestamp`, `Finished`, `Survey ID`, metadata utente e colonne `- Option ID`. Le severità accettate sono numeriche o testuali sulla scala Nielsen 0-4.

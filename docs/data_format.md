@@ -1,6 +1,6 @@
 # Formato dati
 
-> [!Info]
+> [!info]
 > I file Markdown sono UTF-8. I CSV generati dalla pipeline usano `utf-8-sig` per essere leggibili anche in Excel su Windows.
 
 ## Questionario utenti
@@ -26,7 +26,7 @@ data/raw/questionnaire_glovo.csv
 
 ## Valutazione euristica
 
-> [!Important]
+> [!important]
 > Il flusso supportato è quello completo: discovery, review manuale, rating, aggregazione severità/priorità.
 
 ### 1. Discovery problemi
@@ -85,3 +85,48 @@ data/raw/users_time.csv
 | `errors_count` | Errori osservati |
 | `help_requests` | Richieste di aiuto |
 
+## Formato euristiche deduplicate
+
+> [!info]
+> Il nuovo file canonico per la fase post-deduplicazione è `data/processed/heuristics/clean_problems.csv`.
+
+### `clean_problems.csv`
+
+Colonne obbligatorie:
+
+| Campo | Uso |
+|---|---|
+| `problem_id` | ID stabile `P001`, `P002`, ... |
+| `app` | `Deliveroo` o `Glovo` |
+| `screen` | Schermata o area |
+| `heuristic` | Euristica violata |
+| `title` | Titolo breve |
+| `description` | Descrizione completa e neutra |
+
+Campi opzionali consigliati: `source_count`, `notes`, `raw_problem_ids`, `recommendation`, `impact`.
+
+### Export Formbricks severità
+
+La prima domanda deve identificare l'esperto, per esempio `Qual è il tuo id esperto?`. Ogni domanda di rating deve includere il codice del problema nel titolo:
+
+```text
+[P001] Titolo problema
+```
+
+La pipeline ignora metadata Formbricks e colonne `- Option ID`, quindi l'output normalizzato diventa:
+
+```text
+data/processed/heuristics/problem_ratings_long.csv
+```
+
+con colonne `expert_id`, `problem_id`, `severity`.
+
+### Scala Nielsen 0-4
+
+| Valore | Significato |
+|---:|---|
+| 0 | Non è un problema |
+| 1 | Problema cosmetico |
+| 2 | Problema minore |
+| 3 | Problema maggiore |
+| 4 | Problema critico |

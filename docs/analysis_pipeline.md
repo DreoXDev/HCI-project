@@ -73,3 +73,28 @@ I dark pattern possono essere discussi manualmente nelle slide, ma non sono più
 ## Nota di architettura
 
 I notebook nuovi devono restare interfacce leggere. La logica va nei moduli in `src/` e deve essere coperta da test quando cambia comportamento.
+
+## Pipeline euristiche deduplicate
+
+Quando sono presenti:
+
+```text
+data/processed/heuristics/clean_problems.csv
+data/formbricks_raw/heuristics/severity_ratings_export.csv
+```
+
+`python -m src.cli all --plot-style both` include automaticamente anche la pipeline finale delle euristiche. Se uno dei due file manca, il comando mostra un warning e continua; con `--strict` blocca l'esecuzione.
+
+Comando esplicito consigliato:
+
+```powershell
+python -m src.cli heuristics severity-pipeline --problems data/processed/heuristics/clean_problems.csv --ratings-export data/formbricks_raw/heuristics/severity_ratings_export.csv --out outputs/heuristics --strict
+```
+
+Output principali:
+
+```text
+outputs/heuristics/charts/
+outputs/heuristics/tables/
+outputs/heuristics/texts/
+```

@@ -11,6 +11,52 @@ from .users_time import TEMPLATE_COLUMNS
 USERS_TEMPLATE = "User;Task 1 Deliveroo;Task 2 Deliveroo;Task 3 Deliveroo;Task 1 Glovo;Task 2 Glovo;Task 3 Glovo;Sesso;Eta;Lavoro;Istruzione\nU1;0.00-C;0.00-A;0.00-F;0.00-C;0.00-A;0.00-F;F;22;Studente;Diploma\n"
 HEURISTICS_TEMPLATE = ",Problema,Expert 1,Expert 2,Expert 3,Euristiche,Id valutatori\nPB1,Descrizione problema,2,3,1,E1-E5,EU1-ED1\n"
 QUESTIONNAIRE_TEMPLATE = ",Utente 1,Utente 2\ngenere,Femmina,Maschio\neta,22,23\nsituazione lavorativa,Studente,Studente\nistruzione,Diploma,Laurea\nfastidioso-piacevole,4,5\nNPS,8,9\n"
+HEURISTICS_CLEAN_PROBLEMS_TEMPLATE = pd.DataFrame(
+    [
+        {
+            "problem_id": "P001",
+            "app": "Deliveroo",
+            "screen": "Checkout",
+            "heuristic": "H4",
+            "title": "Titolo breve problema",
+            "description": "Descrizione chiara del problema",
+            "source_count": 1,
+            "notes": "",
+        },
+        {
+            "problem_id": "P002",
+            "app": "Glovo",
+            "screen": "Home",
+            "heuristic": "H8",
+            "title": "Titolo breve problema",
+            "description": "Descrizione chiara del problema",
+            "source_count": 1,
+            "notes": "",
+        },
+    ]
+)
+HEURISTICS_RATINGS_LONG_TEMPLATE = pd.DataFrame(
+    [
+        {"expert_id": "E01", "problem_id": "P001", "severity": 3},
+        {"expert_id": "E01", "problem_id": "P002", "severity": 2},
+        {"expert_id": "E02", "problem_id": "P001", "severity": 4},
+    ]
+)
+HEURISTICS_FORMBRICKS_EXAMPLE = pd.DataFrame(
+    [
+        {
+            "No.": 1,
+            "Response ID": "resp_001",
+            "Timestamp": "2026-05-13 10:00:00",
+            "Finished": True,
+            "1. Qual e il tuo id esperto?": "E01",
+            "2. [P001] Titolo breve problema": "3 - Problema maggiore",
+            "2. [P001] Titolo breve problema - Option ID": "opt_3",
+            "3. [P002] Titolo breve problema": "2 - Problema minore",
+            "3. [P002] Titolo breve problema - Option ID": "opt_2",
+        }
+    ]
+)
 USERS_TIME_EXAMPLE = [
     {
         "user_id": "U01",
@@ -117,6 +163,15 @@ def create_templates(directory: str | Path = "data/templates", overwrite: bool =
         (examples / "users_time_template.xlsx", users_time_template),
         (examples / "users_time_example.csv", users_time_example),
         (examples / "users_time_example.xlsx", users_time_example),
+    ]:
+        if _write_dataframe_if_needed(path, df, overwrite):
+            created.append(path)
+    heuristics = target / "heuristics"
+    heuristics.mkdir(parents=True, exist_ok=True)
+    for path, df in [
+        (heuristics / "clean_problems_template.csv", HEURISTICS_CLEAN_PROBLEMS_TEMPLATE),
+        (heuristics / "problem_ratings_long_template.csv", HEURISTICS_RATINGS_LONG_TEMPLATE),
+        (heuristics / "severity_formbricks_example.csv", HEURISTICS_FORMBRICKS_EXAMPLE),
     ]:
         if _write_dataframe_if_needed(path, df, overwrite):
             created.append(path)

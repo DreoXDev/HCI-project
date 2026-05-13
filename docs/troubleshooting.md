@@ -65,3 +65,31 @@ python -m src.cli all
 ```powershell
 python -m pytest
 ```
+
+## Errori nella pipeline severità deduplicata
+
+### `problem_id` non valido
+
+Eseguire:
+
+```powershell
+python -m src.cli heuristics validate-clean --problems data/processed/heuristics/clean_problems.csv
+```
+
+Gli ID devono seguire il formato `P001`, `P002`, ... e devono essere univoci.
+
+### Nessuna colonna `[P001]` trovata
+
+Controllare i titoli delle domande nel secondo form Formbricks. Ogni domanda di severità deve contenere il codice tra parentesi quadre:
+
+```text
+[P001] Titolo problema
+```
+
+### Severità non convertibile
+
+Usare valori numerici `0`, `1`, `2`, `3`, `4` oppure opzioni testuali come `3 - Problema maggiore`. Valori fuori scala bloccano o generano warning.
+
+### Problema nel form ma non nel file clean
+
+Con `--strict` la pipeline si ferma. Correggere il titolo della domanda Formbricks o aggiungere il problema a `clean_problems.csv` se è davvero parte del dataset finale.

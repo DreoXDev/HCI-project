@@ -1,6 +1,6 @@
 # Generazione slide
 
-> [!Info]
+> [!info]
 > Questa pagina descrive come produrre la presentazione PPTX e il PDF finale.
 
 ## Input
@@ -26,7 +26,7 @@ Per esportare anche il PDF:
 python -m src.cli full-pipeline --plot-style both --export-pdf
 ```
 
-> [!Warning]
+> [!warning]
 > L'export PDF richiede LibreOffice. Su Windows installa LibreOffice e aggiungi `soffice.exe` al `PATH`.
 
 ## Uso degli snippet testuali nelle slide
@@ -52,8 +52,28 @@ table:
   title_prefix: "Problemi rilevati"
 ```
 
-> [!Info]
+> [!info]
 > Le tabelle destinate alle slide usano label italiane e colonne sintetiche. I CSV tecnici restano disponibili in `outputs/tables/`.
+
+## Asset euristiche deduplicate
+
+La generazione slide non ricalcola l'analisi: legge gli asset già prodotti dalla pipeline euristica finale.
+
+```powershell
+python -m src.cli heuristics severity-pipeline --problems data/processed/heuristics/clean_problems.csv --ratings-export data/formbricks_raw/heuristics/severity_ratings_export.csv --out outputs/heuristics --strict
+```
+
+Asset disponibili:
+
+```text
+outputs/heuristics/heuristics_top_problems.png
+outputs/heuristics/heuristics_problem_expert_heatmap.png
+outputs/heuristics/heuristics_by_app.png
+outputs/heuristics/heuristics_by_heuristic.png
+outputs/heuristics/heuristics_critical_problems_table.csv
+outputs/heuristics/heuristics_summary.md
+outputs/heuristics/heuristics_top_findings.md
+```
 
 ## Template PowerPoint
 
@@ -69,4 +89,3 @@ table:
 | `LibreOffice non trovato` | Installa LibreOffice e verifica `soffice --version` |
 | PDF non prodotto | Controlla che il PPTX esista e che `outputs/slides/` sia scrivibile |
 | Layout PDF diverso | Apri il PPTX in LibreOffice e verifica font/template |
-

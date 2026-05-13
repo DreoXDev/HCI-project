@@ -1,6 +1,6 @@
 # HCI Toolkit - Deliveroo vs Glovo
 
-> [!Info]
+> [!info]
 > Toolkit Python per generare analisi, grafici, tabelle, testi, slide PPTX e PDF finali del progetto HCI Deliveroo vs Glovo.
 
 ## Quick Start
@@ -10,8 +10,21 @@ python -m pip install -r requirements.txt
 python -m src.cli full-pipeline --plot-style both --export-pdf
 ```
 
-> [!Warning]
+> [!warning]
 > L'export PDF richiede LibreOffice installato e accessibile come `soffice` o `libreoffice`.
+
+## Pipeline euristiche Formbricks
+
+Il flusso supporta una deduplicazione manuale seguita da import automatico delle valutazioni di severità:
+
+```powershell
+python -m src.cli heuristics raw --input data/formbricks_raw/heuristics/problems_raw_export.csv
+python -m src.cli heuristics validate-clean --problems data/processed/heuristics/clean_problems.csv
+python -m src.cli heuristics severity-pipeline --problems data/processed/heuristics/clean_problems.csv --ratings-export data/formbricks_raw/heuristics/severity_ratings_export.csv --out outputs/heuristics --strict
+```
+
+> [!info]
+> La deduplicazione resta manuale: il file stabile è `data/processed/heuristics/clean_problems.csv`. Dopo l'export Formbricks delle valutazioni, la pipeline genera dataset, grafici, tabelle e testi in modo automatico.
 
 ## Documentazione
 
@@ -24,4 +37,3 @@ python -m src.cli full-pipeline --plot-style both --export-pdf
 - [Snippet testuali](docs/text_snippets.md)
 
 I dati demo inclusi sono inventati e servono solo per provare la pipeline.
-

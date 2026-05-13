@@ -1,6 +1,6 @@
 # Mappa CLI
 
-> [!Info]
+> [!info]
 > Tutti i comandi partono da `python -m src.cli`.
 
 ## Comandi principali
@@ -15,55 +15,15 @@
 | `validate-slide-template` | Controlla i `TEMPLATE_ID` del template |
 | `validate-slide-assets` | Controlla asset richiesti dal deck |
 
-## `python -m src.cli full-pipeline`
-
-> [!Info]
-> Esegue la pipeline completa e, con `--export-pdf`, genera anche PPTX e PDF.
-
-### Uso
+## Pipeline completa
 
 ```powershell
 python -m src.cli full-pipeline --plot-style both --export-pdf
+python -m src.cli all --plot-style both
 ```
 
-### Output
-
-`outputs/figures/`, `outputs/tables/`, `outputs/tables_md/`, `outputs/text_snippets/`, `outputs/slide_pack/`, `outputs/slides/`.
-
-### Opzioni
-
-| Opzione | Effetto |
-|---|---|
-| `--plot-style both` | Esporta figure scure e presentation |
-| `--generate-slides` | Genera il PPTX senza chiedere PDF |
-| `--export-pdf` | Genera PPTX e tenta export PDF |
-| `--no-export-pdf` | Salta il PDF |
-
-## `python -m src.cli generate-slides`
-
-> [!Info]
-> Usa `slides/config/slide_deck.yml` e il template PPTX per generare la presentazione.
-
-```powershell
-python -m src.cli generate-slides --auto --overwrite --export-pdf
-```
-
-### Errori comuni
-
-| Errore | Causa |
-|---|---|
-| LibreOffice non trovato | Serve per `--export-pdf` |
-| Asset mancante | Lancia prima `full-pipeline` |
-| Template non valido | Esegui `validate-slide-template` |
-
-## `python -m src.cli build-slide-pack`
-
-> [!Info]
-> Genera il materiale narrativo in `outputs/slide_pack/`. Con `--export-pdf` genera anche PPTX e PDF.
-
-```powershell
-python -m src.cli build-slide-pack --export-pdf
-```
+> [!tip]
+> `all` include anche la pipeline euristica finale se trova `data/processed/heuristics/clean_problems.csv` e `data/formbricks_raw/heuristics/severity_ratings_export.csv`.
 
 ## Import Formbricks
 
@@ -73,15 +33,29 @@ python -m src.cli import-formbricks-heuristics-discovery --input data/formbricks
 python -m src.cli import-formbricks-heuristics-ratings --input data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv --output data/templates/heuristics_consolidated_problems_demo.csv
 ```
 
-## Validazione slide
+## Euristiche deduplicate
+
+```powershell
+python -m src.cli heuristics validate-clean --problems data/processed/heuristics/clean_problems.csv
+python -m src.cli heuristics import-severity-formbricks --input data/formbricks_raw/heuristics/severity_ratings_export.csv --output data/processed/heuristics/problem_ratings_long.csv
+python -m src.cli heuristics join-severity --problems data/processed/heuristics/clean_problems.csv --ratings data/processed/heuristics/problem_ratings_long.csv --output data/processed/heuristics/heuristic_final_dataset.csv
+python -m src.cli heuristics analyze-final --dataset data/processed/heuristics/heuristic_final_dataset.csv --out outputs/heuristics
+python -m src.cli heuristics severity-pipeline --problems data/processed/heuristics/clean_problems.csv --ratings-export data/formbricks_raw/heuristics/severity_ratings_export.csv --out outputs/heuristics --strict
+```
+
+> [!info]
+> `severity-pipeline` esegue validazione, import Formbricks wide-to-long, join e generazione di grafici, tabelle e testi.
+
+## Slide
 
 ```powershell
 python -m src.cli validate-slide-template
 python -m src.cli validate-slide-assets
+python -m src.cli generate-slides --auto --overwrite
+python -m src.cli build-slide-pack --export-pdf
 ```
 
 ## Note
 
-> [!Warning]
+> [!warning]
 > La CLI usa un parser globale: alcune opzioni sono visibili per più comandi, ma hanno effetto solo dove indicato.
-
