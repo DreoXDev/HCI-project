@@ -17,7 +17,7 @@ from .visualization.theme import get_brand_palette, style_axis
 
 def analyze_ueq_benchmark(config: dict, input_path: str | Path = "data/raw/ueq_benchmark.csv") -> pd.DataFrame:
     path = resolve_path(input_path)
-    text_path = resolve_path("outputs/text_snippets/ueq_benchmark_conclusions.md")
+    text_path = resolve_path("outputs/texts/snippets/ueq_benchmark_conclusions.md")
     text_path.parent.mkdir(parents=True, exist_ok=True)
     if not path.exists():
         text_path.write_text(
@@ -55,3 +55,4 @@ def analyze_ueq_benchmark(config: dict, input_path: str | Path = "data/raw/ueq_b
         note += f" Scala con media più alta: {best.iloc[0]['scale']} ({best.iloc[0]['system']})."
     text_path.write_text("# Benchmark UEQ\n\n" + note + "\n", encoding="utf-8")
     return merged
+

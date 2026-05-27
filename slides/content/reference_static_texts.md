@@ -1,6 +1,12 @@
-﻿# Testi statici per deck in ordine reference
+# Testi statici per deck in ordine reference
 
 Questo file contiene i testi modificabili usati dalla modalità `reference_order` del generatore slide. Ogni sezione `## chiave` viene letta dal codice e può essere cambiata senza toccare Python.
+
+## components
+Gruppo HCI
+
+## academic_year
+Anno accademico 2025/2026
 
 ## index
 **01 Contesto**
@@ -153,13 +159,11 @@ Durante i test sono stati osservati:
 Il confronto tra **Deliveroo** e **Glovo** permette di rilevare differenze concrete nel modo in cui gli utenti attraversano flussi simili.
 
 ## user_test_tasks
-I task sono stati costruiti per simulare **situazioni d'uso quotidiane**.
+I task sono stati costruiti per simulare un flusso di ordinazione realistico e identico per entrambi i sistemi.
 
-1. **Ricerca** di un ristorante.
-2. **Aggiunta** di un prodotto al carrello.
-3. **Modifica** del carrello.
-4. **Checkout**.
-5. **Tracking** dell'ordine.
+1. **Impostare l'indirizzo di consegna**: Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI.
+2. **Filtrare la ricerca per hamburger**, trovare il ristorante **Bun Burgers** e comporre un ordine fino al checkout, senza confermare l'acquisto.
+3. **Editare il carrello** rimuovendo il menu appena aggiunto.
 
 ## task_deck_purpose
 Questa presentazione serve a guidarti durante il test utente su **Deliveroo** e **Glovo**.
@@ -179,49 +183,52 @@ Prima di iniziare:
 Se un task non può essere completato per motivi tecnici, fermati e descrivi cosa ti ha bloccato.
 
 ## user_task_1
-Cerca un ristorante disponibile nella tua zona e apri la scheda di dettaglio.
+Imposta l'indirizzo di consegna uguale per tutti:
+**Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI**.
 
 ## user_task_1_deliveroo
 1. Apri Deliveroo.
-2. Inserisci o conferma l'indirizzo.
-3. Cerca un ristorante.
-4. Apri la scheda del ristorante scelto.
+2. Apri la gestione dell'indirizzo di consegna.
+3. Inserisci **Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI**.
+4. Conferma l'indirizzo e torna alla schermata principale.
 
 ## user_task_1_glovo
 1. Apri Glovo.
-2. Inserisci o conferma l'indirizzo.
-3. Entra nella categoria cibo o ristoranti.
-4. Apri la scheda del ristorante scelto.
+2. Apri la gestione dell'indirizzo di consegna.
+3. Inserisci **Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI**.
+4. Conferma l'indirizzo e torna alla schermata principale.
 
 ## user_task_2
-Aggiungi un prodotto al carrello partendo dalla scheda di un ristorante.
+Filtra la ricerca per **hamburgers**, trova **Bun Burgers** e prepara un ordine fino al checkout, senza completare l'acquisto.
 
 ## user_task_2_deliveroo
-1. Seleziona un ristorante.
-2. Scegli un prodotto dal menu.
-3. Aggiungi eventuali opzioni richieste.
-4. Inserisci il prodotto nel carrello.
+1. Filtra o cerca la categoria **hamburgers**.
+2. Trova e apri il ristorante **Bun Burgers**.
+3. Aggiungi un **menu cheeseburger doppio**.
+4. Scegli **patatine normali** e una **bibita a piacere**.
+5. Procedi fino al checkout, senza confermare l'ordine.
 
 ## user_task_2_glovo
-1. Seleziona un ristorante o negozio.
-2. Scegli un prodotto.
-3. Gestisci eventuali opzioni o personalizzazioni.
-4. Inserisci il prodotto nel carrello.
+1. Filtra o cerca la categoria **hamburgers**.
+2. Trova e apri il ristorante **Bun Burgers**.
+3. Aggiungi un **menu cheeseburger doppio**.
+4. Scegli **patatine normali** e una **bibita a piacere**.
+5. Procedi fino al checkout, senza confermare l'ordine.
 
 ## user_task_3
-Modifica il carrello cambiando quantità o rimuovendo un prodotto.
+Edita il carrello rimuovendo il menu appena aggiunto.
 
 ## user_task_3_deliveroo
 1. Apri il carrello.
-2. Modifica la quantità di un prodotto.
-3. Rimuovi un prodotto se richiesto.
-4. Verifica il totale aggiornato.
+2. Individua il menu appena aggiunto.
+3. Rimuovi il prodotto dal carrello.
+4. Verifica che il carrello sia vuoto o che il totale sia aggiornato.
 
 ## user_task_3_glovo
 1. Apri il carrello.
-2. Modifica la quantità di un prodotto.
-3. Rimuovi un prodotto se richiesto.
-4. Verifica il totale aggiornato.
+2. Individua il menu appena aggiunto.
+3. Rimuovi il prodotto dal carrello.
+4. Verifica che il carrello sia vuoto o che il totale sia aggiornato.
 
 ## user_task_4
 Completa il checkout fino alla schermata finale prima della conferma definitiva.

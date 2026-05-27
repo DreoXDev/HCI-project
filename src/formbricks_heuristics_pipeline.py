@@ -501,7 +501,7 @@ def normalize_formbricks_severity_export(
     warnings: list[str] = []
     evaluator_col = detect_expert_id_column(export.columns)
     if not evaluator_col:
-        raise ValueError("Colonna ID esperto non trovata. Inserisci una domanda tipo 'Qual e il tuo id esperto?'.")
+        raise ValueError("Colonna ID esperto non trovata. Inserisci una domanda tipo 'Qual e il tuo id esperto'.")
     problem_columns = detect_problem_rating_columns(export.columns)
     if not problem_columns:
         raise ValueError("Nessuna colonna rating con pattern [P001] trovata nell'export Formbricks.")
@@ -578,7 +578,7 @@ def normalize_severity_strict(value: Any) -> int | None:
     if text.isdigit():
         number = int(text)
         return number if 0 <= number <= 4 else None
-    match = re.match(r"^\s*([0-4])\s*(?:[-–:]|$)", text)
+    match = re.match(r"^\s*([0-4])\s*(:[-–:]|$)", text)
     if match:
         return int(match.group(1))
     lower = comparable(text)

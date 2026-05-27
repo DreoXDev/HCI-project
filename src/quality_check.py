@@ -62,8 +62,8 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
         "outputs/tables/user_test_effectiveness.csv",
         "outputs/tables/heuristics_summary.csv",
         "outputs/tables/ueq_summary.csv",
-        "outputs/slide_pack/00_index.md",
-        "outputs/slide_pack/assets_manifest.csv",
+        "outputs/slide_assets/pack/00_index.md",
+        "outputs/slide_assets/pack/assets_manifest.csv",
     ]
     for output in required_outputs:
         _check(resolve_path(output).exists(), f"Output principale presente: {output}", f"Output principale mancante: {output}", rows)
@@ -91,3 +91,4 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(lines), encoding="utf-8")
     return status == "READY_FOR_SLIDES"
+

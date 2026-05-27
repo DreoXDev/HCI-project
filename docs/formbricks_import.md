@@ -91,8 +91,8 @@ Per il questionario usare tag nei titoli quando possibile:
 [DEMOGRAPHIC] Eta
 [UEQ][Deliveroo] Fastidioso/Piacevole
 [UEQ][Glovo] Fastidioso/Piacevole
-[NPS][Deliveroo] Quanto consiglieresti Deliveroo?
-[NPS][Glovo] Quanto consiglieresti Glovo?
+[NPS][Deliveroo] Quanto consiglieresti Deliveroo
+[NPS][Glovo] Quanto consiglieresti Glovo
 ```
 
 Per le euristiche, il mapping delle colonne vive in:

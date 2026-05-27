@@ -33,7 +33,7 @@ def test_convert_questionnaire_export_transposes_and_splits_systems(tmp_path: Pa
                 "5. Inserisci una valutazione per ogni campo riguardo all'app di Deliveroo. Fastidioso/Piacevole,"
                 "6. Incomprensibile/Comprensibile,"
                 "31. Inserisci una valutazione per ogni campo riguardo all'app di Glovo. Fastidioso/Piacevole,"
-                "32. Incomprensibile/Comprensibile,Quanto consiglieresti Deliveroo?,Quanto consiglieresti Glovo?",
+                "32. Incomprensibile/Comprensibile,Quanto consiglieresti Deliveroo,Quanto consiglieresti Glovo",
                 "1,r1,Yes,Maschio,Meno di 25 anni,Studente,Alta,5,6,4,5,9,8",
                 "2,r2,No,Femmina,25-45,Lavoratore,Bassa,1,1,1,1,0,0",
                 "3,r3,Yes,Femmina,25-45,Studente,Media,6,7,5,6,10,9",
@@ -49,8 +49,8 @@ def test_convert_questionnaire_export_transposes_and_splits_systems(tmp_path: Pa
         "fastidioso-piacevole",
         "incomprensibile-comprensibile",
     ]
-    config["formbricks"]["questionnaire"]["nps_system_1"] = "Quanto consiglieresti Deliveroo?"
-    config["formbricks"]["questionnaire"]["nps_system_2"] = "Quanto consiglieresti Glovo?"
+    config["formbricks"]["questionnaire"]["nps_system_1"] = "Quanto consiglieresti Deliveroo"
+    config["formbricks"]["questionnaire"]["nps_system_2"] = "Quanto consiglieresti Glovo"
 
     convert_questionnaire_export(None, config)
 

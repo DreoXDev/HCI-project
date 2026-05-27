@@ -24,12 +24,12 @@ def classify_asset(path: Path) -> tuple[str, str]:
     return "general", "Asset generale"
 
 
-def build_assets_manifest(output_path: str | Path = "outputs/slide_pack/assets_manifest.csv") -> pd.DataFrame:
+def build_assets_manifest(output_path: str | Path = "outputs/slide_assets/pack/assets_manifest.csv") -> pd.DataFrame:
     roots = [
         resolve_path("outputs/figures/dark"),
         resolve_path("outputs/figures/presentation"),
-        resolve_path("outputs/tables_md"),
-        resolve_path("outputs/text_snippets"),
+        resolve_path("outputs/tables/markdown"),
+        resolve_path("outputs/texts/snippets"),
     ]
     rows = []
     for root in roots:
@@ -37,7 +37,7 @@ def build_assets_manifest(output_path: str | Path = "outputs/slide_pack/assets_m
             continue
         for path in sorted(p for p in root.rglob("*") if p.is_file() and p.suffix.lower() in {".png", ".svg", ".md", ".csv"}):
             section, slide_title = classify_asset(path)
-            asset_type = "figure" if path.suffix.lower() in {".png", ".svg"} else "text" if "text_snippets" in str(path) else "table"
+            asset_type = "figure" if path.suffix.lower() in {".png", ".svg"} else "text" if "texts/snippets" in str(path).replace("\\", "/") else "table"
             priority = "high" if section in {"heuristics", "user_tests", "questionnaire", "conclusions"} else "medium"
             rows.append(
                 {
@@ -54,3 +54,4 @@ def build_assets_manifest(output_path: str | Path = "outputs/slide_pack/assets_m
     target.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(target, index=False)
     return df
+

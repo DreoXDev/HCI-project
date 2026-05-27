@@ -57,12 +57,65 @@ from .validation import (
     validate_users_time_csv,
 )
 
+GENERATED_OUTPUT_PATHS = [
+    "outputs/figures",
+    "outputs/reports",
+    "outputs/slides",
+    "outputs/slide_assets",
+    "outputs/tables",
+    "outputs/texts",
+    "outputs/texts/snippets",
+    "outputs/texts/analysis",
+    "outputs/import_report.md",
+    "outputs/reference_model_pages.txt",
+    "outputs/slide_manifest.json",
+    "outputs/slide_manifest.md",
+    # Legacy output layout, kept here so one clean run removes old clutter.
+    "outputs/generated_report_sections",
+    "outputs/slide_pack",
+    "outputs/tables_md",
+    "outputs/text",
+    "outputs/text_snippets",
+    "reports",
+]
+
+OUTPUT_KEEP_FILES = [
+    "outputs/.gitkeep",
+    "outputs/reports/.gitkeep",
+    "outputs/tables/markdown/.gitkeep",
+    "outputs/texts/analysis/.gitkeep",
+    "outputs/texts/snippets/.gitkeep",
+    "reports/.gitkeep",
+]
+
 
 def _existing(path: str | Path | None) -> Path | None:
     if not path:
         return None
     target = resolve_path(path)
     return target if target.exists() else None
+
+
+def clean_generated_outputs(config: dict) -> list[Path]:
+    root = resolve_path(".").resolve()
+    removed: list[Path] = []
+    for raw_path in GENERATED_OUTPUT_PATHS:
+        target = resolve_path(raw_path).resolve()
+        if not target.exists():
+            continue
+        if target == root or root not in target.parents:
+            raise RuntimeError(f"Refusing to remove outside project root: {target}")
+        if target.is_dir():
+            shutil.rmtree(target)
+        else:
+            target.unlink()
+        removed.append(target)
+    ensure_output_dirs(config)
+    for keep in OUTPUT_KEEP_FILES:
+        keep_path = resolve_path(keep)
+        keep_path.parent.mkdir(parents=True, exist_ok=True)
+        keep_path.touch()
+    return removed
 
 
 def import_formbricks_available(config: dict, include_unfinished: bool = False) -> bool:
@@ -89,6 +142,7 @@ def import_formbricks_available(config: dict, include_unfinished: bool = False) 
 
 def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     print("HCI Toolkit - Full Pipeline")
+    clean_generated_outputs(config)
     ensure_output_dirs(config)
     print("\n[1/7] Import Formbricks CSV...")
     import_formbricks_available(config, include_unfinished)
@@ -139,7 +193,7 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     run_quality_check(config)
     print(resolve_path("outputs/reports/final_quality_check.md"))
     print("\nOutput principale:")
-    print(resolve_path("outputs/slide_pack/00_index.md"))
+    print(resolve_path("outputs/slide_assets/pack/00_index.md"))
 
 
 def run_optional_final_heuristics(strict: bool = False) -> None:
@@ -159,6 +213,7 @@ def run_optional_final_heuristics(strict: bool = False) -> None:
 
 def generate_report(config: dict) -> None:
     """Generate normalized report assets without assembling the PPTX deck."""
+    clean_generated_outputs(config)
     ensure_output_dirs(config)
     data = load_all(config)
     print(validate(config, data))
@@ -364,7 +419,7 @@ def analyze(config: dict, data: dict[str, pd.DataFrame]) -> None:
     Path(paths["output_text"]).mkdir(parents=True, exist_ok=True)
     Path(paths["output_text"], "user_test_summary.txt").write_text("\n".join(snippets), encoding="utf-8")
     Path(paths["output_text"], "final_comparison_summary.txt").write_text(
-        f"Pipeline completata per {systems[0]} vs {systems[1]}. Consultare outputs/figures e outputs/tables_md.",
+        f"Pipeline completata per {systems[0]} vs {systems[1]}. Consultare outputs/figures e outputs/tables/markdown.",
         encoding="utf-8",
     )
     if users_time_enabled(config):
@@ -399,6 +454,19 @@ def export_pdf_or_exit(pptx_path: str | Path) -> None:
     print(f"PDF generato: {result.pdf_path}")
 
 
+FULL_PIPELINE_SLIDE_CONFIGS = [
+    "slides/config/slide_deck.yml",
+    "slides/config/user_task_deck.yml",
+]
+
+
+def generate_full_pipeline_slide_decks(*, overwrite: bool = False, timestamp: bool = False) -> list[SlideGenerationResult]:
+    results = []
+    for slide_config in FULL_PIPELINE_SLIDE_CONFIGS:
+        results.append(generate_slides(slide_config, overwrite=overwrite, timestamp=timestamp))
+    return results
+
+
 def main() -> None:
     if len(sys.argv) > 1 and sys.argv[1] == "heuristics":
         heuristics_cli(sys.argv[2:])
@@ -411,6 +479,7 @@ def main() -> None:
             "validate-users-time",
             "analyze",
             "generate-report",
+            "clean-outputs",
             "generate-slides",
             "validate-slide-template",
             "validate-slide-assets",
@@ -491,6 +560,12 @@ def main() -> None:
             raise SystemExit(1)
         print("OK: asset slide validi")
         return
+    if args.command == "clean-outputs":
+        removed = clean_generated_outputs(config)
+        print("Output generati rimossi:")
+        for path in removed:
+            print(path)
+        return
     if args.command == "generate-report":
         generate_report(config)
         return
@@ -534,12 +609,13 @@ def main() -> None:
         full_pipeline(config, include_unfinished=args.include_unfinished)
         if args.generate_slides or args.export_pdf:
             try:
-                result = generate_slides(overwrite=args.overwrite, timestamp=args.timestamp)
+                results = generate_full_pipeline_slide_decks(overwrite=args.overwrite, timestamp=args.timestamp)
             except SlideGenerationError as exc:
                 raise SystemExit(str(exc)) from exc
-            print(format_slide_generation_summary(result))
-            if args.export_pdf and not args.no_export_pdf:
-                export_pdf_or_exit(result.output)
+            for result in results:
+                print(format_slide_generation_summary(result))
+                if args.export_pdf and not args.no_export_pdf:
+                    export_pdf_or_exit(result.output)
         return
     if args.command == "analyze-benchmark":
         analyze_ueq_benchmark(config, args.input or "data/raw/ueq_benchmark.csv")
@@ -555,7 +631,7 @@ def main() -> None:
         analyze_ueq_benchmark(config)
         generate_text_outputs(config)
         build_slide_pack(config)
-        print("Slide pack generato in outputs/slide_pack/.")
+        print("Slide pack generato in outputs/slide_assets/pack/.")
         if args.export_pdf and not args.no_export_pdf:
             try:
                 result = generate_slides(overwrite=True, timestamp=args.timestamp)
@@ -638,7 +714,7 @@ def main() -> None:
         print("Analisi completata. Output salvati in outputs/.")
     if args.command in {"all", "all-from-formbricks", "export-text"}:
         generate_text_outputs(config)
-        print("Testi generati in outputs/text_snippets e outputs/generated_report_sections.")
+        print("Testi generati in outputs/texts/snippets.")
     if args.command in {"all", "all-from-formbricks", "export-slide-assets"}:
         data = load_all(config)
         generate_final_assets(config, data)

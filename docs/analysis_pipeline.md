@@ -51,13 +51,12 @@ python -m src.cli full-pipeline --plot-style both
 
 - `outputs/figures/`: grafici PNG/SVG
 - `outputs/tables/`: tabelle CSV
-- `outputs/tables_md/`: tabelle Markdown
-- `outputs/text_snippets/`: frasi pronte per report
-- `outputs/text/`: testi deterministici dedicati, incluso `users_time_interpretation.md`
+- `outputs/tables/markdown/`: tabelle Markdown
+- `outputs/texts/snippets/`: frasi pronte per report
+- `outputs/texts/analysis/`: testi deterministici dedicati, incluso `users_time_interpretation.md`
 - `outputs/reports/`: report di validazione
-- `outputs/generated_report_sections/`: sezioni report
 - `outputs/slide_manifest.md`: indice operativo per le slide
-- `outputs/slide_pack/`: markdown finale per slide, executive summary e manifest CSV degli asset
+- `outputs/slide_assets/pack/`: markdown finale per slide, executive summary e manifest CSV degli asset
 
 ## Comandi extra per slide finali
 
@@ -98,3 +97,4 @@ outputs/heuristics/charts/
 outputs/heuristics/tables/
 outputs/heuristics/texts/
 ```
+

@@ -49,7 +49,7 @@ HEURISTICS_FORMBRICKS_EXAMPLE = pd.DataFrame(
             "Response ID": "resp_001",
             "Timestamp": "2026-05-13 10:00:00",
             "Finished": True,
-            "1. Qual e il tuo id esperto?": "E01",
+            "1. Qual e il tuo id esperto": "E01",
             "2. [P001] Titolo breve problema": "3 - Problema maggiore",
             "2. [P001] Titolo breve problema - Option ID": "opt_3",
             "3. [P002] Titolo breve problema": "2 - Problema minore",
@@ -156,6 +156,7 @@ def create_templates(directory: str | Path = "data/templates", overwrite: bool =
 
     examples = resolve_path("data/examples")
     examples.mkdir(parents=True, exist_ok=True)
+    overwrite_examples = overwrite and target == resolve_path("data/templates")
     users_time_template = pd.DataFrame(columns=TEMPLATE_COLUMNS)
     users_time_example = pd.DataFrame(USERS_TIME_EXAMPLE, columns=TEMPLATE_COLUMNS)
     for path, df in [
@@ -164,7 +165,7 @@ def create_templates(directory: str | Path = "data/templates", overwrite: bool =
         (examples / "users_time_example.csv", users_time_example),
         (examples / "users_time_example.xlsx", users_time_example),
     ]:
-        if _write_dataframe_if_needed(path, df, overwrite):
+        if _write_dataframe_if_needed(path, df, overwrite_examples):
             created.append(path)
     heuristics = target / "heuristics"
     heuristics.mkdir(parents=True, exist_ok=True)

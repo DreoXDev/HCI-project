@@ -64,7 +64,7 @@ def test_analyze_users_time_writes_outputs(tmp_path: Path) -> None:
     )
 
     assert (tmp_path / "tables" / "users_time_summary.csv").exists()
-    assert (tmp_path / "tables" / "users_time_summary.md").exists()
+    assert (tmp_path / "tables" / "markdown" / "users_time_summary.md").exists()
     assert (tmp_path / "tables" / "users_time_stat_tests.csv").exists()
     assert (tmp_path / "figures" / "dark" / "users_time_mean_by_task.png").exists()
     assert (tmp_path / "figures" / "presentation" / "users_time_mean_by_task.png").exists()

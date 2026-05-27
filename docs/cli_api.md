@@ -8,8 +8,9 @@
 | Comando | Scopo |
 |---|---|
 | `validate` | Valida i CSV normalizzati |
-| `full-pipeline` | Rigenera analisi, asset, testi e slide pack |
-| `generate-slides` | Crea il PPTX finale |
+| `clean-outputs` | Rimuove artefatti rigenerabili senza toccare dati, template e testi statici |
+| `full-pipeline` | Rigenera analisi, asset, testi, slide pack e, con `--generate-slides`, entrambi i PPTX finali |
+| `generate-slides` | Crea un PPTX dalla config indicata |
 | `build-slide-pack` | Prepara testi e asset narrativi per le slide |
 | `quality-check` | Controlla dati, output e documentazione |
 | `validate-slide-template` | Controlla i `TEMPLATE_ID` del template |
@@ -18,12 +19,27 @@
 ## Pipeline completa
 
 ```powershell
-python -m src.cli full-pipeline --plot-style both --export-pdf
-python -m src.cli all --plot-style both
+python -m src.cli full-pipeline --plot-style both --generate-slides --no-export-pdf
+python -m src.cli full-pipeline --plot-style both --generate-slides --export-pdf
 ```
 
+Con `--generate-slides`, la pipeline completa produce:
+
+- `outputs/slides/final_report.pptx`
+- `outputs/slides/user_task_deck.pptx`
+
+Con `--export-pdf`, esporta anche i PDF dei deck generati.
+
 > [!tip]
-> `all` include anche la pipeline euristica finale se trova `data/processed/heuristics/clean_problems.csv` e `data/formbricks_raw/heuristics/severity_ratings_export.csv`.
+> `full-pipeline` pulisce automaticamente `outputs/` e `reports/` prima di rigenerare gli artefatti. Il comando `all` resta disponibile per compatibilità, ma non è il flusso production consigliato.
+
+## Pulizia output
+
+```powershell
+python -m src.cli clean-outputs
+```
+
+Rimuove solo output rigenerabili. Non tocca `data/`, `slides/templates/`, `slides/content/` o `slides/assets/appendices/`.
 
 ## Import Formbricks
 
@@ -52,6 +68,7 @@ python -m src.cli heuristics severity-pipeline --problems data/processed/heurist
 python -m src.cli validate-slide-template
 python -m src.cli validate-slide-assets
 python -m src.cli generate-slides --auto --overwrite
+python -m src.cli generate-slides --config slides/config/user_task_deck.yml --overwrite
 python -m src.cli build-slide-pack --export-pdf
 ```
 

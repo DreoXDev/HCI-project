@@ -6,7 +6,7 @@ metadata:
   project_title: "Deliveroo vs Glovo"
   subtitle: "Analisi trasversale di usabilità"
   authors: "Gruppo HCI"
-  date: "2026"
+  date: "Anno accademico 2025/2026"
 
 auto_slides:
   enabled: true
@@ -24,6 +24,8 @@ auto_slides:
   include_slide_pack_text: false
   include_sources: true
   table_rows_per_slide: 12
+  task_count: 3
+  appendix_assets_root: slides/assets/appendices
   # Lasciare vuoto per generare tutte le slide possibili dagli asset esistenti.
   # Impostare un numero se serve produrre solo un sottoinsieme per revisione rapida.
   max_slides:
@@ -35,7 +37,7 @@ slides:
       PROJECT_TITLE: "Deliveroo vs Glovo"
       PROJECT_SUBTITLE: "Analisi trasversale di usabilità"
       AUTHORS: "Gruppo HCI"
-      YEAR/DATE: "2026"
+      YEAR/DATE: "Anno accademico 2025/2026"
 
   - template_id: section_divider
     fields:

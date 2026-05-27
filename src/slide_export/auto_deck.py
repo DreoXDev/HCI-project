@@ -32,9 +32,13 @@ DEFAULT_AUTO_CONFIG = {
     "include_sources": True,
     "reference_texts": "slides/content/reference_static_texts.md",
     "table_rows_per_slide": 12,
+    "task_count": 5,
+    "appendix_assets_root": "slides/assets/appendices",
     "max_slides": None,
     "exclude": [],
 }
+
+APPENDIX_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
 
 
 def expand_auto_slides(deck_config: dict[str, Any], available_templates: set[str]) -> dict[str, Any]:
@@ -121,6 +125,9 @@ def _reference_order_specs(
     texts = _reference_texts(auto)
     metadata = deck_config.get("metadata") or {}
     systems = _systems_from_metadata(metadata)
+    task_count = _task_count(auto)
+    authors = metadata.get("authors") or texts.get("components", "Gruppo HCI")
+    date = metadata.get("date") or texts.get("academic_year", "")
     specs: list[dict[str, Any]] = []
 
     def add(spec: dict[str, Any] | None) -> None:
@@ -133,9 +140,9 @@ def _reference_order_specs(
             "fields": {
                 "PROJECT_TITLE": metadata.get("project_title", f"{systems[0]} vs {systems[1]}"),
                 "PROJECT_SUBTITLE": metadata.get("subtitle", "Analisi trasversale di usabilità"),
-                "AUTHORS": metadata.get("authors", "Gruppo HCI"),
-                "YEAR/DATE": metadata.get("date", ""),
-                "AUTHORS_DATE": f"{metadata.get('authors', 'Gruppo HCI')} - {metadata.get('date', '')}".strip(" -"),
+                "AUTHORS": authors,
+                "YEAR/DATE": date,
+                "AUTHORS_DATE": f"{authors} - {date}".strip(" -"),
             },
         }
     )
@@ -202,7 +209,7 @@ def _reference_order_specs(
     add(_section_slide("Test utente"))
     add(_text_spec("Obiettivo", texts, "user_test_objective", available_templates))
     add(_text_spec("I task", texts, "user_test_tasks", available_templates))
-    for task_idx in range(1, 6):
+    for task_idx in range(1, task_count + 1):
         key = f"user_task_{task_idx}"
         add(_text_spec(f"Task {task_idx}", texts, key, available_templates))
         for app, theme in ((systems[0], "deliveroo"), (systems[1], "glovo")):
@@ -210,12 +217,12 @@ def _reference_order_specs(
     add(_text_spec("Composizione del campione", texts, "user_test_sample", available_templates))
     add(_text_spec("Legenda efficacia", texts, "effectiveness_legend", available_templates))
     add(_graph_or_blank("Efficacia", "outputs/figures/dark/user_tests/effectiveness_deliveroo_vs_glovo.png", texts, "effectiveness_intro", available_templates))
-    for task_idx in range(1, 6):
+    for task_idx in range(1, task_count + 1):
         task = f"t{task_idx:02d}"
         add(_graph_or_blank(f"Efficacia - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_effectiveness.png", texts, "task_result_placeholder", available_templates))
         add(_graph_or_blank(f"Errori - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_error_breakdown.png", texts, "task_error_placeholder", available_templates))
     add(_graph_or_blank("Efficienza", "outputs/figures/dark/user_tests/efficiency_boxplot.png", texts, "efficiency_intro", available_templates))
-    for task_idx in range(1, 6):
+    for task_idx in range(1, task_count + 1):
         task = f"t{task_idx:02d}"
         add(_graph_or_blank(f"Efficienza - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_efficiency.png", texts, "task_result_placeholder", available_templates))
     add(_comparison_or_blank(
@@ -272,8 +279,8 @@ def _reference_order_specs(
 
     add(_final_or_text(texts, available_templates))
     add(_section_slide("Appendici"))
-    for title in _appendix_titles(systems):
-        add(_blank_spec(title, texts, "appendix_placeholder", available_templates))
+    for spec in _appendix_specs(auto, systems, texts, available_templates, task_count):
+        add(spec)
     if auto.get("include_sources"):
         add(_text_spec("Fonti statiche", texts, "sources", available_templates))
         add(_source_specs(available_templates, specs)[0] if _source_specs(available_templates, specs) else None)
@@ -295,6 +302,9 @@ def _user_task_specs(
     texts = _reference_texts(auto)
     metadata = deck_config.get("metadata") or {}
     systems = _systems_from_metadata(metadata)
+    task_count = _task_count(auto)
+    authors = metadata.get("authors") or texts.get("components", "Gruppo HCI")
+    date = metadata.get("date") or texts.get("academic_year", "")
     specs: list[dict[str, Any]] = []
 
     def add(spec: dict[str, Any] | None) -> None:
@@ -307,21 +317,21 @@ def _user_task_specs(
             "fields": {
                 "PROJECT_TITLE": metadata.get("project_title", f"User test {systems[0]} vs {systems[1]}"),
                 "PROJECT_SUBTITLE": metadata.get("subtitle", "Presentazione dei task per i partecipanti"),
-                "AUTHORS": metadata.get("authors", "Gruppo HCI"),
-                "YEAR/DATE": metadata.get("date", ""),
-                "AUTHORS_DATE": f"{metadata.get('authors', 'Gruppo HCI')} - {metadata.get('date', '')}".strip(" -"),
+                "AUTHORS": authors,
+                "YEAR/DATE": date,
+                "AUTHORS_DATE": f"{authors} - {date}".strip(" -"),
             },
         }
     )
     add(_text_spec("A cosa serve", texts, "task_deck_purpose", available_templates))
     add(_text_spec("Prima di iniziare", texts, "task_deck_before_start", available_templates))
 
-    add(_section_slide(systems[0]))
-    for task_idx in range(1, 6):
+    add(_section_slide(systems[0], theme="deliveroo"))
+    for task_idx in range(1, task_count + 1):
         add(_text_spec(f"{systems[0]} - Task {task_idx}", texts, f"user_task_{task_idx}_deliveroo", available_templates, theme="deliveroo"))
 
-    add(_section_slide(systems[1]))
-    for task_idx in range(1, 6):
+    add(_section_slide(systems[1], theme="glovo"))
+    for task_idx in range(1, task_count + 1):
         add(_text_spec(f"{systems[1]} - Task {task_idx}", texts, f"user_task_{task_idx}_glovo", available_templates, theme="glovo"))
 
     add(_text_spec("Conclusione e questionario", texts, "task_deck_survey", available_templates))
@@ -407,9 +417,11 @@ def _table_specs(auto: dict[str, Any], available_templates: set[str], used_asset
         return []
     tables = _existing_files(resolve_path("outputs/tables"), "*.csv", used_assets, excludes)
     specs = []
-    rows_per_slide = max(4, int(auto.get("table_rows_per_slide") or 12))
+    preferred_rows_per_slide = max(4, int(auto.get("table_rows_per_slide") or 12))
     for table in tables:
         rows = _read_csv_rows(table)
+        rows_per_slide = _rows_per_slide_for_table(rows, preferred_rows_per_slide)
+        table_options = _table_render_options(rows)
         data_rows = max(0, len(rows) - 1)
         pages = max(1, (data_rows + rows_per_slide - 1) // rows_per_slide)
         for page in range(pages):
@@ -429,6 +441,7 @@ def _table_specs(auto: dict[str, Any], available_templates: set[str], used_asset
                         "source": _rel(table),
                         "start_row": page * rows_per_slide,
                         "max_rows": rows_per_slide,
+                        **table_options,
                     },
                 }
             )
@@ -438,9 +451,9 @@ def _table_specs(auto: dict[str, Any], available_templates: set[str], used_asset
 def _finding_specs(auto: dict[str, Any], available_templates: set[str], excludes: list[str]) -> list[dict[str, Any]]:
     if not _has_template(available_templates, "findings"):
         return []
-    snippets = _existing_files(resolve_path("outputs/text_snippets"), "*.md", set(), excludes)
+    snippets = _existing_files(resolve_path("outputs/texts/snippets"), "*.md", set(), excludes)
     if auto.get("include_slide_pack_text"):
-        snippets.extend(_existing_files(resolve_path("outputs/slide_pack"), "*.md", set(), excludes))
+        snippets.extend(_existing_files(resolve_path("outputs/slide_assets/pack"), "*.md", set(), excludes))
     specs = []
     seen = set()
     for snippet in snippets:
@@ -466,9 +479,8 @@ def _text_slide_specs(available_templates: set[str], excludes: list[str]) -> lis
         return []
     template_id = "text_only" if _has_template(available_templates, "text_only") else "graph_full"
     files = []
-    files.extend(_existing_files(resolve_path("outputs/slide_pack"), "*.md", set(), excludes))
-    files.extend(_existing_files(resolve_path("outputs/generated_report_sections"), "*.md", set(), excludes))
-    files.extend(_existing_files(resolve_path("outputs/text_snippets"), "*.md", set(), excludes))
+    files.extend(_existing_files(resolve_path("outputs/slide_assets/pack"), "*.md", set(), excludes))
+    files.extend(_existing_files(resolve_path("outputs/texts/snippets"), "*.md", set(), excludes))
     specs = []
     seen = set()
     for path in files:
@@ -528,8 +540,8 @@ def _source_specs(available_templates: set[str], generated_specs: list[dict[str,
     return specs
 
 
-def _section_slide(section: str) -> dict[str, Any]:
-    return {"template": "section_divider", "theme": "neutral", "fields": {"SECTION_NAME": SECTION_TITLES.get(section, _humanize(section))}}
+def _section_slide(section: str, *, theme: str = "neutral") -> dict[str, Any]:
+    return {"template": "section_divider", "theme": theme, "fields": {"SECTION_NAME": SECTION_TITLES.get(section, _humanize(section))}}
 
 
 def _text_spec(
@@ -622,12 +634,10 @@ def _table_or_blank(
             "table": {
                 "placeholder": "TABLE_MAIN",
                 "source": _rel(table_path),
-                "max_rows": 6 if "problems_slide" in table_path.name else 12,
+                "max_rows": _rows_per_slide_for_table(_read_csv_rows(table_path), 5 if "problems_slide" in table_path.name else 10),
                 "paginate": "problems_slide" in table_path.name,
                 "title_prefix": title,
-                "font_size": 7.2,
-                "header_font_size": 7.5,
-                "max_cell_chars": 72,
+                **_table_render_options(_read_csv_rows(table_path)),
             },
         }
     return _blank_spec(title, texts, fallback_key, available_templates, theme=theme)
@@ -693,23 +703,124 @@ def _systems_from_metadata(metadata: dict[str, Any]) -> tuple[str, str]:
 
 
 def _appendix_titles(systems: tuple[str, str]) -> list[str]:
+    return [title for title, _folder, _theme in _appendix_entries(systems, int(DEFAULT_AUTO_CONFIG["task_count"]))]
+
+
+def _task_count(auto: dict[str, Any]) -> int:
+    try:
+        return max(1, int(auto.get("task_count") or DEFAULT_AUTO_CONFIG["task_count"]))
+    except (TypeError, ValueError):
+        return int(DEFAULT_AUTO_CONFIG["task_count"])
+
+
+def _appendix_specs(
+    auto: dict[str, Any],
+    systems: tuple[str, str],
+    texts: dict[str, str],
+    available_templates: set[str],
+    task_count: int,
+) -> list[dict[str, Any]]:
+    root = resolve_path(auto.get("appendix_assets_root") or DEFAULT_AUTO_CONFIG["appendix_assets_root"])
+    specs = [
+        _appendix_asset_or_blank(title, root / folder, texts, available_templates, theme=theme)
+        for title, folder, theme in _appendix_entries(systems, task_count)
+    ]
+    return [spec for spec in specs if spec is not None]
+
+
+def _appendix_entries(systems: tuple[str, str], task_count: int) -> list[tuple[str, str, str]]:
     evaluators = ["EU1", "EU2", "EU3", "ED1", "ED2", "ED3"]
-    titles = []
+    entries: list[tuple[str, str, str]] = []
     for evaluator in evaluators:
         for app in systems:
-            titles.append(f"Appendice - Valutazione euristica {evaluator} - {app}")
-    titles.extend(
+            theme = infer_theme_from_app(app)
+            entries.append(
+                (
+                    f"Appendice - Valutazione euristica {evaluator} - {app}",
+                    f"heuristic_evaluations/{evaluator.lower()}/{_slug(app)}",
+                    theme,
+                )
+            )
+    entries.extend(
         [
-            "Appendice - Modulo autorizzazione foto e video",
-            f"Appendice - Valutazione dei problemi di usabilità {systems[0]}",
-            f"Appendice - Valutazione dei problemi di usabilità {systems[1]}",
-            f"{systems[0]} vs {systems[1]}",
-            "Appendice - Presentazione task user test",
-            "Appendice - Risultati questionario di usabilità",
-            "Grazie",
+            ("Appendice - Modulo autorizzazione foto e video", "consent_forms", "neutral"),
+            (f"Appendice - Valutazione dei problemi di usabilità {systems[0]}", f"problem_ratings/{_slug(systems[0])}", infer_theme_from_app(systems[0])),
+            (f"Appendice - Valutazione dei problemi di usabilità {systems[1]}", f"problem_ratings/{_slug(systems[1])}", infer_theme_from_app(systems[1])),
+            (f"{systems[0]} vs {systems[1]}", "task_deck/title", "neutral"),
+            ("Appendice - Presentazione task user test - Introduzione", "task_deck/intro", "neutral"),
+            ("Appendice - Presentazione task user test - Come funziona", "task_deck/how_it_works", "neutral"),
+            ("Appendice - Presentazione task user test - Le task", "task_deck/task_list", "neutral"),
         ]
     )
-    return titles
+    for app in systems:
+        theme = infer_theme_from_app(app)
+        app_slug = _slug(app)
+        entries.append((app, f"task_deck/{app_slug}/section", theme))
+        entries.append((f"Prima di iniziare - {app}", f"task_deck/{app_slug}/before_start", theme))
+        for task_idx in range(1, task_count + 1):
+            entries.append((f"{app} - Task {task_idx}", f"task_deck/{app_slug}/task_{task_idx}", theme))
+    entries.extend(
+        [
+            ("Attività conclusa", "task_deck/conclusion", "neutral"),
+            ("Questionario", "questionnaire/form", "neutral"),
+            ("Appendice - Risposte questionario", "questionnaire/responses", "neutral"),
+            ("Appendice - Risultati questionario di usabilità", "questionnaire/results", "neutral"),
+            ("Grazie", "closing", "neutral"),
+        ]
+    )
+    return entries
+
+
+def _appendix_asset_or_blank(
+    title: str,
+    folder: Path,
+    texts: dict[str, str],
+    available_templates: set[str],
+    *,
+    theme: str = "neutral",
+) -> dict[str, Any] | None:
+    folder.mkdir(parents=True, exist_ok=True)
+    image = _first_appendix_image(folder)
+    if image and _has_template(available_templates, "graph_full"):
+        return {
+            "template": "graph_full",
+            "theme": theme,
+            "fields": {"GRAPH_TITLE": title, "INSIGHT_TEXT": texts.get("appendix_placeholder", "")},
+            "images": {"GRAPH_MAIN": _rel(image)},
+        }
+    body = texts.get("appendix_placeholder", "") or f"Placeholder appendice. Inserire asset in `{_rel(folder)}`."
+    return _text_spec(title, {**texts, "__appendix_body": body}, "__appendix_body", available_templates, theme=theme)
+
+
+def _first_appendix_image(folder: Path) -> Path | None:
+    if not folder.exists():
+        return None
+    for path in sorted(folder.iterdir()):
+        if path.is_file() and path.suffix.lower() in APPENDIX_IMAGE_EXTENSIONS:
+            return path
+    return None
+
+
+def _rows_per_slide_for_table(rows: list[list[str]], preferred: int) -> int:
+    columns = len(rows[0]) if rows else 0
+    if columns >= 9:
+        return min(preferred, 4)
+    if columns >= 7:
+        return min(preferred, 5)
+    if columns >= 5:
+        return min(preferred, 7)
+    return preferred
+
+
+def _table_render_options(rows: list[list[str]]) -> dict[str, Any]:
+    columns = len(rows[0]) if rows else 0
+    if columns >= 9:
+        return {"font_size": 5.8, "header_font_size": 6.0, "max_cell_chars": 34}
+    if columns >= 7:
+        return {"font_size": 6.2, "header_font_size": 6.5, "max_cell_chars": 42}
+    if columns >= 5:
+        return {"font_size": 6.8, "header_font_size": 7.0, "max_cell_chars": 56}
+    return {"font_size": 7.3, "header_font_size": 7.6, "max_cell_chars": 72}
 
 
 def _dedupe_missing_assets(specs: list[dict[str, Any]], used_assets: set[str], excludes: list[str]) -> list[dict[str, Any]]:
@@ -726,7 +837,7 @@ def _dedupe_missing_assets(specs: list[dict[str, Any]], used_assets: set[str], e
 def _task_result_slides(effectiveness_figure: Path) -> list[dict[str, Any]]:
     task = effectiveness_figure.stem.split("_", 1)[0].upper()
     rows = _read_dict_rows(resolve_path(f"outputs/tables/user_tests_{task.lower()}_summary.csv"))
-    text_path = resolve_path(f"outputs/text_snippets/user_tests_{task.lower()}.md")
+    text_path = resolve_path(f"outputs/texts/snippets/user_tests_{task.lower()}.md")
     description = _one_line_markdown(text_path.read_text(encoding="utf-8")) if text_path.exists() else "Risultati sintetici del task generati dalla pipeline."
     slides = []
     for row in rows:
@@ -988,7 +1099,7 @@ def _markdown_body(text: str) -> str:
     lines = []
     skip_section = False
     for line in text.splitlines():
-        heading = re.match(r"^#{1,6}\s*(.+?)\s*$", line)
+        heading = re.match(r"^#{1,6}\s*(.+)\s*$", line)
         if heading:
             title = heading.group(1).strip().lower()
             skip_section = title in {"asset consigliati", "note da completare manualmente"}
@@ -1019,6 +1130,11 @@ def _title_from_path(path: Path) -> str:
 
 def _humanize(value: str) -> str:
     return re.sub(r"\s+", " ", value.replace("_", " ").replace("-", " ")).strip().capitalize()
+
+
+def _slug(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "_", str(value).lower()).strip("_")
+    return slug or "asset"
 
 
 def _compact(value: str, limit: int) -> str:

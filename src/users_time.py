@@ -226,7 +226,7 @@ def analyze_users_time(
     input_path: str | Path | None = None,
     output_tables_dir: str | Path = "outputs/tables",
     output_figures_dir: str | Path = "outputs/figures",
-    output_text_dir: str | Path = "outputs/text",
+    output_text_dir: str | Path = "outputs/texts/analysis",
     report_path: str | Path = "outputs/reports/users_time_validation_report.md",
 ) -> dict[str, pd.DataFrame]:
     path = resolve_path(input_path) if input_path else users_time_file(config)
@@ -240,9 +240,11 @@ def analyze_users_time(
     stat_tests = users_time_stat_tests(df, config)
 
     tables_dir = resolve_path(output_tables_dir)
+    markdown_dir = tables_dir / "markdown"
     tables_dir.mkdir(parents=True, exist_ok=True)
+    markdown_dir.mkdir(parents=True, exist_ok=True)
     summary.to_csv(tables_dir / "users_time_summary.csv", index=False)
-    summary.to_markdown(tables_dir / "users_time_summary.md", index=False)
+    summary.to_markdown(markdown_dir / "users_time_summary.md", index=False)
     stat_tests.to_csv(tables_dir / "users_time_stat_tests.csv", index=False)
 
     _plot_users_time(df, summary, config, output_figures_dir)
@@ -323,3 +325,4 @@ def write_users_time_interpretation(summary: pd.DataFrame, output_text_dir: str 
     target = resolve_path(output_text_dir) / "users_time_interpretation.md"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n\n".join(lines) + "\n", encoding="utf-8")
+

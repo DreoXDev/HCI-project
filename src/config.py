@@ -29,12 +29,11 @@ def ensure_output_dirs(config: dict[str, Any]) -> None:
         "outputs/figures/dark",
         "outputs/figures/presentation",
         paths.get("output_tables", "outputs/tables"),
-        paths.get("output_tables_md", "outputs/tables_md"),
-        paths.get("output_text", "outputs/text_snippets"),
-        "outputs/text",
+        paths.get("output_tables_md", "outputs/tables/markdown"),
+        paths.get("output_text", "outputs/texts/snippets"),
+        "outputs/texts/analysis",
         "outputs/reports",
-        "outputs/slide_pack",
-        "outputs/generated_report_sections",
+        "outputs/slide_assets/pack",
         "outputs/figures/presentation/sample",
         "outputs/figures/presentation/questionnaire/items",
         "outputs/figures/presentation/questionnaire/subgroups",
@@ -65,3 +64,4 @@ def ensure_output_dirs(config: dict[str, Any]) -> None:
     )
     for directory in base_dirs:
         resolve_path(directory).mkdir(parents=True, exist_ok=True)
+

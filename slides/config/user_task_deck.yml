@@ -6,12 +6,13 @@ metadata:
   project_title: "User test Deliveroo vs Glovo"
   subtitle: "Presentazione dei task per i partecipanti"
   authors: "Gruppo HCI"
-  date: "2026"
+  date: "Anno accademico 2025/2026"
 
 auto_slides:
   enabled: true
   mode: user_tasks
   reference_texts: slides/content/reference_static_texts.md
+  task_count: 3
   max_slides:
   exclude: []
 

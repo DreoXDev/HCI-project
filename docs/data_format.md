@@ -107,7 +107,7 @@ Campi opzionali consigliati: `source_count`, `notes`, `raw_problem_ids`, `recomm
 
 ### Export Formbricks severità
 
-La prima domanda deve identificare l'esperto, per esempio `Qual è il tuo id esperto?`. Ogni domanda di rating deve includere il codice del problema nel titolo:
+La prima domanda deve identificare l'esperto, per esempio `Qual è il tuo id esperto`. Ogni domanda di rating deve includere il codice del problema nel titolo:
 
 ```text
 [P001] Titolo problema

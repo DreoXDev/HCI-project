@@ -7,10 +7,15 @@
 
 ```powershell
 python -m pip install -r requirements.txt
-python -m src.cli full-pipeline --plot-style both --export-pdf
+python -m src.cli full-pipeline --plot-style both --generate-slides --no-export-pdf
 ```
 
-Presentazione separata per i partecipanti ai task:
+Il comando rigenera analisi, asset e le due presentazioni principali:
+
+- `outputs/slides/final_report.pptx`
+- `outputs/slides/user_task_deck.pptx`
+
+Per rigenerare solo la presentazione per i partecipanti ai task:
 
 ```powershell
 python -m src.cli generate-slides --config slides/config/user_task_deck.yml --overwrite
@@ -18,6 +23,14 @@ python -m src.cli generate-slides --config slides/config/user_task_deck.yml --ov
 
 > [!warning]
 > L'export PDF richiede LibreOffice installato e accessibile come `soffice` o `libreoffice`.
+
+Pulizia degli output rigenerabili, senza toccare dati, template e testi statici:
+
+```powershell
+python -m src.cli clean-outputs
+```
+
+Gli output finali sono concentrati in `outputs/`: CSV in `outputs/tables/`, Markdown tabellari in `outputs/tables/markdown/`, testi generati in `outputs/texts/`, asset intermedi per le slide in `outputs/slide_assets/`, e presentazioni finali in `outputs/slides/`. I testi statici editabili a mano non sono output: restano in `slides/content/reference_static_texts.md`.
 
 ## Pipeline euristiche Formbricks
 
@@ -40,6 +53,7 @@ python -m src.cli heuristics severity-pipeline --problems data/processed/heurist
 - [Formato dati](docs/data_format.md)
 - [Workflow Formbricks](docs/formbricks_workflow.md)
 - [Generazione slide](docs/slide_generation.md)
+- [Stile visuale](docs/visual_style.md)
 - [Manuale slide finali](manual_slides.md)
 - [Snippet testuali](docs/text_snippets.md)
 

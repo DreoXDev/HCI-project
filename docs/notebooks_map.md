@@ -11,7 +11,7 @@
 | Input | CSV in `data/` |
 | Output | Tutti gli output principali |
 | Usa moduli | `src.cli`, `src.config` |
-| Produzione | No, usare `python -m src.cli full-pipeline` |
+| Produzione | No, usare `python -m src.cli full-pipeline --plot-style both --generate-slides --no-export-pdf` |
 
 ## `notebooks/01_user_test_analysis.ipynb`
 
@@ -20,7 +20,7 @@
 | Scopo | Analizzare tempi, errori e successo dei task |
 | Input | `data/raw/users_time.csv` |
 | Output | Tabelle e grafici user test |
-| Produzione | No |
+| Produzione | No, usare la CLI |
 
 ## `notebooks/02_heuristic_analysis.ipynb`
 

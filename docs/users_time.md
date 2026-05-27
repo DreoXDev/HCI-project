@@ -81,13 +81,13 @@ python -m src.cli analyze-users-time
 
 ```txt
 outputs/tables/users_time_summary.csv
-outputs/tables/users_time_summary.md
+outputs/tables/markdown/users_time_summary.md
 outputs/tables/users_time_stat_tests.csv
 outputs/figures/users_time_mean_by_task.png
 outputs/figures/users_time_boxplot_by_task.png
 outputs/figures/users_time_success_rate.png
 outputs/figures/users_time_errors_by_task.png
-outputs/text/users_time_interpretation.md
+outputs/texts/analysis/users_time_interpretation.md
 outputs/reports/users_time_validation_report.md
 ```
 
@@ -104,3 +104,4 @@ users_time:
   enabled: true
   input_path: "data/raw/users_time.csv"
 ```
+

@@ -18,6 +18,14 @@ from .auto_deck import expand_auto_slides
 from .tables import read_display_table, table_specs_from_paginated_table
 from .template_variants import REQUIRED_SHAPES, REQUIRED_TEMPLATE_IDS, base_template_for, resolve_template_id
 
+DECK_FONT_FAMILY = "Sora"
+DELIVEROO_COLOR = "00CCBC"
+GLOVO_COLOR = "FFC244"
+SECTION_TITLE_SIZE_SHORT = 68
+SECTION_TITLE_SIZE_MEDIUM = 60
+SECTION_TITLE_SIZE_LONG = 52
+COVER_TITLE_SIZE = 66
+
 
 class SlideGenerationError(RuntimeError):
     """Raised when the PPTX deck cannot be generated with actionable context."""
@@ -260,11 +268,12 @@ def replace_placeholder_with_table(
     _add_table_panel(slide, left, top, width, height)
     table_shape = slide.shapes.add_table(len(rows), len(rows[0]), left, top, width, height)
     table = table_shape.table
-    if column_widths and len(column_widths) == len(rows[0]):
-        for idx, ratio in enumerate(column_widths):
+    effective_widths = column_widths if column_widths and len(column_widths) == len(rows[0]) else _column_width_ratios(rows)
+    if effective_widths and len(effective_widths) == len(rows[0]):
+        for idx, ratio in enumerate(effective_widths):
             table.columns[idx].width = int(width * float(ratio))
-    font_size = max(6.5, font_size)
-    header_font_size = max(6.5, header_font_size)
+    font_size = max(5.6, font_size)
+    header_font_size = max(5.8, header_font_size)
     for row_idx, row in enumerate(rows):
         for col_idx, value in enumerate(row):
             cell = table.cell(row_idx, col_idx)
@@ -272,6 +281,7 @@ def replace_placeholder_with_table(
             _style_dark_table_cell(cell, is_header=row_idx == 0, row_idx=row_idx)
             for paragraph in cell.text_frame.paragraphs:
                 for run in paragraph.runs:
+                    run.font.name = DECK_FONT_FAMILY
                     run.font.size = _pt(header_font_size if row_idx == 0 else font_size)
                     run.font.bold = row_idx == 0
                     run.font.color.rgb = _rgb("F8FAFC" if row_idx == 0 else "E5E7EB")
@@ -316,6 +326,7 @@ def replace_placeholder_with_text_box(slide: Any, placeholder_name: str, text: s
     paragraph = box.text_frame.paragraphs[0]
     paragraph.text = _compact(text, 1400)
     for run in paragraph.runs:
+        run.font.name = DECK_FONT_FAMILY
         run.font.size = _pt(_fit_font_size(box, paragraph.text, preferred=20, minimum=11))
         run.font.color.rgb = _rgb("F8FAFC")
 
@@ -572,6 +583,7 @@ def _write_rich_text(shape: Any, text: str, *, preferred: int | None = None, min
         for segment, bold, italic in _rich_segments(line):
             run = paragraph.add_run()
             run.text = segment
+            run.font.name = DECK_FONT_FAMILY
             run.font.size = _pt(font_size + (4 if kind == "heading" else 0))
             run.font.bold = bold or kind == "heading" or title_like
             run.font.italic = italic
@@ -635,23 +647,103 @@ def _segment_color(segment: str, *, bold: bool, italic: bool, kind: str) -> str:
 
 def _style_and_fit_slide_text_dark(slide: Any, template_id: str | None = None) -> None:
     is_section = str(template_id or "").startswith("section_divider")
+    is_cover = str(template_id or "") == "cover"
     for shape in slide.shapes:
         if not getattr(shape, "has_text_frame", False):
             continue
         if getattr(shape, "left", 0) < 0:
             continue
         text = _shape_text(shape).strip()
+        if is_cover and _style_cover_title(shape, text):
+            continue
         fitted_size = _fit_font_size(shape, text)
+        title_size = _single_line_title_size(shape, text)
         for paragraph in shape.text_frame.paragraphs:
             for run in paragraph.runs:
+                run.font.name = DECK_FONT_FAMILY
                 if is_section and text and "SECTION" not in text.upper():
-                    run.font.size = _pt(48 if len(text) <= 28 else 42)
+                    shape.text_frame.word_wrap = False
+                    run.font.size = _pt(min(_section_title_size(text), title_size or SECTION_TITLE_SIZE_LONG))
                     run.font.bold = True
+                    color = _section_brand_color(template_id)
+                    if color:
+                        run.font.color.rgb = _rgb(color)
+                elif title_size and "\n" not in text:
+                    shape.text_frame.word_wrap = False
+                    current_size = int(run.font.size.pt) if run.font.size else title_size
+                    run.font.size = _pt(min(current_size, title_size))
                 elif fitted_size:
                     current_size = int(run.font.size.pt) if run.font.size else fitted_size
                     run.font.size = _pt(min(current_size, fitted_size))
                 if not (run.font.bold or run.font.italic):
                     run.font.color.rgb = _rgb("F8FAFC")
+
+
+def _section_brand_color(template_id: str | None) -> str | None:
+    template = str(template_id or "").lower()
+    if template.endswith("_deliveroo"):
+        return DELIVEROO_COLOR
+    if template.endswith("_glovo"):
+        return GLOVO_COLOR
+    return None
+
+
+def _style_cover_title(shape: Any, text: str) -> bool:
+    normalized = " ".join(str(text).split())
+    match = re.search(r"deliveroo\s+vs\s+glovo", normalized, flags=re.IGNORECASE)
+    if not match:
+        return False
+    from pptx.enum.text import PP_ALIGN
+
+    frame = shape.text_frame
+    frame.clear()
+    frame.word_wrap = False
+    frame.margin_left = 0
+    frame.margin_right = 0
+    paragraph = frame.paragraphs[0]
+    paragraph.alignment = PP_ALIGN.CENTER
+    title_size = COVER_TITLE_SIZE if normalized.lower() == "deliveroo vs glovo" else 50
+    parts = []
+    prefix = normalized[: match.start()]
+    suffix = normalized[match.end() :]
+    if prefix:
+        parts.append((prefix, "F8FAFC"))
+    parts.extend([("Deliveroo", DELIVEROO_COLOR), (" vs ", "F8FAFC"), ("Glovo", GLOVO_COLOR)])
+    if suffix:
+        parts.append((suffix, "F8FAFC"))
+    for segment, color in parts:
+        run = paragraph.add_run()
+        run.text = segment
+        run.font.name = DECK_FONT_FAMILY
+        run.font.size = _pt(title_size)
+        run.font.bold = True
+        run.font.color.rgb = _rgb(color)
+    return True
+
+
+def _section_title_size(text: str) -> int:
+    length = len(" ".join(str(text).split()))
+    if length <= 22:
+        return SECTION_TITLE_SIZE_SHORT
+    if length <= 36:
+        return SECTION_TITLE_SIZE_MEDIUM
+    return SECTION_TITLE_SIZE_LONG
+
+
+def _single_line_title_size(shape: Any, text: str, *, minimum: int = 18) -> int | None:
+    compact = " ".join(str(text).split())
+    if not compact:
+        return None
+    width = max(int(getattr(shape, "width", 0)), 1)
+    height = max(int(getattr(shape, "height", 0)), 1)
+    is_title_like = height <= 950000 and width >= 2500000
+    if not is_title_like:
+        return None
+    max_size = 72 if height >= 650000 else 38
+    for size in range(max_size, minimum - 1, -1):
+        if len(compact) * size * 6100 <= width * 0.92:
+            return size
+    return minimum
 
 
 def _fit_font_size(shape: Any, text: str, *, preferred: int | None = None, minimum: int = 8) -> int | None:
@@ -795,6 +887,24 @@ def _expand_table_bounds_if_needed(left: int, top: int, width: int, height: int)
     expanded_width = 11049000
     expanded_height = 4750000
     return expanded_left, expanded_top, expanded_width, expanded_height
+
+
+def _column_width_ratios(rows: list[list[str]]) -> list[float]:
+    if not rows or not rows[0]:
+        return []
+    columns = len(rows[0])
+    weights = []
+    for col_idx in range(columns):
+        values = [str(row[col_idx]) for row in rows if col_idx < len(row)]
+        max_len = max((len(value) for value in values), default=1)
+        avg_len = sum(len(value) for value in values) / max(len(values), 1)
+        weights.append(min(max(max_len * 0.55 + avg_len * 0.45, 8), 34))
+    total = sum(weights) or 1
+    ratios = [weight / total for weight in weights]
+    min_ratio = 0.07 if columns <= 8 else 0.055
+    ratios = [max(ratio, min_ratio) for ratio in ratios]
+    total = sum(ratios) or 1
+    return [ratio / total for ratio in ratios]
 
 
 def _style_dark_table_cell(cell: Any, *, is_header: bool, row_idx: int) -> None:

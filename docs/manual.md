@@ -59,7 +59,7 @@ python -m src.cli import-formbricks-heuristics-ratings --input data/formbricks_r
 > Comando consigliato:
 >
 > ```powershell
-> python -m src.cli full-pipeline --plot-style both --export-pdf
+> python -m src.cli full-pipeline --plot-style both --generate-slides --no-export-pdf
 > ```
 
 Se LibreOffice non è disponibile:
@@ -68,15 +68,22 @@ Se LibreOffice non è disponibile:
 python -m src.cli full-pipeline --plot-style both --generate-slides --no-export-pdf
 ```
 
+Per pulire solo gli artefatti rigenerabili prima di una consegna:
+
+```powershell
+python -m src.cli clean-outputs
+```
+
 ## Step 5 - Controllare gli output
 
 | Output | Percorso |
 |---|---|
 | Grafici | `outputs/figures/` |
-| Tabelle | `outputs/tables/`, `outputs/tables_md/` |
-| Snippet utili | `outputs/text_snippets/` |
-| Slide | `outputs/slides/final_report.pptx` |
-| PDF | `outputs/slides/final_report.pdf` |
+| Tabelle | `outputs/tables/`, `outputs/tables/markdown/` |
+| Snippet utili | `outputs/texts/snippets/` |
+| Slide finali | `outputs/slides/final_report.pptx` |
+| Slide task partecipanti | `outputs/slides/user_task_deck.pptx` |
+| PDF | `outputs/slides/final_report.pdf`, `outputs/slides/user_task_deck.pdf` |
 | Manifest | `outputs/slide_manifest.md` |
 
 ## Checklist finale
@@ -85,7 +92,7 @@ python -m src.cli full-pipeline --plot-style both --generate-slides --no-export-
 - [ ] `users_time.csv` aggiornato
 - [ ] Review euristiche completata
 - [ ] Pipeline eseguita
-- [ ] PPTX generato
+- [ ] PPTX finale e deck task generati
 - [ ] PDF generato o motivazione documentata
 - [ ] `python -m src.cli quality-check` senza errori critici
 
@@ -165,7 +172,7 @@ Se ci sono errori, correggere il CSV prima di continuare.
 Prima domanda obbligatoria:
 
 ```text
-Qual è il tuo id esperto?
+Qual è il tuo id esperto
 ```
 
 Poi creare una domanda per ogni problema. Il titolo deve contenere l'ID tra parentesi quadre:

@@ -8,13 +8,15 @@ Questo documento separa ciò che la pipeline genera automaticamente da ciò che,
 python -m src.cli full-pipeline --plot-style both --generate-slides --overwrite
 ```
 
-Per creare solo la presentazione da mostrare ai partecipanti durante le task:
+Questo comando genera sia `outputs/slides/final_report.pptx` sia `outputs/slides/user_task_deck.pptx`.
+
+Per rigenerare solo la presentazione da mostrare ai partecipanti durante le task:
 
 ```powershell
 python -m src.cli generate-slides --config slides/config/user_task_deck.yml --overwrite
 ```
 
-Per generare anche il PDF serve LibreOffice nel `PATH`:
+Per generare anche i PDF serve LibreOffice nel `PATH`:
 
 ```powershell
 python -m src.cli full-pipeline --plot-style both --generate-slides --export-pdf --overwrite
@@ -44,7 +46,7 @@ Gli asset letti dalla pipeline sono soprattutto:
 
 - `outputs/figures/dark/` per grafici e matrici;
 - `outputs/tables/` per tabelle CSV adatte alle slide;
-- `outputs/text_snippets/` per testi sintetici;
+- `outputs/texts/snippets/` per testi sintetici;
 - `slides/content/reference_static_texts.md` per testi statici modificabili senza toccare Python.
 
 ## Aggiunte automatiche rispetto al deck precedente

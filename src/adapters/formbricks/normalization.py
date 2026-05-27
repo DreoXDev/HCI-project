@@ -34,6 +34,6 @@ def normalize_item_name(column: str) -> str:
 
 
 def normalize_heuristic_codes(value: Any) -> list[str]:
-    codes = re.findall(r"E(?:10|[1-9])", str(value).upper())
+    codes = re.findall(r"E(:10|[1-9])", str(value).upper())
     return list(dict.fromkeys(codes))
 

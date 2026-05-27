@@ -22,7 +22,7 @@ I titoli Formbricks possono contenere tag come:
 [DEMOGRAPHIC] Eta
 [UEQ][Deliveroo] Fastidioso/Piacevole
 [UEQ][Glovo] Fastidioso/Piacevole
-[NPS][Deliveroo] Quanto consiglieresti Deliveroo?
+[NPS][Deliveroo] Quanto consiglieresti Deliveroo
 ```
 
 Comando:

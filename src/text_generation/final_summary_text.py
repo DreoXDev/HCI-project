@@ -70,10 +70,8 @@ def compute_final_comparison_score(config: dict) -> pd.DataFrame:
 
 def generate_text_outputs(config: dict) -> None:
     systems = [config["project"]["system_1"], config["project"]["system_2"]]
-    snippets_dir = resolve_path("outputs/text_snippets")
-    sections_dir = resolve_path("outputs/generated_report_sections")
+    snippets_dir = resolve_path("outputs/texts/snippets")
     snippets_dir.mkdir(parents=True, exist_ok=True)
-    sections_dir.mkdir(parents=True, exist_ok=True)
 
     intro = INTRO_TEMPLATE.format(system_1=systems[0], system_2=systems[1])
     methods = METHODS_TEMPLATE
@@ -105,20 +103,10 @@ def generate_text_outputs(config: dict) -> None:
     for name, text in outputs.items():
         (snippets_dir / name).write_text(italian_display_text(text), encoding="utf-8")
 
-    sections = {
-        "01_introduzione.md": intro,
-        "02_valutazione_euristica.md": methods + "\n\n" + heuristics,
-        "03_user_test.md": user_tests,
-        "04_questionario.md": questionnaire + "\n\n" + nps,
-        "05_conclusioni.md": final,
-    }
-    for name, text in sections.items():
-        (sections_dir / name).write_text(italian_display_text(text), encoding="utf-8")
-
     final_scores = compute_final_comparison_score(config)
     if not final_scores.empty:
         table_path = resolve_path("outputs/tables/final_comparison.csv")
-        md_path = resolve_path("outputs/tables_md/final_comparison.md")
+        md_path = resolve_path("outputs/tables/markdown/final_comparison.md")
         table_path.parent.mkdir(parents=True, exist_ok=True)
         md_path.parent.mkdir(parents=True, exist_ok=True)
         final_scores.round(config["analysis"].get("round_decimals", 2)).to_csv(table_path, index=False, encoding="utf-8-sig")
@@ -228,3 +216,4 @@ def _limitations_text() -> str:
         "I risultati dipendono da numerosita campionaria, profilo dei partecipanti, task scelti e consolidamento manuale dei problemi. "
         "Le stime statistiche e di copertura vanno lette come supporto alla discussione critica, non come conclusioni automatiche."
     )
+

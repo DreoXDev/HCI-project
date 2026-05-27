@@ -22,8 +22,8 @@ paths:
   questionnaire_system_2: "data/raw/questionnaire_glovo.csv"
   output_figures: "outputs/figures"
   output_tables: "outputs/tables"
-  output_tables_md: "outputs/tables_md"
-  output_text: "outputs/text_snippets"
+  output_tables_md: "outputs/tables/markdown"
+  output_text: "outputs/texts/snippets"
 
 users_time:
   enabled: true
@@ -199,3 +199,4 @@ formbricks:
       - "invitante-non invitante"
       - "congeniale-ostile"
       - "conservativo-innovativo"
+

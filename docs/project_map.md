@@ -15,6 +15,7 @@ Comandi principali:
 
 ```powershell
 python -m src.cli validate
+python -m src.cli clean-outputs
 python -m src.cli all --plot-style both
 python -m src.cli import-formbricks-heuristics-discovery --input data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv
 python -m src.cli import-formbricks-heuristics-ratings --input data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv
@@ -70,6 +71,7 @@ src/visualization/
 - `src/heuristics.py`: analisi dei file euristici consolidati legacy.
 - `src/plots.py`, `src/visualization/theme.py`: grafici e tema.
 - `src/slide_export/pptx_generator.py`: generazione PPTX da template.
+- `src/cli.py clean-outputs`: rimuove solo artefatti rigenerabili (`outputs/` e `reports/`), senza toccare dati, template o testi statici.
 
 ## Slide
 
@@ -83,6 +85,7 @@ slides/assets/
 - `slides/config/slide_deck.yml`: report finale.
 - `slides/config/user_task_deck.yml`: presentazione separata per i partecipanti ai task.
 - `slides/assets/`: asset del template.
+- `slides/assets/appendices/`: cartelle ufficiali per asset manuali delle appendici finali; se vuote, generano placeholder.
 
 ## Output Generati
 
@@ -99,13 +102,17 @@ Output principali:
 ```txt
 outputs/figures/
 outputs/tables/
-outputs/tables_md/
-outputs/text_snippets/
-outputs/slide_pack/
+outputs/tables/markdown/
+outputs/texts/analysis/
+outputs/texts/snippets/
+outputs/slide_assets/pack/
+outputs/slide_assets/rounded/
 outputs/slides/
 reports/
 data/processed/heuristics/
 ```
+
+`outputs/texts/report_sections/`, `outputs/text_snippets/`, `outputs/tables_md/` e `outputs/slide_pack/` sono layout legacy: non vengono più generati e `clean-outputs` li rimuove se presenti.
 
 ## Documentazione
 
@@ -121,6 +128,7 @@ docs/
 ## Regole di Pulizia
 
 - Non versionare output generati.
+- Prima di una rigenerazione production usare `python -m src.cli clean-outputs` o `full-pipeline`, che pulisce automaticamente gli output rigenerabili.
 - Non versionare export reali Formbricks.
 - Non aggiungere nuovi entry point se non strettamente necessario: estendere `src/cli.py`.
 - Se cambia un comando, aggiornare `README.md`, `docs/manual.md`, `docs/cli_api.md` e la pagina docs corrispondente.

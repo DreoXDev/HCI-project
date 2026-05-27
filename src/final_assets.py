@@ -84,7 +84,7 @@ def generate_problem_evaluator_outputs(config: dict, data: dict[str, pd.DataFram
         top_problem = problem_counts.index[0] if not problem_counts.empty else "n.d."
         top_count = int(problem_counts.iloc[0]) if not problem_counts.empty else 0
         top_evaluators = ", ".join(evaluator_counts.head(2).index.astype(str)) if not evaluator_counts.empty else "n.d."
-        resolve_path(f"outputs/text_snippets/problem_evaluator_matrix_{slug}.md").write_text(
+        resolve_path(f"outputs/texts/snippets/problem_evaluator_matrix_{slug}.md").write_text(
             f"# Matrice problemi-valutatori {system}\n\nIl problema più ricorrente e `{top_problem}`, segnalato da {top_count} valutatori. I valutatori più produttivi sono {top_evaluators}.\n",
             encoding="utf-8",
         )
@@ -107,7 +107,7 @@ def generate_problem_evaluator_outputs(config: dict, data: dict[str, pd.DataFram
     coverage = pd.DataFrame(coverage_rows)
     if not coverage.empty:
         export_table(coverage, "outputs/tables/heuristics_problem_coverage.csv", 2)
-    resolve_path("outputs/text_snippets/heuristics_problem_coverage.md").write_text("\n".join(text_lines) + "\n", encoding="utf-8")
+    resolve_path("outputs/texts/snippets/heuristics_problem_coverage.md").write_text("\n".join(text_lines) + "\n", encoding="utf-8")
 
 
 def generate_expertise_matrix_assets(config: dict) -> None:
@@ -167,7 +167,7 @@ def generate_expertise_matrix_assets(config: dict) -> None:
     save_figure(fig, "outputs/figures/heuristics/expertise_matrix.png", config)
 
     counts = profiles["expert_group"].fillna("n.d.").value_counts().to_dict()
-    resolve_path("outputs/text_snippets/heuristics_expertise_matrix.md").write_text(
+    resolve_path("outputs/texts/snippets/heuristics_expertise_matrix.md").write_text(
         "# Matrice di expertise\n\n"
         f"La matrice posiziona {len(profiles)} valutatori rispetto a esperienza di usabilita ed esperienza di dominio. "
         f"Distribuzione gruppi: {counts}.\n",
@@ -211,13 +211,13 @@ def generate_questionnaire_item_outputs(config: dict, data: dict[str, pd.DataFra
     summary["rank_score"] = summary["p_value"].fillna(1).rank(method="first") + summary["median_difference_abs"].rank(ascending=False) * 0.01
     relevant = summary.sort_values(["p_value", "median_difference_abs", "mean_difference_abs"], ascending=[True, False, False]).head(8)
     export_table(summary.drop(columns=["rank_score"]), "outputs/tables/questionnaire_items_summary.csv", 2)
-    export_table(summary.drop(columns=["rank_score"]), "outputs/tables_md/questionnaire_items_summary.md", 2)
+    export_table(summary.drop(columns=["rank_score"]), "outputs/tables/markdown/questionnaire_items_summary.md", 2)
     export_table(relevant.drop(columns=["rank_score"]), "outputs/tables/questionnaire_most_relevant_items.csv", 2)
     lines = ["# Item UEQ più rilevanti", ""]
     for row in relevant.itertuples():
         significance = "significativa" if pd.notna(row.p_value) and row.p_value < 0.05 else "non significativa"
         lines.append(f"- Item {row.item_number:02d} `{row.item}`: differenza media assoluta {row.mean_difference_abs:.2f}, p={row.p_value:.4f}; differenza {significance}.")
-    resolve_path("outputs/text_snippets/questionnaire_selected_items.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    resolve_path("outputs/texts/snippets/questionnaire_selected_items.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def generate_nps_breakdown(config: dict, data: dict[str, pd.DataFrame]) -> None:
@@ -293,7 +293,7 @@ def generate_users_time_task_assets(config: dict) -> None:
             oet_text = f" Con OET={getattr(row, 'oet_seconds', 'n.d.')}s, scostamento medio={getattr(row, 'mean_over_oet_sec', 'n.d.')}s." if "oet_seconds" in summary.columns else " OET non configurato per questa task."
             lines.append(f"- {row.app}: successo {row.success_rate:.0%}, tempo medio {row.mean_time_sec:.2f}s, mediana {row.median_time_sec:.2f}s, errori medi {row.mean_errors:.2f}.{oet_text}")
         lines.append(f"- Test statistico sui tempi: p={p_text}.")
-        resolve_path(f"outputs/text_snippets/user_tests_{slug}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        resolve_path(f"outputs/texts/snippets/user_tests_{slug}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def generate_sample_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:
@@ -324,14 +324,14 @@ def generate_sample_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:
         ax.tick_params(axis="x", rotation=25)
         style_axis(ax, field, "", "Rispondenti")
         save_figure(fig, f"outputs/figures/sample/{filename}.png", config)
-    resolve_path("outputs/text_snippets/sample_description.md").write_text(
+    resolve_path("outputs/texts/snippets/sample_description.md").write_text(
         "# Composizione campione\n\nGli asset distinguono il campione questionario per sistema. Integrare manualmente campione user test e valutatori euristici quando serve dettaglio qualitativo.\n",
         encoding="utf-8",
     )
 
 
 def generate_subgroup_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:
-    subgroup_path = resolve_path("outputs/tables_md/subgroup_analysis.md")
+    subgroup_path = resolve_path("outputs/tables/markdown/subgroup_analysis.md")
     csv_path = resolve_path("outputs/tables/subgroup_analysis.csv")
     if subgroup_path.exists() and not csv_path.exists():
         # Il markdown e gia esportato dalla pipeline; il CSV viene creato qui se possibile dai questionari.
@@ -365,4 +365,5 @@ def generate_subgroup_assets(config: dict, data: dict[str, pd.DataFrame]) -> Non
         style_axis(ax, "UEQ per familiarita", "Familiarita", "Media UEQ")
         save_figure(fig, "outputs/figures/questionnaire/subgroups/ueq_by_familiarity.png", config)
     warning = "I sottogruppi con meno di 5 partecipanti sono descrittivi e non robusti."
-    resolve_path("outputs/text_snippets/subgroup_conclusions.md").write_text(f"# Analisi sottogruppi\n\n{warning}\n", encoding="utf-8")
+    resolve_path("outputs/texts/snippets/subgroup_conclusions.md").write_text(f"# Analisi sottogruppi\n\n{warning}\n", encoding="utf-8")
+

@@ -19,17 +19,17 @@ def _asset_list(manifest: pd.DataFrame, section: str, limit: int = 12) -> list[s
 
 
 def build_slide_pack(config: dict) -> None:
-    pack = resolve_path("outputs/slide_pack")
+    pack = resolve_path("outputs/slide_assets/pack")
     pack.mkdir(parents=True, exist_ok=True)
     manifest = build_assets_manifest(pack / "assets_manifest.csv")
 
     sections = [
-        ("00_index.md", "Indice asset slide", "general", "Usare questo file come mappa iniziale degli output generati.", ["outputs/slide_pack/assets_manifest.csv"]),
-        ("01_intro.md", "Introduzione", "intro", _read("outputs/text_snippets/intro_summary.md") + "\n\n" + _read("outputs/text_snippets/sample_description.md"), []),
-        ("02_heuristics.md", "Valutazione euristica", "heuristics", _read("outputs/text_snippets/heuristic_conclusions.md") + "\n\n" + _read("outputs/text_snippets/heuristics_problem_coverage.md"), []),
-        ("03_user_tests.md", "User test", "user_tests", _read("outputs/text_snippets/user_test_effectiveness_conclusions.md") + "\n\n" + _read("outputs/text_snippets/user_test_efficiency_conclusions.md"), []),
-        ("04_questionnaire.md", "Questionario UEQ e NPS", "questionnaire", _read("outputs/text_snippets/questionnaire_conclusions.md") + "\n\n" + _read("outputs/text_snippets/nps_conclusions.md") + "\n\n" + _read("outputs/text_snippets/questionnaire_selected_items.md"), []),
-        ("05_conclusions.md", "Conclusioni", "conclusions", _read("outputs/text_snippets/final_comparative_conclusions.md") + "\n\n" + _read("outputs/text_snippets/redesign_recommendations.md") + "\n\n" + _read("outputs/text_snippets/limitations.md"), []),
+        ("00_index.md", "Indice asset slide", "general", "Usare questo file come mappa iniziale degli output generati.", ["outputs/slide_assets/pack/assets_manifest.csv"]),
+        ("01_intro.md", "Introduzione", "intro", _read("outputs/texts/snippets/intro_summary.md") + "\n\n" + _read("outputs/texts/snippets/sample_description.md"), []),
+        ("02_heuristics.md", "Valutazione euristica", "heuristics", _read("outputs/texts/snippets/heuristic_conclusions.md") + "\n\n" + _read("outputs/texts/snippets/heuristics_problem_coverage.md"), []),
+        ("03_user_tests.md", "User test", "user_tests", _read("outputs/texts/snippets/user_test_effectiveness_conclusions.md") + "\n\n" + _read("outputs/texts/snippets/user_test_efficiency_conclusions.md"), []),
+        ("04_questionnaire.md", "Questionario UEQ e NPS", "questionnaire", _read("outputs/texts/snippets/questionnaire_conclusions.md") + "\n\n" + _read("outputs/texts/snippets/nps_conclusions.md") + "\n\n" + _read("outputs/texts/snippets/questionnaire_selected_items.md"), []),
+        ("05_conclusions.md", "Conclusioni", "conclusions", _read("outputs/texts/snippets/final_comparative_conclusions.md") + "\n\n" + _read("outputs/texts/snippets/redesign_recommendations.md") + "\n\n" + _read("outputs/texts/snippets/limitations.md"), []),
     ]
     for filename, title, section, text, extra_assets in sections:
         lines = [f"# {title}", "", "## Asset consigliati", ""]
@@ -70,10 +70,10 @@ def build_executive_summary(config: dict) -> None:
         "- Da completare sulla base di euristiche, task critici e UEQ.",
         "",
         "## Evidenze statistiche principali",
-        f"- User test: {_read('outputs/text_snippets/user_test_effectiveness_conclusions.md').splitlines()[-1] if resolve_path('outputs/text_snippets/user_test_effectiveness_conclusions.md').exists() else 'consultare gli asset task-by-task.'}",
-        f"- UEQ: {_read('outputs/text_snippets/questionnaire_conclusions.md').splitlines()[-1] if resolve_path('outputs/text_snippets/questionnaire_conclusions.md').exists() else 'consultare ueq_summary.csv.'}",
-        f"- NPS: {_read('outputs/text_snippets/nps_conclusions.md').splitlines()[-1] if resolve_path('outputs/text_snippets/nps_conclusions.md').exists() else 'consultare nps_breakdown.csv.'}",
-        f"- Euristiche: {_read('outputs/text_snippets/heuristic_conclusions.md').splitlines()[-1] if resolve_path('outputs/text_snippets/heuristic_conclusions.md').exists() else 'consultare heuristics_summary.csv.'}",
+        f"- User test: {_read('outputs/texts/snippets/user_test_effectiveness_conclusions.md').splitlines()[-1] if resolve_path('outputs/texts/snippets/user_test_effectiveness_conclusions.md').exists() else 'consultare gli asset task-by-task.'}",
+        f"- UEQ: {_read('outputs/texts/snippets/questionnaire_conclusions.md').splitlines()[-1] if resolve_path('outputs/texts/snippets/questionnaire_conclusions.md').exists() else 'consultare ueq_summary.csv.'}",
+        f"- NPS: {_read('outputs/texts/snippets/nps_conclusions.md').splitlines()[-1] if resolve_path('outputs/texts/snippets/nps_conclusions.md').exists() else 'consultare nps_breakdown.csv.'}",
+        f"- Euristiche: {_read('outputs/texts/snippets/heuristic_conclusions.md').splitlines()[-1] if resolve_path('outputs/texts/snippets/heuristic_conclusions.md').exists() else 'consultare heuristics_summary.csv.'}",
         "",
         "## Raccomandazioni",
         "1. Correggere prima i problemi ad alta severità e alta ricorrenza.",
@@ -81,4 +81,5 @@ def build_executive_summary(config: dict) -> None:
         "3. Intervenire sugli item UEQ con differenze maggiori tra le app.",
         "",
     ]
-    resolve_path("outputs/slide_pack/executive_summary.md").write_text("\n".join(lines), encoding="utf-8")
+    resolve_path("outputs/slide_assets/pack/executive_summary.md").write_text("\n".join(lines), encoding="utf-8")
+
