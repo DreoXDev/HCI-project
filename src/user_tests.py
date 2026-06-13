@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 import pandas as pd
 from scipy import stats
 
+from .config import resolve_path
 from .statistics import gorilla_ttest, mean_ci_proportion
 
 
@@ -90,3 +92,49 @@ def compute_user_test_statistics(df: pd.DataFrame, config: dict) -> list[str]:
         result = stats.ttest_rel(s1, s2, nan_policy="omit")
         snippets.append(gorilla_ttest(systems[0], systems[1], f"Task {task}", result.pvalue, s1.mean(), s2.mean()))
     return snippets
+
+
+def analyze_user_testing_observations(
+    input_path: str | Path = "data/raw/user_testing_observations.csv",
+    output_tables_dir: str | Path = "outputs/tables",
+    output_text_dir: str | Path = "outputs/texts/snippets",
+) -> dict[str, pd.DataFrame]:
+    path = resolve_path(input_path)
+    columns = ["app", "observations_count", "top_notes"]
+    if not path.exists():
+        return {"summary": pd.DataFrame(columns=columns), "observations": pd.DataFrame()}
+    observations = pd.read_csv(path, encoding="utf-8-sig").dropna(how="all")
+    if observations.empty or "app" not in observations.columns:
+        return {"summary": pd.DataFrame(columns=columns), "observations": observations}
+    note_col = "note" if "note" in observations.columns else "notes" if "notes" in observations.columns else ""
+    rows = []
+    for app, group in observations.groupby("app", dropna=False):
+        notes = group[note_col].dropna().astype(str).tolist() if note_col else []
+        rows.append(
+            {
+                "app": app,
+                "observations_count": int(len(group)),
+                "top_notes": " | ".join(note[:180] for note in notes[:3]),
+            }
+        )
+    summary = pd.DataFrame(rows, columns=columns)
+    tables_dir = resolve_path(output_tables_dir)
+    markdown_dir = tables_dir / "markdown"
+    tables_dir.mkdir(parents=True, exist_ok=True)
+    markdown_dir.mkdir(parents=True, exist_ok=True)
+    summary.to_csv(tables_dir / "user_testing_observations_summary.csv", index=False, encoding="utf-8-sig")
+    summary.to_markdown(markdown_dir / "user_testing_observations_summary.md", index=False)
+
+    text_dir = resolve_path(output_text_dir)
+    text_dir.mkdir(parents=True, exist_ok=True)
+    lines = ["# Problemi emersi dai test utenti", ""]
+    if note_col:
+        for row in observations.itertuples(index=False):
+            app = getattr(row, "app", "")
+            note = getattr(row, note_col, "")
+            if str(note).strip():
+                lines.append(f"- {app}: {str(note).strip()}")
+    else:
+        lines.append("- Note osservazionali non disponibili.")
+    (text_dir / "user_testing_observations.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return {"summary": summary, "observations": observations}

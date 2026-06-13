@@ -10,6 +10,7 @@ from src.formbricks_heuristics_pipeline import (
     build_heuristic_final_dataset,
     build_problem_severity_summary,
     normalize_formbricks_severity_export,
+    normalize_problem_id_from_column,
     normalize_severity_strict,
     run_severity_pipeline,
     validate_clean_problems,
@@ -91,6 +92,12 @@ def test_formbricks_wide_export_extracts_problem_ids_and_ignores_metadata() -> N
         {"expert_id": "E02", "problem_id": "P001", "severity": 4},
     ]
     assert "Option ID" not in set(ratings["problem_id"])
+
+
+def test_problem_id_normalization_supports_app_qualified_columns() -> None:
+    assert normalize_problem_id_from_column("PD01", "[PD01] Checkout - Deliveroo") == "P001"
+    assert normalize_problem_id_from_column("PG01", "[PG01] Checkout - Glovo") == "P021"
+    assert normalize_problem_id_from_column("P001", "[P001] Checkout - Glovo") == "P001"
 
 
 def test_severity_conversion_accepts_text_and_rejects_out_of_range() -> None:

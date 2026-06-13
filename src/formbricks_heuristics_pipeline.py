@@ -87,7 +87,7 @@ FORMBRICKS_METADATA_COLUMNS = {
     "useragent - device",
     "useragent - browser",
 }
-PROBLEM_ID_PATTERN = re.compile(r"\[(P\d{3,})\]", re.IGNORECASE)
+PROBLEM_ID_PATTERN = re.compile(r"\[(P\d{3,}|P[DG]\d{2,})\]", re.IGNORECASE)
 
 
 def load_raw_heuristics_mapping(path: str | Path = "config/heuristics_raw_mapping.yml") -> dict[str, Any]:
@@ -561,12 +561,31 @@ def detect_problem_rating_columns(columns: pd.Index | list[str]) -> list[tuple[s
         match = PROBLEM_ID_PATTERN.search(column_text)
         if not match:
             continue
-        problem_id = match.group(1).upper()
+        problem_id = normalize_problem_id_from_column(match.group(1), column_text)
         if problem_id in seen:
             continue
         detected.append((problem_id, column_text))
         seen.add(problem_id)
     return detected
+
+
+def normalize_problem_id_from_column(raw_problem_id: str, column_text: str = "") -> str:
+    problem_id = raw_problem_id.upper()
+    if re.match(r"^P\d{3,}$", problem_id):
+        return problem_id
+    qualified = re.match(r"^P([DG])(\d{2,})$", problem_id)
+    if qualified:
+        app_prefix, number_text = qualified.groups()
+        number = int(number_text)
+        offset = 0 if app_prefix == "D" else 20
+        return f"P{offset + number:03d}"
+    if problem_id.startswith("P") and problem_id[1:].isdigit():
+        number = int(problem_id[1:])
+        text = comparable(column_text)
+        if number <= 20 and "glovo" in text and "deliveroo" not in text:
+            return f"P{20 + number:03d}"
+        return f"P{number:03d}"
+    return problem_id
 
 
 def normalize_severity_strict(value: Any) -> int | None:
@@ -717,6 +736,7 @@ def write_final_heuristics_outputs(
         _write_csv_return(matrix, processed_root / "expert_problem_matrix.csv"),
         _write_csv_return(heuristic_summary, processed_root / "heuristic_severity_summary.csv"),
         _write_csv_return(app_summary, processed_root / "app_severity_summary.csv"),
+        _write_csv_return(build_problems_slide_table(problem_summary), resolve_path("outputs/tables/heuristics_problems_slide.csv")),
     ]
     table_outputs = {
         "final_problems_table.csv": clean,
@@ -749,6 +769,12 @@ def write_final_heuristics_outputs(
             else:
                 target.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
             paths.append(target)
+    summary_text = texts_dir / "summary.md"
+    if summary_text.exists():
+        conclusions = resolve_path("outputs/text_snippets/heuristic_conclusions.md")
+        conclusions.parent.mkdir(parents=True, exist_ok=True)
+        conclusions.write_text(summary_text.read_text(encoding="utf-8"), encoding="utf-8")
+        paths.append(conclusions)
     critical_table = tables_dir / "critical_problems.csv"
     if critical_table.exists():
         paths.append(output_root / "heuristics_critical_problems_table.csv")
@@ -935,6 +961,15 @@ def build_problems_slide_table(summary: pd.DataFrame) -> pd.DataFrame:
     if summary.empty:
         return pd.DataFrame(columns=display_columns)
     table = summary.copy()
+    rename_map = {
+        "problem_id": "final_problem_id",
+        "title": "short_description",
+        "heuristic": "heuristics",
+        "mean_severity": "severity_mean",
+    }
+    table = table.rename(columns={source: target for source, target in rename_map.items() if source in table.columns and target not in table.columns})
+    if "priority_band" not in table.columns and "severity_mean" in table.columns:
+        table["priority_band"] = pd.to_numeric(table["severity_mean"], errors="coerce").map(priority_band)
     for column in source_columns:
         if column not in table.columns:
             table[column] = ""

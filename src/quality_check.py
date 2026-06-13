@@ -7,6 +7,7 @@ import pandas as pd
 
 from .config import resolve_path
 from .data_loading import load_all
+from .formbricks_heuristics_pipeline import import_severity_formbricks, validate_clean_problems
 from .questionnaire import numeric_items
 from .users_time import users_time_file, validate_users_time_file
 
@@ -17,6 +18,10 @@ LOCAL_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+\.md)\)")
 
 def _check(condition: bool, ok: str, fail: str, rows: list[dict]) -> None:
     rows.append({"status": "OK" if condition else "FAIL", "check": ok if condition else fail})
+
+
+def _warn(condition: bool, ok: str, warn: str, rows: list[dict]) -> None:
+    rows.append({"status": "OK" if condition else "WARNING", "check": ok if condition else warn})
 
 
 def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/final_quality_check.md") -> bool:
@@ -40,10 +45,40 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
                 nps = pd.to_numeric(df.loc["NPS"], errors="coerce").dropna()
                 _check(bool(nps.between(0, 10).all()), f"NPS nel range 0-10 per {system}", f"NPS fuori range per {system}", rows)
 
-    users_validation = validate_users_time_file(users_time_file(config), required_columns=config.get("users_time", {}).get("required_columns"))
+    clean_problems = resolve_path("data/processed/heuristics/clean_problems.csv")
+    severity_export = resolve_path("data/formbricks_raw/heuristics/severity_ratings_export.csv")
+    if clean_problems.exists():
+        clean_result = validate_clean_problems(clean_problems)
+        _check(clean_result.valid, "clean_problems.csv valido", "clean_problems.csv non valido", rows)
+        clean_df = pd.read_csv(clean_problems)
+        _check(len(clean_df) == 40, "40 problemi consolidati presenti", f"Problemi consolidati presenti: {len(clean_df)}/40", rows)
+    else:
+        _check(False, "", "clean_problems.csv mancante", rows)
+    if severity_export.exists():
+        try:
+            ratings, warnings = import_severity_formbricks(severity_export, problems_path=clean_problems if clean_problems.exists() else None)
+            experts = ratings["expert_id"].nunique() if not ratings.empty else 0
+            _check(experts == 8, "8 esperti nella survey severita", f"Esperti nella survey severita: {experts}/8", rows)
+            _check(not any("Option ID" in str(value) for value in ratings.astype(str).stack()), "Nessuna colonna Option ID negli output severita", "Option ID trovato negli output severita", rows)
+            for warning in warnings:
+                if not warning.startswith("File generato"):
+                    rows.append({"status": "WARNING", "check": warning})
+        except Exception as exc:
+            _check(False, "", f"Import severita reale non riuscito: {exc}", rows)
+    else:
+        _check(False, "", "severity_ratings_export.csv mancante", rows)
+
+    users_validation = validate_users_time_file(
+        users_time_file(config),
+        required_columns=config.get("users_time", {}).get("required_columns"),
+        tasks=config.get("users_time", {}).get("tasks", []),
+    )
     _check(users_validation.is_valid, "users_time.csv osservazionale valido", "users_time.csv osservazionale mancante o non valido", rows)
+    observed_user_count = 0
     if users_validation.is_valid:
         observed = users_validation.normalized
+        observed_user_count = observed["user_id"].nunique() if "user_id" in observed else 0
+        _warn(observed_user_count >= 24, "24 utenti presenti: dataset finale", f"Dataset utenti parziale: {observed_user_count}/24 utenti", rows)
         _check(observed["task_id"].nunique() >= 3, "Almeno 3 task user test presenti", "Meno di 3 task user test presenti", rows)
         missing_tasks = [task.get("id") for task in config.get("users_time", {}).get("tasks", []) if not task.get("oet_seconds")]
         _check(not missing_tasks, "OET configurato per tutti i task in config.yaml", f"OET mancante per task: {', '.join(map(str, missing_tasks))}", rows)
@@ -68,6 +103,12 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
     for output in required_outputs:
         _check(resolve_path(output).exists(), f"Output principale presente: {output}", f"Output principale mancante: {output}", rows)
 
+    deck_config = resolve_path("slides/config/slide_deck.yml")
+    if deck_config.exists():
+        text = deck_config.read_text(encoding="utf-8")
+        demo_refs = [line.strip() for line in text.splitlines() if "demo" in line.lower()]
+        _check(not demo_refs, "Nessun riferimento demo nel deck finale", f"Riferimenti demo nel deck finale: {'; '.join(demo_refs[:3])}", rows)
+
     for doc in sorted(resolve_path("docs").glob("*.md")) + [resolve_path("README.md")]:
         try:
             text = doc.read_text(encoding="utf-8")
@@ -76,19 +117,24 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
             _check(False, "", f"Encoding non UTF-8: {doc}", rows)
             continue
         bad_words = [match.group(0) for match in DOC_WORD_RE.finditer(text)]
-        _check(not bad_words, f"Accenti OK: {doc.name}", f"Possibili accenti mancanti in {doc.name}: {', '.join(sorted(set(bad_words)))}", rows)
+        _warn(not bad_words, f"Accenti OK: {doc.name}", f"Possibili accenti mancanti in {doc.name}: {', '.join(sorted(set(bad_words)))}", rows)
         for link in LOCAL_LINK_RE.findall(text):
             if "://" in link or link.startswith("#"):
                 continue
             target = (doc.parent / link).resolve()
             _check(target.exists(), f"Link locale valido in {doc.name}: {link}", f"Link locale rotto in {doc.name}: {link}", rows)
 
-    status = "READY_FOR_SLIDES" if all(row["status"] == "OK" for row in rows) else "NEEDS_FIXES"
+    has_failures = any(row["status"] == "FAIL" for row in rows)
+    if has_failures:
+        status = "NEEDS_FIXES"
+    elif observed_user_count >= 24:
+        status = "READY_FOR_FINAL_SLIDES"
+    else:
+        status = "PARTIAL_READY_FOR_REVIEW"
     lines = ["# Final Quality Check", "", "| status | check |", "|---|---|"]
     lines.extend(f"| {row['status']} | {row['check']} |" for row in rows)
     lines.extend(["", f"STATUS: {status}", ""])
     target = resolve_path(output_path)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(lines), encoding="utf-8")
-    return status == "READY_FOR_SLIDES"
-
+    return status in {"READY_FOR_FINAL_SLIDES", "PARTIAL_READY_FOR_REVIEW"}

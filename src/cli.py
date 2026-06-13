@@ -36,6 +36,7 @@ from .plots import (
 )
 from .questionnaire import item_summary, nps_summary, subgroup_summaries, ueq_summary
 from .quality_check import run_quality_check
+from .real_inputs import prepare_real_inputs
 from .slide_pack import build_slide_pack
 from .tables import export_table
 from .text_generation.final_summary_text import generate_text_outputs
@@ -48,7 +49,7 @@ from .slide_export.pptx_generator import (
     validate_template_structure,
 )
 from .slide_export.pdf_export import PdfExportError, export_pptx_to_pdf
-from .user_tests import compute_effectiveness, compute_efficiency, compute_user_test_statistics
+from .user_tests import analyze_user_testing_observations, compute_effectiveness, compute_efficiency, compute_user_test_statistics
 from .users_time import analyze_users_time, users_time_enabled, users_time_file, validate_users_time_file
 from .validation import (
     format_validation,
@@ -121,7 +122,7 @@ def clean_generated_outputs(config: dict) -> list[Path]:
 def import_formbricks_available(config: dict, include_unfinished: bool = False) -> bool:
     paths = config.get("paths", {})
     q_path = _existing(paths.get("questionnaire_raw")) or _existing(config.get("formbricks", {}).get("questionnaire", {}).get("export_path"))
-    h_path = _existing(paths.get("heuristics_raw")) or _existing("data/raw/formbricks/heuristics_experts_raw.csv")
+    h_path = _existing(paths.get("heuristics_raw"))
     ratings_path = _existing(paths.get("heuristics_ratings"))
     if q_path:
         convert_questionnaire_export(q_path, config, include_unfinished=include_unfinished)
@@ -133,10 +134,6 @@ def import_formbricks_available(config: dict, include_unfinished: bool = False) 
         print(f"OK: survey euristica raw importata da {h_path}. Completa data/processed/heuristics/consolidated_problems.csv prima della survey severità.")
     else:
         print("WARNING: CSV euristiche raw Formbricks non trovato, uso eventuali file euristiche gia consolidati.")
-    demo_problems = resolve_path("data/templates/heuristics_consolidated_problems_demo.csv")
-    if ratings_path and demo_problems.exists():
-        parse_severity_ratings(ratings_path, demo_problems)
-        print(f"OK: survey rating euristiche importata da {ratings_path}")
     return False
 
 
@@ -426,6 +423,7 @@ def analyze(config: dict, data: dict[str, pd.DataFrame]) -> None:
         users_time_path = users_time_file(config)
         if users_time_path.exists():
             analyze_users_time(config, users_time_path)
+            analyze_user_testing_observations()
             print("OK: analisi users_time completata")
         else:
             print(f"[users-time] File non trovato: {users_time_path}")
@@ -508,6 +506,7 @@ def main() -> None:
             "quality-check",
             "analyze-benchmark",
             "build-asset-manifest",
+            "prepare-real-inputs",
         ],
     )
     parser.add_argument("--config", default="config.yaml")
@@ -515,6 +514,7 @@ def main() -> None:
     parser.add_argument("--output", help="Path CSV normalizzato da generare")
     parser.add_argument("--template", help="Template PPTX da usare per generate-slides")
     parser.add_argument("--output-dir", help="Cartella output per i CSV finali")
+    parser.add_argument("--source-dir", default="data/inbox", help="Cartella sorgente per prepare-real-inputs")
     parser.add_argument("--mapping", default="config/heuristics_raw_mapping.yml", help="Mapping colonne per import euristiche raw Formbricks")
     parser.add_argument("--plot-style", choices=["dark", "presentation", "both"], help="Stile grafici da esportare")
     parser.add_argument("--overwrite", action="store_true", help="Sovrascrive template esistenti quando supportato")
@@ -539,9 +539,24 @@ def main() -> None:
         else:
             print("Nessun template sovrascritto. Usa --overwrite per rigenerare file esistenti.")
         return
+    if args.command == "prepare-real-inputs":
+        status = prepare_real_inputs(args.source_dir, config, overwrite=args.overwrite)
+        for warning in status.warnings:
+            print(f"WARNING: {warning}")
+        for error in status.errors:
+            print(f"ERROR: {error}")
+        print(resolve_path("outputs/reports/real_input_status.md"))
+        print(f"STATUS: {status.data_status}")
+        if status.errors:
+            raise SystemExit(1)
+        return
     if args.command == "validate-users-time":
         path = resolve_path(args.input) if args.input else users_time_file(config)
-        result = validate_users_time_file(path, required_columns=config.get("users_time", {}).get("required_columns"))
+        result = validate_users_time_file(
+            path,
+            required_columns=config.get("users_time", {}).get("required_columns"),
+            tasks=config.get("users_time", {}).get("tasks", []),
+        )
         print("\n".join(result.messages))
         print(resolve_path("outputs/reports/users_time_validation_report.md"))
         return
@@ -600,7 +615,11 @@ def main() -> None:
         if not path.exists():
             print(f"[users-time] File non trovato: {path}")
             print("[users-time] Analisi saltata. Usa create-templates per generare un template.")
-            validate_users_time_file(path, required_columns=config.get("users_time", {}).get("required_columns"))
+            validate_users_time_file(
+                path,
+                required_columns=config.get("users_time", {}).get("required_columns"),
+                tasks=config.get("users_time", {}).get("tasks", []),
+            )
             return
         analyze_users_time(config, path)
         print("Analisi users_time completata.")
@@ -642,8 +661,14 @@ def main() -> None:
         return
     if args.command == "quality-check":
         ready = run_quality_check(config)
-        print(resolve_path("outputs/reports/final_quality_check.md"))
-        print("STATUS: READY_FOR_SLIDES" if ready else "STATUS: NEEDS_FIXES")
+        report_path = resolve_path("outputs/reports/final_quality_check.md")
+        status_line = "STATUS: NEEDS_FIXES"
+        if report_path.exists():
+            for line in report_path.read_text(encoding="utf-8").splitlines():
+                if line.startswith("STATUS:"):
+                    status_line = line
+        print(report_path)
+        print(status_line)
         return
     if args.command == "import-formbricks":
         import_formbricks_available(config, include_unfinished=args.include_unfinished)

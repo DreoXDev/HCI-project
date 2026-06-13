@@ -130,3 +130,29 @@ con colonne `expert_id`, `problem_id`, `severity`.
 | 2 | Problema minore |
 | 3 | Problema maggiore |
 | 4 | Problema critico |
+
+## Contratto dati reali
+
+Per il deck finale la pipeline usa i dati reali quando sono presenti nei percorsi canonici. I dati demo restano utilizzabili solo come esempi o fallback di sviluppo, non come input del report finale.
+
+Percorsi attesi:
+
+```text
+data/processed/heuristics/clean_problems.csv
+data/formbricks_raw/heuristics/severity_ratings_export.csv
+data/raw/users_time.csv
+data/raw/user_testing_observations.csv
+data/formbricks_raw/questionnaire/users_questionnaire_export.csv
+```
+
+Stato dati:
+
+- `PARTIAL_DATA`: sono presenti meno di 24 utenti nel questionario o nei test osservazionali. Gli output sono rigenerabili e marcati come provvisori.
+- `FINAL_DATA`: sono presenti 24 utenti e 8 esperti; il quality gate puo passare a `READY_FOR_FINAL_SLIDES`.
+
+Naming ufficiale problemi:
+
+- `P001`-`P020`: Deliveroo.
+- `P021`-`P040`: Glovo.
+
+Se un export Formbricks usa ID app-qualified come `[PD01]` o `[PG01]`, il parser li normalizza rispettivamente in `P001` e `P021`. Se usa `[P001] ... Glovo`, il bootstrap deve ricevere il file gia rimappato a `P021`-`P040` oppure un export non ambiguo.

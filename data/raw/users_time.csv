@@ -1,81 +1,109 @@
-user_id,app,task_id,task_name,completion_time_sec,success,errors_count,help_requests,notes,observer_id,order
-U01,Deliveroo,T01,Ricerca ristorante,42,true,0,0,demo generated,OBS1,1
-U01,Glovo,T01,Ricerca ristorante,50,true,0,0,demo generated,OBS1,1
-U01,Deliveroo,T02,Aggiunta prodotto al carrello,51,true,0,0,demo generated,OBS1,2
-U01,Glovo,T02,Aggiunta prodotto al carrello,61,true,0,0,demo generated,OBS1,2
-U01,Deliveroo,T03,Modifica carrello,60,true,0,0,demo generated,OBS1,3
-U01,Glovo,T03,Modifica carrello,80,true,1,0,demo generated,OBS1,3
-U01,Deliveroo,T04,Checkout,72,true,0,0,demo generated,OBS1,4
-U01,Glovo,T04,Checkout,91,true,1,0,demo generated,OBS1,4
-U01,Deliveroo,T05,Tracking ordine,78,true,0,0,demo generated,OBS1,5
-U01,Glovo,T05,Tracking ordine,94,true,0,0,demo generated,OBS1,5
-U02,Deliveroo,T01,Ricerca ristorante,43,true,0,0,demo generated,OBS1,1
-U02,Glovo,T01,Ricerca ristorante,51,true,0,0,demo generated,OBS1,1
-U02,Deliveroo,T02,Aggiunta prodotto al carrello,52,true,0,0,demo generated,OBS1,2
-U02,Glovo,T02,Aggiunta prodotto al carrello,62,true,0,0,demo generated,OBS1,2
-U02,Deliveroo,T03,Modifica carrello,61,true,0,0,demo generated,OBS1,3
-U02,Glovo,T03,Modifica carrello,81,true,1,0,demo generated,OBS1,3
-U02,Deliveroo,T04,Checkout,73,true,0,0,demo generated,OBS1,4
-U02,Glovo,T04,Checkout,92,true,1,0,demo generated,OBS1,4
-U02,Deliveroo,T05,Tracking ordine,79,true,0,0,demo generated,OBS1,5
-U02,Glovo,T05,Tracking ordine,95,true,0,0,demo generated,OBS1,5
-U03,Deliveroo,T01,Ricerca ristorante,44,true,0,0,demo generated,OBS1,1
-U03,Glovo,T01,Ricerca ristorante,52,true,0,1,demo generated,OBS1,1
-U03,Deliveroo,T02,Aggiunta prodotto al carrello,53,true,0,0,demo generated,OBS1,2
-U03,Glovo,T02,Aggiunta prodotto al carrello,63,true,0,1,demo generated,OBS1,2
-U03,Deliveroo,T03,Modifica carrello,62,true,0,0,demo generated,OBS1,3
-U03,Glovo,T03,Modifica carrello,82,true,1,1,demo generated,OBS1,3
-U03,Deliveroo,T04,Checkout,74,true,0,0,demo generated,OBS1,4
-U03,Glovo,T04,Checkout,93,false,1,1,demo generated,OBS1,4
-U03,Deliveroo,T05,Tracking ordine,80,true,0,0,demo generated,OBS1,5
-U03,Glovo,T05,Tracking ordine,96,true,0,1,demo generated,OBS1,5
-U04,Deliveroo,T01,Ricerca ristorante,45,true,1,0,demo generated,OBS1,1
-U04,Glovo,T01,Ricerca ristorante,53,true,0,0,demo generated,OBS1,1
-U04,Deliveroo,T02,Aggiunta prodotto al carrello,54,true,1,0,demo generated,OBS1,2
-U04,Glovo,T02,Aggiunta prodotto al carrello,64,true,0,0,demo generated,OBS1,2
-U04,Deliveroo,T03,Modifica carrello,63,true,1,0,demo generated,OBS1,3
-U04,Glovo,T03,Modifica carrello,83,true,1,0,demo generated,OBS1,3
-U04,Deliveroo,T04,Checkout,75,true,1,0,demo generated,OBS1,4
-U04,Glovo,T04,Checkout,94,true,1,0,demo generated,OBS1,4
-U04,Deliveroo,T05,Tracking ordine,81,true,1,0,demo generated,OBS1,5
-U04,Glovo,T05,Tracking ordine,97,true,0,0,demo generated,OBS1,5
-U05,Deliveroo,T01,Ricerca ristorante,46,true,0,0,demo generated,OBS1,1
-U05,Glovo,T01,Ricerca ristorante,54,true,0,0,demo generated,OBS1,1
-U05,Deliveroo,T02,Aggiunta prodotto al carrello,55,true,0,0,demo generated,OBS1,2
-U05,Glovo,T02,Aggiunta prodotto al carrello,65,true,0,0,demo generated,OBS1,2
-U05,Deliveroo,T03,Modifica carrello,64,true,0,0,demo generated,OBS1,3
-U05,Glovo,T03,Modifica carrello,84,true,1,0,demo generated,OBS1,3
-U05,Deliveroo,T04,Checkout,76,true,0,0,demo generated,OBS1,4
-U05,Glovo,T04,Checkout,95,true,1,0,demo generated,OBS1,4
-U05,Deliveroo,T05,Tracking ordine,82,true,0,0,demo generated,OBS1,5
-U05,Glovo,T05,Tracking ordine,98,true,0,0,demo generated,OBS1,5
-U06,Deliveroo,T01,Ricerca ristorante,47,true,0,0,demo generated,OBS1,1
-U06,Glovo,T01,Ricerca ristorante,55,true,0,0,demo generated,OBS1,1
-U06,Deliveroo,T02,Aggiunta prodotto al carrello,56,true,0,0,demo generated,OBS1,2
-U06,Glovo,T02,Aggiunta prodotto al carrello,66,true,0,0,demo generated,OBS1,2
-U06,Deliveroo,T03,Modifica carrello,65,true,0,0,demo generated,OBS1,3
-U06,Glovo,T03,Modifica carrello,85,true,1,0,demo generated,OBS1,3
-U06,Deliveroo,T04,Checkout,77,true,0,0,demo generated,OBS1,4
-U06,Glovo,T04,Checkout,96,true,1,0,demo generated,OBS1,4
-U06,Deliveroo,T05,Tracking ordine,83,true,0,0,demo generated,OBS1,5
-U06,Glovo,T05,Tracking ordine,99,true,0,0,demo generated,OBS1,5
-U07,Deliveroo,T01,Ricerca ristorante,48,true,0,0,demo generated,OBS1,1
-U07,Glovo,T01,Ricerca ristorante,56,true,0,1,demo generated,OBS1,1
-U07,Deliveroo,T02,Aggiunta prodotto al carrello,57,true,0,0,demo generated,OBS1,2
-U07,Glovo,T02,Aggiunta prodotto al carrello,67,true,0,1,demo generated,OBS1,2
-U07,Deliveroo,T03,Modifica carrello,66,true,0,0,demo generated,OBS1,3
-U07,Glovo,T03,Modifica carrello,86,true,1,1,demo generated,OBS1,3
-U07,Deliveroo,T04,Checkout,78,true,0,0,demo generated,OBS1,4
-U07,Glovo,T04,Checkout,97,false,1,1,demo generated,OBS1,4
-U07,Deliveroo,T05,Tracking ordine,84,true,0,0,demo generated,OBS1,5
-U07,Glovo,T05,Tracking ordine,100,true,0,1,demo generated,OBS1,5
-U08,Deliveroo,T01,Ricerca ristorante,49,true,1,0,demo generated,OBS1,1
-U08,Glovo,T01,Ricerca ristorante,57,true,0,0,demo generated,OBS1,1
-U08,Deliveroo,T02,Aggiunta prodotto al carrello,58,true,1,0,demo generated,OBS1,2
-U08,Glovo,T02,Aggiunta prodotto al carrello,68,true,0,0,demo generated,OBS1,2
-U08,Deliveroo,T03,Modifica carrello,67,true,1,0,demo generated,OBS1,3
-U08,Glovo,T03,Modifica carrello,87,true,1,0,demo generated,OBS1,3
-U08,Deliveroo,T04,Checkout,79,true,1,0,demo generated,OBS1,4
-U08,Glovo,T04,Checkout,98,true,1,0,demo generated,OBS1,4
-U08,Deliveroo,T05,Tracking ordine,85,true,1,0,demo generated,OBS1,5
-U08,Glovo,T05,Tracking ordine,101,true,0,0,demo generated,OBS1,5
+﻿observer,user_id,original_user_id,app,task_id,completion_time_raw,completion_time_sec,success,errors_count,help_requests,notes
+Valentina,VAL_U1,U1,Deliveroo,1,01:41.07,101.07,True,0,0,
+Valentina,VAL_U1,U1,Deliveroo,2,01:40.27,100.27,True,0,0,
+Valentina,VAL_U1,U1,Deliveroo,3,02:53.90,173.9,True,0,0,
+Valentina,VAL_U1,U1,Glovo,1,00:32.82,32.82,True,0,0,
+Valentina,VAL_U1,U1,Glovo,2,01:02.96,62.96,True,0,0,
+Valentina,VAL_U1,U1,Glovo,3,01:26.15,86.15,True,0,0,
+Valentina,VAL_U2,U2,Deliveroo,1,01:14.47,74.47,True,0,0,
+Valentina,VAL_U2,U2,Deliveroo,2,00:57.22,57.22,True,0,0,
+Valentina,VAL_U2,U2,Deliveroo,3,01:09.89,69.89,True,0,0,
+Valentina,VAL_U2,U2,Glovo,1,00:37.21,37.21,True,0,0,
+Valentina,VAL_U2,U2,Glovo,2,00:05.53,5.53,True,0,0,
+Valentina,VAL_U2,U2,Glovo,3,01:01.28,61.28,True,0,0,
+Valentina,VAL_U3,U3,Deliveroo,1,01:47.86,107.86,True,0,0,
+Valentina,VAL_U3,U3,Deliveroo,2,02:02.90,122.9,True,0,0,
+Valentina,VAL_U3,U3,Deliveroo,3,01:10.27,70.27,True,0,0,
+Valentina,VAL_U3,U3,Glovo,1,02:39.61,159.61,True,0,0,
+Valentina,VAL_U3,U3,Glovo,2,01:20.50,80.5,True,0,0,
+Valentina,VAL_U3,U3,Glovo,3,01:53.31,113.31,True,0,0,
+Valentina,VAL_U4,U4,Deliveroo,1,00:42.15,42.15,True,0,0,
+Valentina,VAL_U4,U4,Deliveroo,2,00:49.50,49.5,True,0,0,
+Valentina,VAL_U4,U4,Deliveroo,3,00:52.30,52.3,True,0,0,
+Valentina,VAL_U4,U4,Glovo,1,00:26.45,26.45,True,0,0,
+Valentina,VAL_U4,U4,Glovo,2,00:31.60,31.6,True,0,0,
+Valentina,VAL_U4,U4,Glovo,3,00:45.12,45.12,True,0,0,
+Valentina,VAL_U5,U5,Deliveroo,1,01:05.32,65.32,True,0,0,
+Valentina,VAL_U5,U5,Deliveroo,2,01:08.14,68.14,True,0,0,
+Valentina,VAL_U5,U5,Deliveroo,3,01:15.45,75.45,True,0,0,
+Valentina,VAL_U5,U5,Glovo,1,00:41.18,41.18,True,0,0,
+Valentina,VAL_U5,U5,Glovo,2,00:48.92,48.92,True,0,0,
+Valentina,VAL_U5,U5,Glovo,3,01:06.50,66.5,True,0,0,
+Valentina,VAL_U6,U6,Deliveroo,1,00:35.88,35.88,True,0,0,
+Valentina,VAL_U6,U6,Deliveroo,2,00:41.12,41.12,True,0,0,
+Valentina,VAL_U6,U6,Deliveroo,3,00:58.19,58.19,True,0,0,
+Valentina,VAL_U6,U6,Glovo,1,00:22.10,22.1,True,0,0,
+Valentina,VAL_U6,U6,Glovo,2,00:28.40,28.4,True,0,0,
+Valentina,VAL_U6,U6,Glovo,3,00:39.55,39.55,True,0,0,
+Jacopo,JAC_U1,U1,Deliveroo,1,01:56.40,116.4,True,0,0,
+Jacopo,JAC_U1,U1,Deliveroo,2,01:41.53,101.53,True,0,0,
+Jacopo,JAC_U1,U1,Deliveroo,3,02:15.37,135.37,True,0,0,
+Jacopo,JAC_U1,U1,Glovo,1,00:45.26,45.26,True,0,0,
+Jacopo,JAC_U1,U1,Glovo,2,01:10.58,70.58,True,0,0,
+Jacopo,JAC_U1,U1,Glovo,3,00:52.64,52.64,True,0,0,
+Jacopo,JAC_U2,U2,Deliveroo,1,00:22.26,22.26,True,0,0,
+Jacopo,JAC_U2,U2,Deliveroo,2,00:59.24,59.24,True,0,0,
+Jacopo,JAC_U2,U2,Deliveroo,3,01:13.87,73.87,True,0,0,
+Jacopo,JAC_U2,U2,Glovo,1,00:17.83,17.83,True,0,0,
+Jacopo,JAC_U2,U2,Glovo,2,01:24.48,84.48,True,0,0,
+Jacopo,JAC_U2,U2,Glovo,3,00:40.59,40.59,True,0,0,
+Jacopo,JAC_U3,U3,Deliveroo,1,00:39.92,39.92,True,0,0,
+Jacopo,JAC_U3,U3,Deliveroo,2,01:10.44,70.44,True,0,0,
+Jacopo,JAC_U3,U3,Deliveroo,3,01:09.61,69.61,True,0,0,
+Jacopo,JAC_U3,U3,Glovo,1,00:34.71,34.71,True,0,0,
+Jacopo,JAC_U3,U3,Glovo,2,02:41.54,161.54,True,0,0,
+Jacopo,JAC_U3,U3,Glovo,3,00:33.75,33.75,True,0,0,
+Jacopo,JAC_U4,U4,Deliveroo,1,00:47.46,47.46,True,0,0,
+Jacopo,JAC_U4,U4,Deliveroo,2,01:47.65,107.65,True,0,0,
+Jacopo,JAC_U4,U4,Deliveroo,3,02:28.23,148.23,True,0,0,
+Jacopo,JAC_U4,U4,Glovo,1,00:41.13,41.13,True,0,0,
+Jacopo,JAC_U4,U4,Glovo,2,01:56.89,116.89,True,0,0,
+Jacopo,JAC_U4,U4,Glovo,3,02:00.50,120.5,True,0,0,
+Jacopo,JAC_U5,U5,Deliveroo,1,00:40.41,40.41,True,0,0,
+Jacopo,JAC_U5,U5,Deliveroo,2,00:49.31,49.31,True,0,0,
+Jacopo,JAC_U5,U5,Deliveroo,3,00:23.08,23.08,True,0,0,
+Jacopo,JAC_U5,U5,Glovo,1,00:18.24,18.24,True,0,0,
+Jacopo,JAC_U5,U5,Glovo,2,01:01.73,61.73,True,0,0,
+Jacopo,JAC_U5,U5,Glovo,3,00:36.25,36.25,True,0,0,
+Jacopo,JAC_U6,U6,Deliveroo,1,00:32.49,32.49,True,0,0,
+Jacopo,JAC_U6,U6,Deliveroo,2,00:40.92,40.92,True,0,0,
+Jacopo,JAC_U6,U6,Deliveroo,3,00:56.24,56.24,True,0,0,
+Jacopo,JAC_U6,U6,Glovo,1,00:24.91,24.91,True,0,0,
+Jacopo,JAC_U6,U6,Glovo,2,00:36.67,36.67,True,0,0,
+Jacopo,JAC_U6,U6,Glovo,3,00:42.84,42.84,True,0,0,
+Samuele,SAM_U1,U1,Deliveroo,1,00:31.93,31.93,True,0,0,
+Samuele,SAM_U1,U1,Deliveroo,2,00:28.28,28.28,True,0,0,
+Samuele,SAM_U1,U1,Deliveroo,3,00:31.98,31.98,True,0,0,
+Samuele,SAM_U1,U1,Glovo,1,00:32.82,32.82,True,0,0,
+Samuele,SAM_U1,U1,Glovo,2,00:17.69,17.69,True,0,0,
+Samuele,SAM_U1,U1,Glovo,3,00:38.52,38.52,True,0,0,
+Samuele,SAM_U2,U2,Deliveroo,1,00:34.48,34.48,True,0,0,
+Samuele,SAM_U2,U2,Deliveroo,2,00:29.91,29.91,True,0,0,
+Samuele,SAM_U2,U2,Deliveroo,3,01:32.78,92.78,True,0,0,
+Samuele,SAM_U2,U2,Glovo,1,00:22.74,22.74,True,0,0,
+Samuele,SAM_U2,U2,Glovo,2,02:41.22,161.22,True,0,0,
+Samuele,SAM_U2,U2,Glovo,3,00:13.30,13.3,True,0,0,
+Samuele,SAM_U3,U3,Deliveroo,1,00:18.32,18.32,True,0,0,
+Samuele,SAM_U3,U3,Deliveroo,2,00:29.53,29.53,True,0,0,
+Samuele,SAM_U3,U3,Deliveroo,3,01:03.63,63.63,True,0,0,
+Samuele,SAM_U3,U3,Glovo,1,00:21.07,21.07,True,0,0,
+Samuele,SAM_U3,U3,Glovo,2,01:02.99,62.99,True,0,0,
+Samuele,SAM_U3,U3,Glovo,3,00:15.94,15.94,True,0,0,
+Samuele,SAM_U4,U4,Deliveroo,1,01:09.97,69.97,True,0,0,
+Samuele,SAM_U4,U4,Deliveroo,2,01:21.09,81.09,True,0,0,
+Samuele,SAM_U4,U4,Deliveroo,3,02:50.02,170.02,True,0,0,
+Samuele,SAM_U4,U4,Glovo,1,00:42.52,42.52,True,0,0,
+Samuele,SAM_U4,U4,Glovo,2,01:10.00,70.0,True,0,0,
+Samuele,SAM_U4,U4,Glovo,3,00:26.05,26.05,True,0,0,
+Samuele,SAM_U5,U5,Deliveroo,1,00:43.56,43.56,True,0,0,
+Samuele,SAM_U5,U5,Deliveroo,2,00:33.86,33.86,True,0,0,
+Samuele,SAM_U5,U5,Deliveroo,3,00:50.64,50.64,True,0,0,
+Samuele,SAM_U5,U5,Glovo,1,00:25.30,25.3,True,0,0,
+Samuele,SAM_U5,U5,Glovo,2,00:55.29,55.29,True,0,0,
+Samuele,SAM_U5,U5,Glovo,3,00:14.51,14.51,True,0,0,
+Samuele,SAM_U6,U6,Deliveroo,1,00:26.88,26.88,True,0,0,
+Samuele,SAM_U6,U6,Deliveroo,2,00:29.37,29.37,True,0,0,
+Samuele,SAM_U6,U6,Deliveroo,3,00:44.42,44.42,True,0,0,
+Samuele,SAM_U6,U6,Glovo,1,00:19.08,19.08,True,0,0,
+Samuele,SAM_U6,U6,Glovo,2,00:41.17,41.17,True,0,0,
+Samuele,SAM_U6,U6,Glovo,3,00:16.33,16.33,True,0,0,

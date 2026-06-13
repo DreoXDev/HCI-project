@@ -30,7 +30,17 @@ REQUIRED_COLUMNS = [
     "help_requests",
 ]
 
-OPTIONAL_COLUMNS = ["notes", "start_time", "end_time", "device", "observer_id", "order"]
+OPTIONAL_COLUMNS = [
+    "notes",
+    "start_time",
+    "end_time",
+    "device",
+    "observer",
+    "observer_id",
+    "original_user_id",
+    "completion_time_raw",
+    "order",
+]
 TEMPLATE_COLUMNS = REQUIRED_COLUMNS + OPTIONAL_COLUMNS
 TRUE_VALUES = {"true", "1", "yes", "si", "sì"}
 FALSE_VALUES = {"false", "0", "no"}
@@ -69,13 +79,41 @@ def normalize_boolean(value: Any) -> bool | None:
     return None
 
 
-def validate_users_time_long(df: pd.DataFrame, required_columns: list[str] | None = None) -> UsersTimeValidationResult:
+def _normalize_task_id(value: Any) -> str:
+    text = "" if pd.isna(value) else str(value).strip()
+    if not text:
+        return ""
+    if text.upper().startswith("T"):
+        digits = "".join(ch for ch in text if ch.isdigit())
+        return f"T{int(digits):02d}" if digits else text.upper()
+    if text.replace(".", "", 1).isdigit():
+        return f"T{int(float(text)):02d}"
+    return text
+
+
+def _task_name_map(tasks: list[dict[str, Any]] | None) -> dict[str, str]:
+    return {_normalize_task_id(task.get("id")): str(task.get("name", "")) for task in tasks or []}
+
+
+def validate_users_time_long(
+    df: pd.DataFrame,
+    required_columns: list[str] | None = None,
+    *,
+    expected_users: int = 24,
+    tasks: list[dict[str, Any]] | None = None,
+) -> UsersTimeValidationResult:
     required = required_columns or REQUIRED_COLUMNS
     messages: list[str] = []
     normalized = df.dropna(how="all").copy()
     empty_rows = len(df) - len(normalized)
     if empty_rows:
         messages.append(f"WARNING: {empty_rows} righe completamente vuote ignorate")
+
+    if "task_id" in normalized.columns:
+        normalized["task_id"] = normalized["task_id"].map(_normalize_task_id)
+    if "task_name" not in normalized.columns and "task_id" in normalized.columns:
+        names = _task_name_map(tasks)
+        normalized["task_name"] = normalized["task_id"].map(names).fillna(normalized["task_id"])
 
     missing = [column for column in required if column not in normalized.columns]
     if missing:
@@ -104,6 +142,12 @@ def validate_users_time_long(df: pd.DataFrame, required_columns: list[str] | Non
         messages.append("ERROR: `success` deve essere convertibile a booleano")
     normalized["success"] = success
 
+    observed_users = normalized["user_id"].dropna().astype(str).str.strip().nunique()
+    if observed_users and observed_users < expected_users:
+        messages.append(f"WARNING: dataset parziale users_time: {observed_users}/{expected_users} utenti presenti")
+    elif observed_users >= expected_users:
+        messages.append(f"OK: dataset users_time finale: {observed_users}/{expected_users} utenti presenti")
+
     is_valid = not any(message.startswith("ERROR") for message in messages)
     if is_valid and not messages:
         messages.append("OK: users_time.csv valido")
@@ -116,13 +160,16 @@ def validate_users_time_file(
     path: str | Path,
     report_path: str | Path = "outputs/reports/users_time_validation_report.md",
     required_columns: list[str] | None = None,
+    *,
+    expected_users: int = 24,
+    tasks: list[dict[str, Any]] | None = None,
 ) -> UsersTimeValidationResult:
     target = resolve_path(path)
     if not target.exists():
         result = UsersTimeValidationResult(False, [f"WARNING: file non trovato: {target}"], pd.DataFrame())
         write_validation_report(result, report_path, target)
         return result
-    result = validate_users_time_long(load_users_time_long(target), required_columns)
+    result = validate_users_time_long(load_users_time_long(target), required_columns, expected_users=expected_users, tasks=tasks)
     write_validation_report(result, report_path, target)
     return result
 
@@ -230,7 +277,12 @@ def analyze_users_time(
     report_path: str | Path = "outputs/reports/users_time_validation_report.md",
 ) -> dict[str, pd.DataFrame]:
     path = resolve_path(input_path) if input_path else users_time_file(config)
-    validation = validate_users_time_file(path, report_path, config.get("users_time", {}).get("required_columns"))
+    validation = validate_users_time_file(
+        path,
+        report_path,
+        config.get("users_time", {}).get("required_columns"),
+        tasks=config.get("users_time", {}).get("tasks", []),
+    )
     if not validation.is_valid:
         if not path.exists():
             return {"summary": pd.DataFrame(), "stat_tests": pd.DataFrame()}
@@ -325,4 +377,3 @@ def write_users_time_interpretation(summary: pd.DataFrame, output_text_dir: str 
     target = resolve_path(output_text_dir) / "users_time_interpretation.md"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n\n".join(lines) + "\n", encoding="utf-8")
-

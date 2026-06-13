@@ -1,7 +1,7 @@
 ﻿system,task,completed,helped,failed,total,completion_rate,ci_low,ci_high
-Deliveroo,1,8,0,0,8,1.0,1.0,1
-Deliveroo,2,8,0,0,8,1.0,1.0,1
-Deliveroo,3,8,0,0,8,1.0,1.0,1
-Glovo,1,6,2,0,8,0.75,0.45,1
-Glovo,2,6,2,0,8,0.75,0.45,1
-Glovo,3,6,2,0,8,0.75,0.45,1
+Deliveroo,1,18,0,0,18,1.0,1.0,1
+Deliveroo,2,18,0,0,18,1.0,1.0,1
+Deliveroo,3,18,0,0,18,1.0,1.0,1
+Glovo,1,18,0,0,18,1.0,1.0,1
+Glovo,2,18,0,0,18,1.0,1.0,1
+Glovo,3,18,0,0,18,1.0,1.0,1

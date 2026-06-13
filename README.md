@@ -10,6 +10,14 @@ python -m pip install -r requirements.txt
 python -m src.cli full-pipeline --plot-style both --generate-slides --no-export-pdf
 ```
 
+Per installare i CSV reali ricevuti dal gruppo nei percorsi canonici:
+
+```powershell
+python -m src.cli prepare-real-inputs --source-dir data/inbox --overwrite
+```
+
+Con i dati attuali il report e marcato come parziale: 18 utenti su 24 previsti. Quando arriva l'ultimo blocco utenti, rilanciare il bootstrap e la full pipeline.
+
 Il comando rigenera analisi, asset e le due presentazioni principali:
 
 - `outputs/slides/final_report.pptx`
@@ -51,6 +59,7 @@ python -m src.cli heuristics severity-pipeline --problems data/processed/heurist
 - [Mappa CLI](docs/cli_api.md)
 - [Mappa notebook](docs/notebooks_map.md)
 - [Formato dati](docs/data_format.md)
+- [Input reali progetto finale](docs/real_project_inputs.md)
 - [Workflow Formbricks](docs/formbricks_workflow.md)
 - [Generazione slide](docs/slide_generation.md)
 - [Stile visuale](docs/visual_style.md)

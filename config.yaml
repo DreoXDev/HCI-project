@@ -11,9 +11,9 @@ paths:
   processed_dir: "data/processed"
   raw_dir: "data/raw"
   outputs_dir: "outputs"
-  questionnaire_raw: "data/formbricks_raw/questionnaire/formbricks_questionnaire_demo_12_users.csv"
-  heuristics_raw: "data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv"
-  heuristics_ratings: "data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv"
+  questionnaire_raw: "data/formbricks_raw/questionnaire/users_questionnaire_export.csv"
+  heuristics_raw: "data/formbricks_raw/heuristics/problems_raw_export.csv"
+  heuristics_ratings: "data/formbricks_raw/heuristics/severity_ratings_export.csv"
   user_tests_raw: "data/formbricks_raw/user_tests/user_tests.csv"
   users_time: "data/raw/users_time.csv"
   heuristics_system_1: "data/raw/heuristics_deliveroo.csv"
@@ -141,7 +141,7 @@ formbricks:
 
   questionnaire:
     schema_path: "src/schemas/questionnaire_schema.yaml"
-    export_path: "data/formbricks_raw/questionnaire/formbricks_questionnaire_demo_12_users.csv"
+    export_path: "data/formbricks_raw/questionnaire/users_questionnaire_export.csv"
     output_system_1: "data/raw/questionnaire_deliveroo.csv"
     output_system_2: "data/raw/questionnaire_glovo.csv"
 
@@ -199,4 +199,3 @@ formbricks:
       - "invitante-non invitante"
       - "congeniale-ostile"
       - "conservativo-innovativo"
-

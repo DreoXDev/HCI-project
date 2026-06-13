@@ -8,6 +8,12 @@ Gruppo HCI
 ## academic_year
 Anno accademico 2025/2026
 
+## DATA_STATUS_LABEL
+Dati parziali
+
+## data_status_note
+I risultati includono tutti gli 8 esperti della valutazione di severita e 18 utenti su 24 previsti. La lettura e gia utile per la revisione del report, ma diventera finale dopo l'inserimento del quarto blocco utenti.
+
 ## index
 **01 Contesto**
 Obiettivi, ambiente e app analizzate
@@ -269,6 +275,8 @@ Link questionario:
 ## user_test_sample
 La composizione del campione dei test utente aiuta a leggere **tempi**, **errori** e successo dei task in relazione al profilo dei partecipanti.
 
+Stato raccolta: **dati parziali**, 18 utenti disponibili su 24 previsti. Le slide vanno aggiornate dopo l'arrivo dell'ultimo blocco da 6 utenti.
+
 ## effectiveness_intro
 L'**efficacia** misura quanto spesso gli utenti riescono a completare correttamente i task assegnati.
 
@@ -299,6 +307,8 @@ Il questionario raccoglie la **percezione soggettiva** dei partecipanti e comple
 
 ## questionnaire_sample
 La composizione del campione del questionario viene usata per contestualizzare i risultati **UEQ** e **NPS**.
+
+Stato raccolta: **dati parziali**, 18 risposte disponibili su 24 previste.
 
 ## questionnaire_item_placeholder
 La slide mostra la distribuzione delle risposte per uno specifico item del questionario UEQ.
@@ -383,4 +393,3 @@ Fonti consultate per i testi statici, rilevate il 10 maggio 2026:
 - Apple App Store Italia, pagina Glovo: valutazione 4,7 su 5, circa 442K valutazioni, oltre 80 milioni di download, 23 paesi e più di 240K ristoranti/store.
 - Deliveroo Help Centre, "Deliveroo 101: how it works": descrizione del tracking ordine, rete di rider e modello di consegna.
 - Glovo corporate site, "This is Glovo" e homepage: descrizione aziendale, presenza in 23 paesi, 120K corrieri mensili, 150K store mensili e 3K dipendenti.
-

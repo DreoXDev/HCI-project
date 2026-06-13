@@ -28,8 +28,9 @@ def _is_nps_column(column: str, configured: str, systems: list[str]) -> bool:
         return True
     if configured and comparable(configured) in comparable(column):
         return True
-    return ("nps" in comparable(column) or "consiglieresti" in comparable(column)) and any(
-        comparable(system) in comparable(column) for system in systems
+    comp = comparable(column)
+    return ("nps" in comp or "consiglieresti" in comp or "coinsiglieresti" in comp or "probabilita" in comp) and any(
+        comparable(system) in comp for system in systems
     )
 
 
@@ -101,7 +102,7 @@ def _nps_column(df: pd.DataFrame, system: str, configured_col: str) -> str | Non
     candidates = [
         column
         for column in df.columns
-        if ("nps" in comparable(column) or "consiglieresti" in comparable(column)) and comparable(system) in comparable(column)
+        if ("nps" in comparable(column) or "consiglieresti" in comparable(column) or "coinsiglieresti" in comparable(column) or "probabilita" in comparable(column)) and comparable(system) in comparable(column)
     ]
     return candidates[0] if candidates else None
 
