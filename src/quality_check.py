@@ -9,6 +9,7 @@ from .config import resolve_path
 from .data_loading import load_all
 from .formbricks_heuristics_pipeline import import_severity_formbricks, validate_clean_problems
 from .questionnaire import numeric_items
+from .report_quality.final_deck_text_audit import audit_final_deck_text
 from .users_time import users_time_file, validate_users_time_file
 
 
@@ -102,6 +103,25 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
     ]
     for output in required_outputs:
         _check(resolve_path(output).exists(), f"Output principale presente: {output}", f"Output principale mancante: {output}", rows)
+
+    for app in ["deliveroo", "glovo"]:
+        full_table = resolve_path(f"outputs/tables/final_problems_{app}.csv")
+        slide_table = resolve_path(f"outputs/tables/final_problems_{app}_slide.csv")
+        _check(full_table.exists(), f"Tabella problemi {app} presente", f"Tabella problemi {app} mancante", rows)
+        _check(slide_table.exists(), f"Tabella problemi slide {app} presente", f"Tabella problemi slide {app} mancante", rows)
+        if full_table.exists():
+            df = pd.read_csv(full_table, encoding="utf-8-sig")
+            _check("description" in df and df["description"].astype(str).str.len().gt(40).all(), f"Descrizioni complete presenti per {app}", f"Descrizioni mancanti o troppo brevi per {app}", rows)
+            _check("description" in df and not df["description"].astype(str).str.contains(r"\.\.\.", regex=True).any(), f"Nessuna ellissi nelle descrizioni {app}", f"Ellissi trovata nelle descrizioni {app}", rows)
+            if {"priority_rank", "severity_mean", "problem_id"}.issubset(df.columns):
+                sortable = df.copy()
+                sortable["priority_rank"] = pd.to_numeric(sortable["priority_rank"], errors="coerce").fillna(9)
+                sortable["severity_mean"] = pd.to_numeric(sortable["severity_mean"], errors="coerce").fillna(-1)
+                sorted_df = sortable.sort_values(["priority_rank", "severity_mean", "problem_id"], ascending=[True, False, True], kind="mergesort")
+                _check(df["problem_id"].tolist() == sorted_df["problem_id"].tolist(), f"Problemi {app} ordinati per priorita/severita", f"Problemi {app} non ordinati per priorita/severita", rows)
+
+    deck_findings = audit_final_deck_text()
+    _check(not deck_findings, "Deck finale senza placeholder o path tecnici", f"Deck finale contiene {len(deck_findings)} testo/i vietato/i", rows)
 
     deck_config = resolve_path("slides/config/slide_deck.yml")
     if deck_config.exists():

@@ -100,6 +100,7 @@ def generate_text_outputs(config: dict) -> None:
         "redesign_recommendations.md": _redesign_text(),
         "limitations.md": _limitations_text(),
     }
+    outputs.update(_final_delivery_snippets(systems))
     for name, text in outputs.items():
         (snippets_dir / name).write_text(italian_display_text(text), encoding="utf-8")
 
@@ -217,3 +218,66 @@ def _limitations_text() -> str:
         "Le stime statistiche e di copertura vanno lette come supporto alla discussione critica, non come conclusioni automatiche."
     )
 
+
+def _final_delivery_snippets(systems: list[str]) -> dict[str, str]:
+    snippets: dict[str, str] = {}
+    problems_d = _read_csv("outputs/tables/final_problems_deliveroo.csv")
+    problems_g = _read_csv("outputs/tables/final_problems_glovo.csv")
+    snippets["heuristic_problem_summary.md"] = _problem_summary_text(problems_d, problems_g, systems)
+    snippets["top_deliveroo_problems.md"] = _top_problem_text(problems_d, systems[0])
+    snippets["top_glovo_problems.md"] = _top_problem_text(problems_g, systems[1])
+    eff = _read_csv("outputs/tables/user_test_effectiveness.csv")
+    speed = _read_csv("outputs/tables/user_test_efficiency.csv")
+    for task in [1, 2, 3]:
+        snippets[f"user_test_effectiveness_task_{task}.md"] = _task_metric_text(eff, task, "completion_rate", "efficacia")
+        snippets[f"user_test_efficiency_task_{task}.md"] = _task_metric_text(speed, task, "mean_seconds", "efficienza")
+    snippets["questionnaire_key_findings.md"] = _questionnaire_text(systems)
+    snippets["final_comparative_conclusions.md"] = _final_text_from_problem_tables(systems) or (
+        "# Conclusioni comparative\n\nLe conclusioni finali integrano problemi euristici, user test, UEQ e NPS."
+    )
+    return snippets
+
+
+def _problem_summary_text(deliveroo: pd.DataFrame, glovo: pd.DataFrame, systems: list[str]) -> str:
+    if deliveroo.empty or glovo.empty:
+        return "# Sintesi problemi euristici\n\nLe tabelle dei problemi sono disponibili dopo la pipeline di severità."
+    return (
+        "# Sintesi problemi euristici\n\n"
+        f"Sono stati consolidati {len(deliveroo)} problemi per {systems[0]} e {len(glovo)} per {systems[1]}. "
+        f"Le priorità più alte riguardano {deliveroo.iloc[0]['title']} per {systems[0]} e {glovo.iloc[0]['title']} per {systems[1]}."
+    )
+
+
+def _top_problem_text(df: pd.DataFrame, system: str) -> str:
+    if df.empty:
+        return f"# Problemi principali {system}\n\nDati non disponibili."
+    rows = df.head(3)
+    items = "; ".join(f"{row.problem_id} {row.title} ({row.severity_mean}/4)" for row in rows.itertuples())
+    return f"# Problemi principali {system}\n\nLe criticità prioritarie sono: {items}."
+
+
+def _task_metric_text(df: pd.DataFrame, task: int, metric: str, label: str) -> str:
+    if df.empty or metric not in df:
+        return f"# Task {task} - {label}\n\nDati non disponibili."
+    subset = df[pd.to_numeric(df.get("task", pd.Series(dtype=float)), errors="coerce") == task]
+    if subset.empty:
+        return f"# Task {task} - {label}\n\nDati non disponibili."
+    if metric == "mean_seconds":
+        best = subset.sort_values(metric).iloc[0]
+        return f"# Task {task} - efficienza\n\n{best['system']} mostra il tempo medio più basso nel task {task}, con {best[metric]:.2f} secondi."
+    best = subset.sort_values(metric, ascending=False).iloc[0]
+    return f"# Task {task} - efficacia\n\n{best['system']} ottiene il completamento medio più alto nel task {task}, pari a {best[metric]:.0%}."
+
+
+def _final_text_from_problem_tables(systems: list[str]) -> str:
+    d = _read_csv("outputs/tables/final_problems_deliveroo.csv")
+    g = _read_csv("outputs/tables/final_problems_glovo.csv")
+    if d.empty or g.empty:
+        return ""
+    d_high = int((d["priority_band"] == "A").sum())
+    g_high = int((g["priority_band"] == "A").sum())
+    return (
+        "# Conclusioni comparative\n\n"
+        f"Il confronto evidenzia {d_high} problemi in fascia A per {systems[0]} e {g_high} per {systems[1]}. "
+        "Le raccomandazioni finali devono concentrarsi su trasparenza informativa, conferme nei passaggi critici e coerenza dei flussi di carrello e checkout."
+    )

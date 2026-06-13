@@ -19,6 +19,7 @@ from .adapters.formbricks.detection import find_by_alias
 from .adapters.formbricks.normalization import comparable
 from .adapters.formbricks.questionnaire_adapter import load_formbricks_export
 from .config import resolve_path
+from .final_problem_tables import generate_final_problem_tables
 from .visualization.theme import style_axis
 
 
@@ -700,15 +701,46 @@ def run_severity_pipeline(
     ratings_path = output_root / "problem_ratings_long.csv"
     final_path = output_root / "heuristic_final_dataset.csv"
     _write_csv_return(ratings_long, ratings_path)
+    evaluators_path = _write_csv_return(build_severity_evaluators_slide_table(ratings_export), resolve_path("outputs/tables/heuristics_evaluators_slide.csv"))
     final, join_warnings = build_heuristic_final_dataset(problems, ratings_long, strict=strict)
     _write_csv_return(final, final_path)
     result = write_final_heuristics_outputs(final, out_dir=out_dir, processed_dir=processed_dir)
     result.warnings = validation.warnings + warnings + join_warnings + result.warnings
-    result.output_paths = [ratings_path, final_path, *result.output_paths]
+    result.output_paths = [ratings_path, evaluators_path, final_path, *result.output_paths]
     result.clean_problems = problems
     result.ratings_long = ratings_long
     result.final_dataset = final
     return result
+
+
+def build_severity_evaluators_slide_table(export: pd.DataFrame) -> pd.DataFrame:
+    columns = list(export.columns)
+    evaluator_col = detect_expert_id_column(columns)
+    rows = []
+    for _, row in export.iterrows():
+        evaluator_id = _clean_text(row[evaluator_col]) if evaluator_col else ""
+        if not evaluator_id:
+            continue
+        rows.append(
+            {
+                "Valutatore": evaluator_id,
+                "Genere": _value_by_alias(row, columns, ["genere"]),
+                "Eta": _value_by_alias(row, columns, ["eta", "età"]),
+                "Profilo": _value_by_alias(row, columns, ["professione", "occupazione"]),
+                "Familiarita delivery": _value_by_alias(row, columns, ["familiarita", "familiarità"]),
+                "Esperienza usabilita": _value_by_alias(row, columns, ["usabilita", "usabilità"]),
+                "Esperienza dominio": _value_by_alias(row, columns, ["dominio"]),
+            }
+        )
+    return pd.DataFrame(rows).drop_duplicates("Valutatore")
+
+
+def _value_by_alias(row: pd.Series, columns: list[str], aliases: list[str]) -> str:
+    for column in columns:
+        comp = comparable(column)
+        if any(comparable(alias) in comp for alias in aliases) and "option id" not in comp:
+            return _clean_text(row[column])
+    return ""
 
 
 def write_final_heuristics_outputs(
@@ -775,6 +807,7 @@ def write_final_heuristics_outputs(
         conclusions.parent.mkdir(parents=True, exist_ok=True)
         conclusions.write_text(summary_text.read_text(encoding="utf-8"), encoding="utf-8")
         paths.append(conclusions)
+    paths.extend(generate_final_problem_tables())
     critical_table = tables_dir / "critical_problems.csv"
     if critical_table.exists():
         paths.append(output_root / "heuristics_critical_problems_table.csv")

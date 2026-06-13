@@ -579,7 +579,7 @@ def _write_rich_text(shape: Any, text: str, *, preferred: int | None = None, min
         paragraph.level = 1 if kind == "subbullet" else 0
         paragraph.alignment = PP_ALIGN.LEFT
         if kind in {"bullet", "subbullet"}:
-            paragraph.text = "• "
+            paragraph.text = "- "
         for segment, bold, italic in _rich_segments(line):
             run = paragraph.add_run()
             run.text = segment
@@ -602,7 +602,7 @@ def _display_lines(text: str) -> list[tuple[str, str]]:
         elif re.match(r"^[-*]\s+", stripped):
             lines.append(("bullet", re.sub(r"^[-*]\s+", "", stripped)))
         elif re.match(r"^\d+\.\s+", stripped):
-            lines.append(("bullet", stripped))
+            lines.append(("plain", stripped))
         elif raw.startswith("  ") or raw.startswith("\t"):
             lines.append(("subbullet", stripped))
         else:
@@ -931,7 +931,7 @@ def _clean_markdown(text: str) -> str:
 
 def _compact(value: str, limit: int) -> str:
     text = " ".join(str(value).split())
-    return text if len(text) <= limit else text[: limit - 1].rstrip() + "..."
+    return text if len(text) <= limit else text[: limit - 1].rstrip()
 
 
 def _pt(size: int | float) -> Any:

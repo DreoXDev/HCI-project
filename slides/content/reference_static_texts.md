@@ -165,76 +165,71 @@ Durante i test sono stati osservati:
 Il confronto tra **Deliveroo** e **Glovo** permette di rilevare differenze concrete nel modo in cui gli utenti attraversano flussi simili.
 
 ## user_test_tasks
-I task sono stati costruiti per simulare un flusso di ordinazione realistico e identico per entrambi i sistemi.
+I task simulano un flusso di ordinazione identico per entrambe le app:
 
-1. **Impostare l'indirizzo di consegna**: Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI.
-2. **Filtrare la ricerca per hamburger**, trovare il ristorante **Bun Burgers** e comporre un ordine fino al checkout, senza confermare l'acquisto.
-3. **Editare il carrello** rimuovendo il menu appena aggiunto.
+1. Inserire l'indirizzo di consegna: Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI.
+2. Trovare Bun Burgers nella lista dei ristoranti di Hamburger, aggiungere un Menu Cheeseburger Singolo con Patatine Normali e una bibita a piacere, procedere fino al checkout senza confermare l'ordine e tornare alla Home.
+3. Aprire il carrello, modificare l'ordine da Cheeseburger Singolo a Cheeseburger Doppio, aumentare la quantita da 1 a 2 e verificare il checkout.
 
 ## task_deck_purpose
-Questa presentazione serve a guidarti durante il test utente su **Deliveroo** e **Glovo**.
-
-Ti verranno mostrati alcuni task da svolgere sulle due applicazioni. L'obiettivo non è valutare te, ma capire quanto i flussi siano chiari, efficienti e facili da usare.
-
-Durante l'attività puoi pensare ad alta voce, segnalare dubbi, difficoltà o passaggi poco chiari. Le osservazioni ci aiuteranno a interpretare tempi, errori e soddisfazione d'uso.
+Questa presentazione serve a guidarti durante il test utente su Deliveroo e Glovo.
+Dovrai svolgere 3 task in entrambe le applicazioni. Lo scopo delle task e' di analizzare la app: Non sei sotto esaminazione, la app lo e'!
+Durante l'attivita' puoi pensare ad alta voce, segnalare dubbi, difficolta' o passaggi poco chiari.
 
 ## task_deck_before_start
 Prima di iniziare:
-- usa le app come faresti normalmente;
-- leggi un task alla volta;
-- avvisa quando inizi e quando pensi di aver completato il task;
-- se qualcosa non è chiaro, dillo ad alta voce;
+- svolgi un task alla volta
+- avvisa quando inizi e quando pensi di aver completato il task
+- se qualcosa non e' chiaro, dillo ad alta voce
 - non inserire dati personali o completare acquisti reali.
 
-Se un task non può essere completato per motivi tecnici, fermati e descrivi cosa ti ha bloccato.
+Se un task non puo' essere completato per motivi tecnici, fermati e descrivi cosa ti ha bloccato.
 
 ## user_task_1
-Imposta l'indirizzo di consegna uguale per tutti:
-**Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI**.
+Inserisci come indirizzo di consegna:
+Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI.
 
 ## user_task_1_deliveroo
-1. Apri Deliveroo.
-2. Apri la gestione dell'indirizzo di consegna.
-3. Inserisci **Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI**.
-4. Conferma l'indirizzo e torna alla schermata principale.
+Apri Deliveroo, e inserisci come indirizzo di consegna:
+Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI
 
 ## user_task_1_glovo
-1. Apri Glovo.
-2. Apri la gestione dell'indirizzo di consegna.
-3. Inserisci **Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI**.
-4. Conferma l'indirizzo e torna alla schermata principale.
+Apri Glovo, e inserisci come indirizzo di consegna:
+Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI
 
 ## user_task_2
-Filtra la ricerca per **hamburgers**, trova **Bun Burgers** e prepara un ordine fino al checkout, senza completare l'acquisto.
+Trova Bun Burgers dalla lista dei ristoranti di hamburger, aggiungi un Menu Cheeseburger Singolo e procedi fino al checkout senza confermare l'ordine.
 
 ## user_task_2_deliveroo
-1. Filtra o cerca la categoria **hamburgers**.
-2. Trova e apri il ristorante **Bun Burgers**.
-3. Aggiungi un **menu cheeseburger doppio**.
-4. Scegli **patatine normali** e una **bibita a piacere**.
-5. Procedi fino al checkout, senza confermare l'ordine.
+Partendo dalla schermata Home:
+Trova la lista di ristoranti di Hamburger. In questa lista trova il ristorante Bun Burgers.
+Aggiungi un Menu Cheeseburger Singolo, con Patatine Normali e una bibita a piacere.
+Procedi fino al Checkout (NON confermare l'ordine)
+Ora torna alla Home.
 
 ## user_task_2_glovo
-1. Filtra o cerca la categoria **hamburgers**.
-2. Trova e apri il ristorante **Bun Burgers**.
-3. Aggiungi un **menu cheeseburger doppio**.
-4. Scegli **patatine normali** e una **bibita a piacere**.
-5. Procedi fino al checkout, senza confermare l'ordine.
+Partendo dalla schermata Home:
+Trova la lista di ristoranti di Hamburger. In questa lista trova il ristorante Bun Burgers.
+Aggiungi un Menu Cheeseburger Singolo, con Patatine Normali e una bibita a piacere.
+Procedi fino al Checkout (NON confermare l'ordine)
+Ora torna alla Home.
 
 ## user_task_3
-Edita il carrello rimuovendo il menu appena aggiunto.
+Modifica l'ordine del task precedente: Cheeseburger Singolo in Cheeseburger Doppio e quantita da 1 a 2.
 
 ## user_task_3_deliveroo
-1. Apri il carrello.
-2. Individua il menu appena aggiunto.
-3. Rimuovi il prodotto dal carrello.
-4. Verifica che il carrello sia vuoto o che il totale sia aggiornato.
+Partendo dalla schermata Home:
+Apri il carrello con i prodotti che hai aggiunto nel Task Precedente, e modifica l'ordine nei seguenti modi:
+1. Anziche' un Cheeseburger Singolo, scegli il Cheeseburger Doppio
+2. Adesso, anziche' 1 Menu Cheeseburger Doppio, aumenta a 2
+Raggiungi il Checkout e assicurati che l'ordine modificato sia corretto.
 
 ## user_task_3_glovo
-1. Apri il carrello.
-2. Individua il menu appena aggiunto.
-3. Rimuovi il prodotto dal carrello.
-4. Verifica che il carrello sia vuoto o che il totale sia aggiornato.
+Partendo dalla schermata Home:
+Apri il carrello con i prodotti che hai aggiunto nel Task Precedente, e modifica l'ordine nei seguenti modi:
+1. Anziche' un Cheeseburger Singolo, scegli il Cheeseburger Doppio
+2. Adesso, anziche' 1 Menu Cheeseburger Doppio, aumenta a 2
+Raggiungi il Checkout e assicurati che l'ordine modificato sia corretto.
 
 ## user_task_4
 Completa il checkout fino alla schermata finale prima della conferma definitiva.
@@ -265,12 +260,11 @@ Individua dove si controlla lo stato dell'ordine e interpreta le informazioni di
 3. Controlla tempo stimato e dettagli della consegna.
 
 ## task_deck_survey
-Grazie per aver completato i task.
-
-Prima di concludere, compila il questionario finale: serve a raccogliere la tua percezione d'uso su Deliveroo e Glovo dopo l'esperienza pratica.
-
+Bene! Grazie di aver partecipato ai Test.
+Prima di concludere, compila il questionario finale:
+serve a raccogliere la tua percezione d'uso su Deliveroo e Glovo dopo l'esperienza pratica.
 Link questionario:
-**INSERIRE QUI IL LINK ALLA SURVEY FORMBRICKS**
+SURVEY FORMBRICKS
 
 ## user_test_sample
 La composizione del campione dei test utente aiuta a leggere **tempi**, **errori** e successo dei task in relazione al profilo dei partecipanti.
@@ -282,17 +276,17 @@ L'**efficacia** misura quanto spesso gli utenti riescono a completare correttame
 
 ## effectiveness_legend
 La lettura delle slide di efficacia distingue tre esiti:
-- **successo**: il task viene completato senza blocchi rilevanti
-- **successo assistito o parziale**: il task viene completato con aiuto, esitazioni o lentezza
-- **insuccesso**: il task non viene completato o produce errori bloccanti
+- successo: il task viene completato senza blocchi rilevanti
+- successo assistito o parziale: il task viene completato con aiuto, esitazioni o lentezza
+- insuccesso: il task non viene completato o produce errori bloccanti
 
-Questa legenda va mantenuta coerente con il file `data/raw/users_time.csv`: successo, errori e richieste di aiuto determinano la classificazione usata nei grafici.
+Successo, errori e richieste di aiuto determinano la classificazione usata nei grafici.
 
 ## efficiency_intro
 L'**efficienza** considera il tempo necessario per completare i task, confrontando le prestazioni tra app e tra attività.
 
 ## task_result_placeholder
-Spazio per commentare il risultato del task con i dati della pipeline.
+I risultati del task mostrano come successo, errori e tempi cambiano tra Deliveroo e Glovo.
 
 ## task_error_placeholder
 La slide mostra gli errori medi osservati per il task. Usarla insieme alla slide di efficacia per distinguere task completati rapidamente da task completati con frizioni operative.
@@ -311,7 +305,7 @@ La composizione del campione del questionario viene usata per contestualizzare i
 Stato raccolta: **dati parziali**, 18 risposte disponibili su 24 previste.
 
 ## questionnaire_item_placeholder
-La slide mostra la distribuzione delle risposte per uno specifico item del questionario UEQ.
+La distribuzione delle risposte evidenzia differenze nella percezione degli utenti sulle due applicazioni.
 
 ## questionnaire_comparison_intro
 Nelle slide successive vengono presentati alcuni **confronti tra sistemi** sulle domande più rappresentative.
@@ -319,7 +313,7 @@ Nelle slide successive vengono presentati alcuni **confronti tra sistemi** sulle
 L'obiettivo e osservare se le differenze percepite dagli utenti sono coerenti con le evidenze emerse nei test e nella **valutazione euristica**.
 
 ## questionnaire_stat_placeholder
-Spazio per confronto statistico tra sistemi sulla domanda selezionata.
+Il confronto tra sistemi aiuta a leggere quali item UEQ separano maggiormente Deliveroo e Glovo.
 
 ## ueq_scale
 La scala **UEQ** consente di misurare l'esperienza d'uso lungo dimensioni come:
@@ -333,10 +327,10 @@ La scala **UEQ** consente di misurare l'esperienza d'uso lungo dimensioni come:
 Il confronto tra sistemi permette di leggere non solo la **prestazione funzionale**, ma anche il vissuto soggettivo degli utenti.
 
 ## subgroup_placeholder
-Spazio per analisi dei sottogruppi o confronto tra profili di partecipanti.
+L'analisi per sottogruppi contestualizza i risultati rispetto al profilo dei partecipanti.
 
 ## ueq_table_placeholder
-Spazio per tabella riassuntiva dei risultati UEQ.
+La tabella riassume le scale UEQ e rende confrontabili le dimensioni principali dell'esperienza d'uso.
 
 ## ueq_summary
 Il grafico riassume le scale **UEQ** e permette di individuare rapidamente le dimensioni in cui una delle due app risulta percepita meglio.
@@ -347,7 +341,7 @@ Il **Net Promoter Score** misura la disponibilita degli utenti a consigliare un 
 Il punteggio sintetizza **promotori**, passivi e **detrattori**, offrendo una lettura immediata della soddisfazione complessiva.
 
 ## nps_placeholder
-La slide mostra la distribuzione di promotori, passivi e detrattori per l'app selezionata.
+La distribuzione NPS distingue promotori, passivi e detrattori per l'app selezionata.
 
 ## deliveroo_strength_1
 **Flusso di ordinazione** focalizzato sul food delivery.
@@ -371,7 +365,7 @@ La maggiore ampiezza funzionale può aumentare **carico cognitivo** e dispersion
 Il confronto va letto integrando **euristiche**, **user test**, **UEQ** e **NPS**: il risultato finale non e un verdetto automatico, ma una sintesi delle evidenze raccolte.
 
 ## conclusions
-L'analisi ha confrontato **Deliveroo** e **Glovo** attraverso valutazione euristica, user test e questionario.
+L'analisi ha confrontato Deliveroo e Glovo attraverso valutazione euristica, user test e questionario.
 
 Nel complesso, le differenze principali emergono dal modo in cui le due app organizzano:
 - ricerca
@@ -379,12 +373,13 @@ Nel complesso, le differenze principali emergono dal modo in cui le due app orga
 - carrello
 - conferma dell'ordine
 
-Le conclusioni finali devono essere aggiornate in base ai **dati raccolti dal gruppo** e agli asset generati dalla pipeline.
+Le conclusioni finali vanno validate dal gruppo sulla base dei dati raccolti e delle evidenze presentate nel report.
 
 ## appendix_placeholder
+Materiale di supporto incluso quando disponibile.
 
 ## table_footnote
-Output generato dalla pipeline di analisi. Verificare la lettura narrativa prima della consegna finale.
+Dati ordinati e sintetizzati per la presentazione finale.
 
 ## sources
 Fonti consultate per i testi statici, rilevate il 10 maggio 2026:

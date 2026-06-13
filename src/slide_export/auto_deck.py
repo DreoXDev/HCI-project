@@ -34,6 +34,9 @@ DEFAULT_AUTO_CONFIG = {
     "table_rows_per_slide": 12,
     "task_count": 5,
     "appendix_assets_root": "slides/assets/appendices",
+    "include_empty_appendices": False,
+    "include_asset_manifest": False,
+    "final_delivery": False,
     "max_slides": None,
     "exclude": [],
 }
@@ -52,6 +55,9 @@ def expand_auto_slides(deck_config: dict[str, Any], available_templates: set[str
     auto = _auto_config(deck_config.get("auto_slides"))
     if not auto["enabled"]:
         return deck_config
+    if deck_config.get("final_delivery"):
+        auto["final_delivery"] = True
+        auto["skip_missing_content"] = True
 
     manual_slides = list(deck_config.get("slides") or [])
     used_assets = _assets_in_specs(manual_slides)
@@ -124,6 +130,7 @@ def _reference_order_specs(
 
     texts = _reference_texts(auto)
     metadata = deck_config.get("metadata") or {}
+    final_delivery = bool(deck_config.get("final_delivery") or auto.get("final_delivery"))
     systems = _systems_from_metadata(metadata)
     task_count = _task_count(auto)
     authors = metadata.get("authors") or texts.get("components", "Gruppo HCI")
@@ -179,7 +186,12 @@ def _reference_order_specs(
     add(_text_spec("Problemi riscontrati", texts, "heuristic_problems_intro", available_templates))
     add(_text_spec("Criteri di prioritizzazione", texts, "priority_criteria", available_templates))
     add(_text_spec("Classificazione in fasce di priorità", texts, "priority_bands", available_templates))
-    add(_table_or_blank("Problemi rilevati", "outputs/tables/heuristics_problems_slide.csv", texts, "manual_problem_list", available_templates))
+    problem_tables = _problem_table_specs(auto, texts, available_templates)
+    if problem_tables:
+        for spec in problem_tables:
+            add(spec)
+    else:
+        add(_table_or_blank("Problemi rilevati", "outputs/tables/heuristics_problems_slide.csv", texts, "manual_problem_list", available_templates))
     add(_graph_or_blank(
         f"Matrice problemi-valutatori {systems[0]}",
         "outputs/figures/dark/heuristics/problem_evaluator_matrix_deliveroo.png",
@@ -278,14 +290,51 @@ def _reference_order_specs(
     add(_graph_or_blank(f"Net Promoter Score {systems[1]}", "outputs/figures/dark/questionnaire/nps_stacked_bar.png", texts, "nps_placeholder", available_templates, theme="glovo"))
 
     add(_final_or_text(texts, available_templates))
-    add(_section_slide("Appendici"))
-    for spec in _appendix_specs(auto, systems, texts, available_templates, task_count):
-        add(spec)
-    if auto.get("include_sources"):
+    appendix_specs = _appendix_specs(auto, systems, texts, available_templates, task_count)
+    if appendix_specs:
+        add(_section_slide("Appendici"))
+        for spec in appendix_specs:
+            add(spec)
+    if auto.get("include_sources") and not final_delivery:
         add(_text_spec("Fonti statiche", texts, "sources", available_templates))
         add(_source_specs(available_templates, specs)[0] if _source_specs(available_templates, specs) else None)
 
     return _dedupe_missing_assets(specs, used_assets, excludes)
+
+
+def _problem_table_specs(auto: dict[str, Any], texts: dict[str, str], available_templates: set[str]) -> list[dict[str, Any]]:
+    if not _has_template(available_templates, "table_large"):
+        return []
+    specs = []
+    for app, theme, path in [
+        ("Deliveroo", "deliveroo", "outputs/tables/final_problems_deliveroo_slide.csv"),
+        ("Glovo", "glovo", "outputs/tables/final_problems_glovo_slide.csv"),
+    ]:
+        table_path = resolve_path(path)
+        if not table_path.exists():
+            continue
+        specs.append(
+            {
+                "template": "table_large",
+                "theme": theme,
+                "fields": {
+                    "TABLE_TITLE": f"Problemi {app}",
+                    "TABLE_FOOTNOTE": texts.get("problem_table_footnote", "Ordinati per priorita e severita media."),
+                },
+                "table": {
+                    "placeholder": "TABLE_MAIN",
+                    "source": _rel(table_path),
+                    "max_rows": int(auto.get("problem_tables", {}).get("max_rows_per_slide", 4)) if isinstance(auto.get("problem_tables"), dict) else 4,
+                    "paginate": True,
+                    "title_prefix": f"Problemi {app}",
+                    "font_size": 5.8,
+                    "header_font_size": 6.0,
+                    "max_cell_chars": 240,
+                    "column_widths": [0.07, 0.22, 0.44, 0.11, 0.08, 0.08],
+                },
+            }
+        )
+    return specs
 
 
 def _user_task_specs(
@@ -566,6 +615,8 @@ def _text_spec(
 
 
 def _blank_spec(title: str, texts: dict[str, str], key: str, available_templates: set[str], *, theme: str = "neutral") -> dict[str, Any] | None:
+    if texts.get("__skip_missing_content") == "true":
+        return None
     return _text_spec(title, texts, key, available_templates, theme=theme)
 
 
@@ -644,21 +695,6 @@ def _table_or_blank(
 
 
 def _final_or_text(texts: dict[str, str], available_templates: set[str]) -> dict[str, Any] | None:
-    if _has_template(available_templates, "final_verdict"):
-        return {
-            "template": "final_verdict",
-            "theme": "neutral",
-            "fields": {
-                "FINAL_TITLE": "Conclusioni",
-                "DELIVEROO_STRENGTH_1": texts.get("deliveroo_strength_1", ""),
-                "DELIVEROO_STRENGTH_2": texts.get("deliveroo_strength_2", ""),
-                "DELIVEROO_WEAKNESS": texts.get("deliveroo_weakness", ""),
-                "GLOVO_STRENGTH_1": texts.get("glovo_strength_1", ""),
-                "GLOVO_STRENGTH_2": texts.get("glovo_strength_2", ""),
-                "GLOVO_WEAKNESS": texts.get("glovo_weakness", ""),
-                "WINNER_LABEL": texts.get("winner_label", "Lettura comparativa basata su euristiche, user test, UEQ e NPS."),
-            },
-        }
     return _text_spec("Conclusioni", texts, "conclusions", available_templates)
 
 
@@ -677,6 +713,8 @@ def _reference_texts(auto: dict[str, Any]) -> dict[str, str]:
         if current:
             sections[current].append(raw_line)
     parsed = {key: _clean_static_text("\n".join(lines)) for key, lines in sections.items()}
+    if auto.get("skip_missing_content"):
+        parsed["__skip_missing_content"] = "true"
     return {**_fallback_reference_texts(), **parsed}
 
 
@@ -721,8 +759,9 @@ def _appendix_specs(
     task_count: int,
 ) -> list[dict[str, Any]]:
     root = resolve_path(auto.get("appendix_assets_root") or DEFAULT_AUTO_CONFIG["appendix_assets_root"])
+    include_empty = bool(auto.get("include_empty_appendices"))
     specs = [
-        _appendix_asset_or_blank(title, root / folder, texts, available_templates, theme=theme)
+        _appendix_asset_or_blank(title, root / folder, texts, available_templates, theme=theme, include_empty=include_empty)
         for title, folder, theme in _appendix_entries(systems, task_count)
     ]
     return [spec for spec in specs if spec is not None]
@@ -778,6 +817,7 @@ def _appendix_asset_or_blank(
     available_templates: set[str],
     *,
     theme: str = "neutral",
+    include_empty: bool = False,
 ) -> dict[str, Any] | None:
     folder.mkdir(parents=True, exist_ok=True)
     image = _first_appendix_image(folder)
@@ -788,6 +828,8 @@ def _appendix_asset_or_blank(
             "fields": {"GRAPH_TITLE": title, "INSIGHT_TEXT": texts.get("appendix_placeholder", "")},
             "images": {"GRAPH_MAIN": _rel(image)},
         }
+    if not include_empty:
+        return None
     body = texts.get("appendix_placeholder", "") or f"Placeholder appendice. Inserire asset in `{_rel(folder)}`."
     return _text_spec(title, {**texts, "__appendix_body": body}, "__appendix_body", available_templates, theme=theme)
 
@@ -1118,7 +1160,18 @@ def _markdown_body(text: str) -> str:
 
 
 def _insight_for_figure(path: Path) -> str:
-    return f"Grafico generato automaticamente da `{_rel(path)}`. Usarlo come base quantitativa e completare la lettura con il commento del gruppo."
+    title = _title_from_path(path).lower()
+    if "effectiveness" in path.name or "success" in path.name:
+        return "Il grafico confronta il completamento dei task e mette in evidenza dove emergono frizioni operative tra le due app."
+    if "efficiency" in path.name or "time" in path.name:
+        return "Il grafico mostra le differenze nei tempi di completamento, utili per leggere l'efficienza percepita nei flussi principali."
+    if "nps" in title:
+        return "Il confronto NPS sintetizza la propensione degli utenti a consigliare le due applicazioni dopo il test."
+    if "ueq" in title or "questionnaire" in _rel(path):
+        return "I risultati UEQ aiutano a collegare prestazioni osservate e percezione soggettiva dell'esperienza d'uso."
+    if "heuristic" in _rel(path):
+        return "La visualizzazione supporta la lettura qualitativa delle criticita euristiche e della loro priorita di intervento."
+    return "La figura sintetizza un'evidenza emersa dall'analisi e va letta insieme agli altri risultati del report."
 
 
 def _title_from_path(path: Path) -> str:
@@ -1139,7 +1192,7 @@ def _slug(value: str) -> str:
 
 def _compact(value: str, limit: int) -> str:
     text = " ".join(str(value).split())
-    return text if len(text) <= limit else text[: limit - 1].rstrip() + "..."
+    return text if len(text) <= limit else text[: limit - 1].rstrip()
 
 
 def _chunks(values: list[str], size: int) -> list[list[str]]:

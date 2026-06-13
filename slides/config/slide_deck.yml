@@ -2,6 +2,23 @@ deck:
   output: outputs/slides/final_report.pptx
   template: slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx
 
+final_delivery: true
+include_asset_manifest: false
+include_empty_appendices: false
+include_debug_footnotes: false
+
+appendices:
+  include_empty_placeholders: false
+  include_task_deck_as_images: true
+  include_questionnaire_exports: false
+  include_asset_manifest: false
+
+problem_tables:
+  split_by_app: true
+  sort_by: [priority_band, severity_mean_desc, source_count_desc, problem_id]
+  include_description: true
+  max_rows_per_slide: 4
+
 metadata:
   project_title: "Deliveroo vs Glovo"
   subtitle: "Analisi trasversale di usabilità"
@@ -23,10 +40,15 @@ auto_slides:
   include_text_findings: true
   include_text_slides: true
   include_slide_pack_text: false
-  include_sources: true
-  table_rows_per_slide: 12
+  include_sources: false
+  include_asset_manifest: false
+  include_empty_appendices: false
+  final_delivery: true
+  table_rows_per_slide: 10
   task_count: 3
   appendix_assets_root: slides/assets/appendices
+  problem_tables:
+    max_rows_per_slide: 4
   # Lasciare vuoto per generare tutte le slide possibili dagli asset esistenti.
   # Impostare un numero se serve produrre solo un sottoinsieme per revisione rapida.
   max_slides:
@@ -62,7 +84,7 @@ slides:
   - template_id: table_large
     fields:
       TABLE_TITLE: "Risultati statistici users time"
-      TABLE_FOOTNOTE: "Output generato dalla pipeline di analisi."
+      TABLE_FOOTNOTE: "Confronto statistico sui tempi osservati nei task."
     table:
       placeholder: TABLE_MAIN
       source: outputs/tables/users_time_stat_tests.csv

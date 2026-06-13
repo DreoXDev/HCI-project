@@ -17,11 +17,26 @@ COMMON_ITALIAN_FIXES = {
     "quantita": "quantità",
     "ambiguita": "ambiguità",
     "liberta": "libertà",
+    "citta": "città",
+    "funzionalita": "funzionalità",
+    "disponibilita": "disponibilità",
+    "perspicuita": "perspicuità",
+    "novita": "novità",
     "piu": "più",
     "perche": "perché",
     "puo": "può",
     "cosi": "così",
     "e'": "è",
+}
+
+POWERPOINT_SAFE_REPLACEMENTS = {
+    "“": '"',
+    "”": '"',
+    "‘": "'",
+    "’": "'",
+    "–": "-",
+    "—": "-",
+    "•": "-",
 }
 
 
@@ -37,5 +52,7 @@ def italian_display_text(value: object) -> str:
     """Return safe display text for final Italian outputs."""
     if value is None:
         return ""
-    return fix_common_ascii_italian(str(value))
-
+    text = fix_common_ascii_italian(str(value))
+    for source, target in POWERPOINT_SAFE_REPLACEMENTS.items():
+        text = text.replace(source, target)
+    return text
