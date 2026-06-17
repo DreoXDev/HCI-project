@@ -10,6 +10,7 @@ OK: descrizioni problema complete
 OK: esperti severita: 8 esperti
 OK: derivati questionario ufficiali presenti
 OK: UEQ normalizzato nel range -3..+3
+OK: tabella valutatori slide: 8 esperti
 OK: testi statici marcati FINAL_DATA
 OK: Task 2 usa Menù Cheeseburger Singolo
 OK: Task 3 richiede Cheeseburger Doppio e quantita 2

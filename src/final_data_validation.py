@@ -51,6 +51,7 @@ def validate_final_data(config: dict, *, strict: bool = False) -> FinalDataValid
     _validate_users_time(result, config)
     _validate_heuristics(result)
     _validate_processed_questionnaire(result)
+    _validate_evaluator_outputs(result)
     _validate_static_texts(result)
     _validate_existing_outputs(result)
     _validate_existing_decks(result)
@@ -146,6 +147,17 @@ def _validate_static_texts(result: FinalDataValidationResult) -> None:
     result.add("FINAL_DATA" in text and "Dati finali" in text, "testi statici marcati FINAL_DATA", "testi statici ancora non marcati FINAL_DATA")
     result.add("Menù Cheeseburger Singolo" in text, "Task 2 usa Menù Cheeseburger Singolo", "Task 2 non usa Menù Cheeseburger Singolo")
     result.add("Cheeseburger Doppio" in text and re.search(r"\b2\b", text), "Task 3 richiede Cheeseburger Doppio e quantita 2", "Task 3 non contiene Cheeseburger Doppio e quantita 2")
+
+
+def _validate_evaluator_outputs(result: FinalDataValidationResult) -> None:
+    path = resolve_path("outputs/tables/heuristics_evaluators_slide.csv")
+    if not path.exists():
+        result.warnings.append("WARNING: tabella valutatori slide non ancora generata")
+        return
+    df = pd.read_csv(path, encoding="utf-8-sig")
+    column = "Valutatore" if "Valutatore" in df.columns else df.columns[0]
+    count = df[column].dropna().astype(str).str.strip().nunique()
+    result.add(count == 8, "tabella valutatori slide: 8 esperti", f"tabella valutatori slide: {count}/8 esperti")
 
 
 def _validate_existing_outputs(result: FinalDataValidationResult) -> None:

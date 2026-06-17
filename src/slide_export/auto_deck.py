@@ -675,6 +675,8 @@ def _table_or_blank(
 ) -> dict[str, Any] | None:
     table_path = resolve_path(table)
     if table_path.exists() and _has_template(available_templates, "table_large"):
+        rows = _read_csv_rows(table_path)
+        is_evaluator_table = table_path.name == "heuristics_evaluators_slide.csv"
         return {
             "template": "table_large",
             "theme": theme,
@@ -685,10 +687,10 @@ def _table_or_blank(
             "table": {
                 "placeholder": "TABLE_MAIN",
                 "source": _rel(table_path),
-                "max_rows": _rows_per_slide_for_table(_read_csv_rows(table_path), 5 if "problems_slide" in table_path.name else 10),
+                "max_rows": max(8, len(rows) - 1) if is_evaluator_table else _rows_per_slide_for_table(rows, 5 if "problems_slide" in table_path.name else 10),
                 "paginate": "problems_slide" in table_path.name,
                 "title_prefix": title,
-                **_table_render_options(_read_csv_rows(table_path)),
+                **_table_render_options(rows),
             },
         }
     return _blank_spec(title, texts, fallback_key, available_templates, theme=theme)
@@ -768,7 +770,7 @@ def _appendix_specs(
 
 
 def _appendix_entries(systems: tuple[str, str], task_count: int) -> list[tuple[str, str, str]]:
-    evaluators = ["EU1", "EU2", "EU3", "ED1", "ED2", "ED3"]
+    evaluators = _heuristic_evaluator_ids()
     entries: list[tuple[str, str, str]] = []
     for evaluator in evaluators:
         for app in systems:
@@ -808,6 +810,33 @@ def _appendix_entries(systems: tuple[str, str], task_count: int) -> list[tuple[s
         ]
     )
     return entries
+
+
+def _heuristic_evaluator_ids() -> list[str]:
+    for path in [
+        resolve_path("outputs/tables/heuristics_evaluators_slide.csv"),
+        resolve_path("data/formbricks_raw/heuristics/severity_ratings_export.csv"),
+    ]:
+        rows = _read_dict_rows(path)
+        if not rows:
+            continue
+        ids: list[str] = []
+        for row in rows:
+            value = row.get("Valutatore") or row.get("1. Qual è il tuo id esperto?") or row.get("expert_id") or row.get("evaluator_id")
+            value = str(value or "").strip()
+            if value and value not in ids:
+                ids.append(value)
+        if ids:
+            return sorted(ids, key=_evaluator_sort_key)
+    return ["EU1", "EU2", "EU3", "EU4", "ED1", "ED2", "ED3", "ED4"]
+
+
+def _evaluator_sort_key(value: str) -> tuple[str, int, str]:
+    match = re.match(r"^([A-Za-z]+)(\d+)$", value.strip())
+    if not match:
+        return (value, 0, value)
+    prefix, number = match.groups()
+    return (prefix.upper(), int(number), value)
 
 
 def _appendix_asset_or_blank(
