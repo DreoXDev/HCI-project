@@ -134,6 +134,9 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
                 sorted_df = sortable.sort_values(sort_columns, ascending=ascending, kind="mergesort")
                 _check(df["problem_id"].tolist() == sorted_df["problem_id"].tolist(), f"Problemi {app} ordinati per severita", f"Problemi {app} non ordinati per severita", rows)
 
+    demographics_ok = run_demographics_quality_check(config)
+    _check(demographics_ok, "Audit composizione campioni demografici superato", "Audit composizione campioni demografici fallito", rows)
+
     deck_findings = audit_final_deck_text()
     _check(not deck_findings, "Deck finale senza placeholder o path tecnici", f"Deck finale contiene {len(deck_findings)} testo/i vietato/i", rows)
 
@@ -172,3 +175,81 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(lines), encoding="utf-8")
     return status in {"READY_FOR_FINAL_SLIDES", "PARTIAL_READY_FOR_REVIEW"}
+
+
+def run_demographics_quality_check(config: dict) -> bool:
+    experts_path = resolve_path("data/processed/heuristics/expert_profiles.csv")
+    if not experts_path.exists():
+        return False
+    experts_df = pd.read_csv(experts_path)
+    
+    unique_experts = experts_df["evaluator_id"].nunique() if "evaluator_id" in experts_df.columns else 0
+    gender_tot = experts_df["gender"].dropna().count() if "gender" in experts_df.columns else 0
+    age_tot = experts_df["age_group"].dropna().count() if "age_group" in experts_df.columns else 0
+    profile_tot = experts_df["occupation"].dropna().count() if "occupation" in experts_df.columns else 0
+    fam_tot = experts_df["familiarity"].dropna().count() if "familiarity" in experts_df.columns else 0
+    
+    expert_split_no = "system" not in experts_df.columns and "app" not in experts_df.columns
+    
+    experts_ok = (unique_experts == 8 and gender_tot == 8 and age_tot == 8 and profile_tot == 8 and fam_tot == 8 and expert_split_no)
+    
+    users_path = resolve_path(config["paths"]["questionnaire_system_1"])
+    if not users_path.exists():
+        users_path = resolve_path(config["paths"]["questionnaire_system_2"])
+    if not users_path.exists():
+        return False
+        
+    users_df = pd.read_csv(users_path)
+    if "item" in users_df.columns:
+        users_df = users_df.set_index("item")
+    elif "item" == users_df.index.name:
+        pass
+    else:
+        users_df = users_df.set_index(users_df.columns[0])
+        
+    user_cols = [c for c in users_df.columns if c != "item"]
+    unique_users = len(user_cols)
+    
+    gender_user_tot = users_df.loc["genere"].dropna().count() if "genere" in users_df.index else 0
+    age_user_tot = users_df.loc["eta"].dropna().count() if "eta" in users_df.index else 0
+    profession_user_tot = users_df.loc["situazione lavorativa"].dropna().count() if "situazione lavorativa" in users_df.index else 0
+    fam_user_tot = users_df.loc["familiarita delivery"].dropna().count() if "familiarita delivery" in users_df.index else 0
+    
+    users_split_no = "system" not in users_df.index and "app" not in users_df.index
+    
+    users_ok = (unique_users == 24 and gender_user_tot == 24 and age_user_tot == 24 and profession_user_tot == 24 and fam_user_tot == 24 and users_split_no)
+    
+    status = "PASS" if (experts_ok and users_ok) else "FAIL"
+    
+    report_lines = [
+        "# Demographics Quality Check",
+        "",
+        "## Experts",
+        "",
+        f"- Unique experts: {unique_experts}",
+        f"- Gender total: {gender_tot}",
+        f"- Age total: {age_tot}",
+        f"- Profile total: {profile_tot}",
+        f"- Familiarity total: {fam_tot}",
+        f"- App/system split used: {'yes' if not expert_split_no else 'no'}",
+        "",
+        "## Users",
+        "",
+        f"- Unique users: {unique_users}",
+        f"- Gender total: {gender_user_tot}",
+        f"- Age total: {age_user_tot}",
+        f"- Profession total: {profession_user_tot}",
+        f"- Familiarity total: {fam_user_tot}",
+        f"- App/system split used: {'yes' if not users_split_no else 'no'}",
+        "",
+        "## Status",
+        "",
+        status,
+        ""
+    ]
+    
+    report_path = resolve_path("outputs/reports/demographics_quality_check.md")
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text("\n".join(report_lines), encoding="utf-8")
+    
+    return status == "PASS"

@@ -168,19 +168,19 @@ def _reference_order_specs(
     add(_text_spec("Valutatori", texts, "heuristic_evaluators", available_templates))
     add(_table_or_blank("Tabella dei valutatori", "outputs/tables/heuristics_evaluators_slide.csv", texts, "manual_evaluator_table", available_templates))
     add(_comparison_or_blank(
-        "Composizione del campione",
-        "outputs/figures/dark/sample/age_distribution.png",
-        "outputs/figures/dark/sample/gender_distribution.png",
+        "Composizione valutatori - dati demografici",
+        "outputs/figures/dark/heuristics/expert_age_distribution.png",
+        "outputs/figures/dark/heuristics/expert_gender_distribution.png",
         texts,
-        "sample_composition",
+        "expert_demographics",
         available_templates,
     ))
     add(_comparison_or_blank(
-        "Composizione del campione",
-        "outputs/figures/dark/sample/occupation_distribution.png",
-        "outputs/figures/dark/sample/familiarity_distribution.png",
+        "Composizione valutatori - profilo ed esperienza",
+        "outputs/figures/dark/heuristics/expert_occupation_distribution.png",
+        "outputs/figures/dark/heuristics/expert_familiarity_distribution.png",
         texts,
-        "sample_composition",
+        "expert_profile_experience",
         available_templates,
     ))
     add(_graph_or_blank("Matrice di expertise", "outputs/figures/dark/heuristics/expertise_matrix.png", texts, "manual_expertise_matrix", available_templates))
@@ -284,11 +284,19 @@ def _reference_order_specs(
     add(_section_slide("Questionario"))
     add(_text_spec("Questionario", texts, "questionnaire_intro", available_templates))
     add(_comparison_or_blank(
-        "Composizione del campione",
+        "Composizione utenti - dati demografici",
+        "outputs/figures/dark/sample/age_distribution.png",
         "outputs/figures/dark/sample/gender_distribution.png",
+        texts,
+        "user_demographics",
+        available_templates,
+    ))
+    add(_comparison_or_blank(
+        "Composizione utenti - familiarità e profilo",
+        "outputs/figures/dark/sample/occupation_distribution.png",
         "outputs/figures/dark/sample/familiarity_distribution.png",
         texts,
-        "questionnaire_sample",
+        "user_familiarity_profile",
         available_templates,
     ))
     for item_idx in [1, 3, 5, 7, 9, 11, 13, 15, 17, 21, 23, 25]:

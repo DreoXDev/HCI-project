@@ -403,6 +403,48 @@ Materiale di supporto incluso quando disponibile.
 ## table_footnote
 Dati ordinati e sintetizzati per la presentazione finale.
 
+
+## nps_placeholder
+La distribuzione NPS distingue promotori, passivi e detrattori per l'app selezionata.
+
+## deliveroo_strength_1
+**Flusso di ordinazione** focalizzato sul food delivery.
+
+## deliveroo_strength_2
+**Tracking** e gestione dell'ordine ben riconoscibili.
+
+## deliveroo_weakness
+Possibili **criticità** nei passaggi di modifica carrello e checkout.
+
+## glovo_strength_1
+**Ampiezza dell'offerta** e categorie multi-servizio.
+
+## glovo_strength_2
+**Percorso rapido** per accedere a negozi e prodotti diversi.
+
+## glovo_weakness
+La maggiore ampiezza funzionale può aumentare **carico cognitivo** e dispersione.
+
+## winner_label
+Il confronto va letto integrando **euristiche**, **user test**, **UEQ** e **NPS**: il risultato finale non e un verdetto automatico, ma una sintesi delle evidenze raccolte.
+
+## conclusions
+L'analisi ha confrontato Deliveroo e Glovo attraverso valutazione euristica, user test e questionario.
+
+Nel complesso, le differenze principali emergono dal modo in cui le due app organizzano:
+- ricerca
+- scelta dei prodotti
+- carrello
+- conferma dell'ordine
+
+Le conclusioni finali vanno validate dal gruppo sulla base dei dati raccolti e delle evidenze presentate nel report.
+
+## appendix_placeholder
+Materiale di supporto incluso quando disponibile.
+
+## table_footnote
+Dati ordinati e sintetizzati per la presentazione finale.
+
 ## sources
 Fonti consultate per i testi statici, rilevate il 10 maggio 2026:
 
@@ -410,3 +452,23 @@ Fonti consultate per i testi statici, rilevate il 10 maggio 2026:
 - Apple App Store Italia, pagina Glovo: valutazione 4,7 su 5, circa 442K valutazioni, oltre 80 milioni di download, 23 paesi e più di 240K ristoranti/store.
 - Deliveroo Help Centre, "Deliveroo 101: how it works": descrizione del tracking ordine, rete di rider e modello di consegna.
 - Glovo corporate site, "This is Glovo" e homepage: descrizione aziendale, presenza in 23 paesi, 120K corrieri mensili, 150K store mensili e 3K dipendenti.
+
+## expert_demographics
+Il campione dei valutatori è composto da 8 esperti. La maggioranza è costituita da studenti under 25, con una presenza prevalentemente maschile. Questa composizione va considerata nella lettura dei risultati, perché riflette un campione giovane e con buona familiarità con servizi digitali.
+
+Nota: i valutatori costituiscono un unico campione esperto; ciascun esperto ha valutato entrambe le applicazioni.
+
+## expert_profile_experience
+Il gruppo include sia esperti di usabilità sia esperti di dominio. La familiarità con app di delivery è prevalentemente intermedia, mentre i punteggi di esperienza in usabilità e dominio consentono di bilanciare osservazioni metodologiche e conoscenza pratica del contesto d'uso.
+
+Nota: i valutatori costituiscono un unico campione esperto; ciascun esperto ha valutato entrambe le applicazioni.
+
+## user_demographics
+Il campione utenti è composto da 24 partecipanti. Le variabili demografiche sono state conteggiate una sola volta per utente, poiché ogni partecipante ha valutato entrambi i sistemi.
+
+Nota: le variabili demografiche sono conteggiate una sola volta per partecipante. Gli stessi utenti hanno valutato entrambe le applicazioni.
+
+## user_familiarity_profile
+La familiarità con le app di delivery permette di interpretare le prestazioni nei task e le risposte al questionario. Il campione non rappresenta due gruppi distinti per app: gli stessi utenti hanno svolto task e valutazioni su entrambi i sistemi.
+
+Nota: le variabili demografiche sono conteggiate una sola volta per partecipante. Gli stessi utenti hanno valutato entrambe le applicazioni.

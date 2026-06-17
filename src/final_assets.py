@@ -34,6 +34,7 @@ def generate_final_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:
     generate_nps_breakdown(config, data)
     generate_users_time_task_assets(config)
     generate_sample_assets(config, data)
+    generate_expert_demographics(config)
     generate_subgroup_assets(config, data)
     export_questionnaire_final_aliases()
 
@@ -512,17 +513,23 @@ def generate_users_time_task_assets(config: dict) -> None:
 
 
 def generate_sample_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:
-    systems = [(config["project"]["system_1"], data.get("questionnaire_system_1", pd.DataFrame())), (config["project"]["system_2"], data.get("questionnaire_system_2", pd.DataFrame()))]
+    df1 = data.get("questionnaire_system_1", pd.DataFrame())
+    df2 = data.get("questionnaire_system_2", pd.DataFrame())
+    df = df1 if not df1.empty else df2
+    if df.empty:
+        return
+    user_cols = [c for c in df.columns if c != "item"]
+    assert len(user_cols) == 24, f"Expected 24 unique users, found {len(user_cols)}"
+
     sample_rows = []
     fields = ["genere", "eta", "familiarita delivery", "familiarita con app di delivery", "situazione lavorativa", "istruzione"]
-    for system, df in systems:
-        for field in fields:
-            if field in df.index:
-                counts = df.loc[field].astype(str).value_counts().reset_index()
-                counts.columns = ["value", "count"]
-                counts["system"] = system
-                counts["field"] = field
-                sample_rows.append(counts)
+    for field in fields:
+        if field in df.index:
+            counts = df.loc[field].astype(str).value_counts().reset_index()
+            counts.columns = ["value", "count"]
+            counts["field"] = field
+            assert counts["count"].sum() == 24, f"Expected total count of 24, but got {counts['count'].sum()} for field {field}"
+            sample_rows.append(counts)
     if not sample_rows:
         return
     all_counts = pd.concat(sample_rows, ignore_index=True)
@@ -535,14 +542,47 @@ def generate_sample_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:
             continue
         done.add(filename)
         fig, ax = plt.subplots(figsize=(8, 4.5))
-        sns.barplot(data=subset, x="value", y="count", hue="system", palette=get_brand_palette(config), ax=ax)
+        sns.barplot(data=subset, x="value", y="count", color=get_brand_palette(config).get("Deliveroo", "#00CCBC"), ax=ax)
         ax.tick_params(axis="x", rotation=25)
-        style_axis(ax, field, "", "Rispondenti")
+        style_axis(ax, field.capitalize(), "", "Rispondenti")
         save_figure(fig, f"outputs/figures/sample/{filename}.png", config)
     resolve_path("outputs/texts/snippets/sample_description.md").write_text(
-        "# Composizione campione\n\nGli asset distinguono il campione questionario per sistema. Integrare manualmente campione user test e valutatori euristici quando serve dettaglio qualitativo.\n",
+        "# Composizione campione\n\nIl campione dei partecipanti è composto da 24 utenti che hanno valutato entrambi i sistemi.\n",
         encoding="utf-8",
     )
+
+
+def generate_expert_demographics(config: dict) -> None:
+    profiles = _load_final_expert_profiles()
+    if profiles.empty:
+        return
+    assert profiles["evaluator_id"].nunique() == 8, f"Expected 8 unique experts, found {profiles['evaluator_id'].nunique()}"
+
+    field_map = {
+        "gender": "expert_gender_distribution",
+        "age_group": "expert_age_distribution",
+        "occupation": "expert_occupation_distribution",
+        "familiarity": "expert_familiarity_distribution"
+    }
+
+    expert_rows = []
+    for field, filename in field_map.items():
+        if field in profiles.columns:
+            counts = profiles[field].replace("", pd.NA).dropna().astype(str).value_counts().reset_index()
+            counts.columns = ["value", "count"]
+            counts["field"] = field
+            assert counts["count"].sum() == 8, f"Expected count of 8 for expert field {field}, got {counts['count'].sum()}"
+            expert_rows.append(counts)
+
+            fig, ax = plt.subplots(figsize=(8, 4.5))
+            sns.barplot(data=counts, x="value", y="count", color=get_brand_palette(config).get("Deliveroo", "#00CCBC"), ax=ax)
+            ax.tick_params(axis="x", rotation=25)
+            style_axis(ax, field.replace("_", " ").capitalize(), "", "Conteggio")
+            save_figure(fig, f"outputs/figures/heuristics/{filename}.png", config)
+
+    if expert_rows:
+        all_expert_counts = pd.concat(expert_rows, ignore_index=True)
+        export_table(all_expert_counts, "outputs/tables/expert_composition.csv", 2)
 
 
 def generate_subgroup_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:
