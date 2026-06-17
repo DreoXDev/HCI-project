@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from ..config import resolve_path
+from .external_deck import user_task_deck_slide_specs
 from .template_variants import infer_theme_from_app, resolve_template_id
 
 
@@ -163,7 +164,7 @@ def _reference_order_specs(
 
     add(_section_slide("Valutazione euristica"))
     add(_text_spec("Obiettivo", texts, "heuristic_objective", available_templates))
-    add(_text_spec("Set di euristiche", texts, "nielsen_heuristics", available_templates))
+    add(_heuristics_set_spec(texts, available_templates))
     add(_text_spec("Valutatori", texts, "heuristic_evaluators", available_templates))
     add(_table_or_blank("Tabella dei valutatori", "outputs/tables/heuristics_evaluators_slide.csv", texts, "manual_evaluator_table", available_templates))
     add(_comparison_or_blank(
@@ -192,6 +193,17 @@ def _reference_order_specs(
             add(spec)
     else:
         add(_table_or_blank("Problemi rilevati", "outputs/tables/heuristics_problems_slide.csv", texts, "manual_problem_list", available_templates))
+    add(_comparison_or_blank(
+        "Sintesi della valutazione euristica",
+        "outputs/assets/final_report/dark/heuristic_priority_bands.png",
+        "outputs/assets/final_report/dark/heuristic_frequency_comparison.png",
+        texts,
+        "heuristic_final_summary",
+        available_templates,
+    ))
+    add(_graph_or_blank("Problemi rilevanti - Deliveroo", "outputs/assets/final_report/dark/top_problems_deliveroo.png", texts, "deliveroo_relevant_problems", available_templates, theme="deliveroo"))
+    add(_graph_or_blank("Problemi rilevanti - Glovo", "outputs/assets/final_report/dark/top_problems_glovo.png", texts, "glovo_relevant_problems", available_templates, theme="glovo"))
+    add(_table_or_blank("Criticita trasversali comuni", "data/processed/final_report/shared_problem_themes.csv", texts, "shared_criticalities", available_templates))
     add(_graph_or_blank(
         f"Matrice problemi-valutatori {systems[0]}",
         "outputs/figures/dark/heuristics/problem_evaluator_matrix_deliveroo.png",
@@ -218,14 +230,25 @@ def _reference_order_specs(
     ))
     add(_text_spec("Valutazione quantitativa", texts, "heuristic_quantitative_conclusion", available_templates))
 
+    add(_section_slide("Dark pattern e frizioni persuasive"))
+    add(_text_spec("Dark pattern e frizioni persuasive", texts, "dark_patterns_intro", available_templates))
+    add(_table_or_blank("Dark pattern osservati - Deliveroo", "data/processed/final_report/dark_patterns_deliveroo_slide.csv", texts, "dark_patterns_deliveroo", available_templates, theme="deliveroo"))
+    add(_table_or_blank("Dark pattern osservati - Glovo", "data/processed/final_report/dark_patterns_glovo_slide.csv", texts, "dark_patterns_glovo", available_templates, theme="glovo"))
+    add(_text_spec("Impatto dei dark pattern sul flusso d'ordine", texts, "dark_patterns_impact", available_templates))
+
     add(_section_slide("Test utente"))
     add(_text_spec("Obiettivo", texts, "user_test_objective", available_templates))
-    add(_text_spec("I task", texts, "user_test_tasks", available_templates))
-    for task_idx in range(1, task_count + 1):
-        key = f"user_task_{task_idx}"
-        add(_text_spec(f"Task {task_idx}", texts, key, available_templates))
-        for app, theme in ((systems[0], "deliveroo"), (systems[1], "glovo")):
-            add(_text_spec(f"{app} - Task {task_idx}", texts, f"{key}_{theme}", available_templates, theme=theme))
+    imported_task_deck = user_task_deck_slide_specs(auto)
+    if imported_task_deck:
+        for spec in imported_task_deck:
+            add(spec)
+    else:
+        add(_text_spec("I task", texts, "user_test_tasks", available_templates))
+        for task_idx in range(1, task_count + 1):
+            key = f"user_task_{task_idx}"
+            add(_text_spec(f"Task {task_idx}", texts, key, available_templates))
+            for app, theme in ((systems[0], "deliveroo"), (systems[1], "glovo")):
+                add(_text_spec(f"{app} - Task {task_idx}", texts, f"{key}_{theme}", available_templates, theme=theme))
     add(_text_spec("Composizione del campione", texts, "user_test_sample", available_templates))
     add(_text_spec("Legenda efficacia", texts, "effectiveness_legend", available_templates))
     add(_graph_or_blank("Efficacia", "outputs/figures/dark/user_tests/effectiveness_deliveroo_vs_glovo.png", texts, "effectiveness_intro", available_templates))
@@ -253,6 +276,10 @@ def _reference_order_specs(
         "users_time_summary",
         available_templates,
     ))
+    add(_graph_or_blank("Confronto statistico dei task", "outputs/assets/final_report/dark/user_test_time_diff_ci.png", texts, "user_test_statistical_significance", available_templates))
+    add(_table_or_blank("Confronto statistico dei task - tabella", "data/processed/final_report/user_test_inferential_stats_slide.csv", texts, "user_test_statistical_significance", available_templates))
+    add(_text_spec("Efficacia ed efficienza: lettura congiunta", texts, "effectiveness_efficiency_joint", available_templates))
+    add(_table_or_blank("Osservazioni qualitative durante i test", "data/processed/final_report/user_test_qualitative_observations_slide.csv", texts, "qualitative_observations", available_templates))
 
     add(_section_slide("Questionario"))
     add(_text_spec("Questionario", texts, "questionnaire_intro", available_templates))
@@ -265,33 +292,46 @@ def _reference_order_specs(
         available_templates,
     ))
     for item_idx in [1, 3, 5, 7, 9, 11, 13, 15, 17, 21, 23, 25]:
-        add(_graph_or_blank(
+        add(_questionnaire_item_spec(
             f"Domanda {item_idx}",
             f"outputs/figures/dark/questionnaire/items/item_{item_idx:02d}_boxplot.png",
             texts,
             "questionnaire_item_placeholder",
             available_templates,
+            item_idx=item_idx,
         ))
     add(_text_spec("Confronto tra sistemi", texts, "questionnaire_comparison_intro", available_templates))
     for item_idx in [1, 4, 9, 13, 23]:
-        add(_graph_or_blank(
+        add(_questionnaire_item_spec(
             f"Confronto statistico - Domanda {item_idx}",
             f"outputs/figures/dark/questionnaire/items/item_{item_idx:02d}_boxplot.png",
             texts,
             "questionnaire_stat_placeholder",
             available_templates,
+            item_idx=item_idx,
+            statistical=True,
         ))
+    add(_graph_or_blank("Confronto statistico item chiave", "outputs/assets/final_report/dark/questionnaire_top_differences.png", texts, "questionnaire_statistical_comparison", available_templates))
+    add(_text_spec("Sintesi dei risultati del questionario", texts, "questionnaire_synthesis", available_templates))
     add(_text_spec("La scala UEQ", texts, "ueq_scale", available_templates))
     add(_graph_or_blank("Scala UEQ - analisi dei sottogruppi", "outputs/figures/dark/questionnaire/subgroups/ueq_by_familiarity.png", texts, "subgroup_placeholder", available_templates))
     add(_table_or_blank("Analisi dei dati UEQ", "outputs/tables/ueq_summary.csv", texts, "ueq_table_placeholder", available_templates))
     add(_graph_or_blank("Media risultati UEQ", "outputs/figures/dark/questionnaire/ueq_scales.png", texts, "ueq_summary", available_templates))
-    add(_graph_or_blank("Net Promoter Score", "outputs/figures/dark/questionnaire/nps_comparison.png", texts, "nps_intro", available_templates))
-    add(_graph_or_blank(f"Net Promoter Score {systems[0]}", "outputs/figures/dark/questionnaire/nps_stacked_bar.png", texts, "nps_placeholder", available_templates, theme="deliveroo"))
-    add(_graph_or_blank(f"Net Promoter Score {systems[1]}", "outputs/figures/dark/questionnaire/nps_stacked_bar.png", texts, "nps_placeholder", available_templates, theme="glovo"))
+    add(_graph_or_blank("Interpretazione delle scale UEQ", "outputs/assets/final_report/dark/ueq_with_ci.png", texts, "ueq_interpretation", available_templates))
+    add(_text_spec("UEQ: conferme e contraddizioni rispetto ai test", texts, "ueq_confirmations_contradictions", available_templates))
+    add(_graph_or_blank("Net Promoter Score: raccomandabilita percepita", "outputs/assets/final_report/dark/nps_breakdown.png", texts, "nps_interpreted", available_templates))
 
-    add(_final_or_text(texts, available_templates))
+    add(_section_slide("Sintesi finale"))
+    add(_text_spec("Conclusioni: confronto complessivo", texts, "conclusions_overall", available_templates))
+    add(_text_spec("Evidenze integrate", texts, "integrated_evidence", available_templates))
+    add(_text_spec("Raccomandazioni prioritarie", texts, "priority_recommendations", available_templates))
+    add(_text_spec("Verdetto finale", texts, "final_verdict_argument", available_templates))
     appendix_specs = _appendix_specs(auto, systems, texts, available_templates, task_count)
-    if appendix_specs:
+    if final_delivery:
+        add(_section_slide("Appendice"))
+        for spec in _guided_appendix_specs(texts, available_templates):
+            add(spec)
+    elif appendix_specs:
         add(_section_slide("Appendici"))
         for spec in appendix_specs:
             add(spec)
@@ -640,6 +680,75 @@ def _graph_or_blank(
     return _blank_spec(title, texts, fallback_key, available_templates, theme=theme)
 
 
+def _heuristics_set_spec(texts: dict[str, str], available_templates: set[str]) -> dict[str, Any] | None:
+    image = _first_existing_path(
+        [
+            "assets/manual/heuristics_table.png",
+            "assets/manual/tabella_euristiche.png",
+            "assets/heuristics/heuristics_table.png",
+        ]
+    )
+    if image and _has_template(available_templates, "graph_full"):
+        return {
+            "template": "graph_full",
+            "theme": "neutral",
+            "fields": {
+                "GRAPH_TITLE": "Set di euristiche",
+                "INSIGHT_TEXT": "Tabella di riferimento delle 10 euristiche di Nielsen usata per classificare i problemi osservati.",
+            },
+            "images": {"GRAPH_MAIN": _rel(image)},
+        }
+    return _text_spec("Set di euristiche", texts, "nielsen_heuristics", available_templates)
+
+
+def _questionnaire_item_spec(
+    title: str,
+    image: str,
+    texts: dict[str, str],
+    fallback_key: str,
+    available_templates: set[str],
+    *,
+    item_idx: int,
+    statistical: bool = False,
+) -> dict[str, Any] | None:
+    insight = _questionnaire_item_insight(item_idx, statistical=statistical) or texts.get(fallback_key, "")
+    image_path = resolve_path(image)
+    if image_path.exists() and _has_template(available_templates, "graph_full"):
+        return {
+            "template": "graph_full",
+            "theme": "neutral",
+            "fields": {"GRAPH_TITLE": title, "INSIGHT_TEXT": insight},
+            "images": {"GRAPH_MAIN": _rel(image_path)},
+        }
+    return _blank_spec(title, {**texts, fallback_key: insight}, fallback_key, available_templates)
+
+
+def _questionnaire_item_insight(item_idx: int, *, statistical: bool = False) -> str:
+    rows = _read_dict_rows(resolve_path("outputs/tables/questionnaire_items_summary.csv"))
+    row = next((item for item in rows if _safe_int(item.get("item_number")) == item_idx), None)
+    if not row:
+        return ""
+    item_label = str(row.get("item") or f"item {item_idx}")
+    deliveroo = _float_or_none(row.get("Deliveroo_mean"))
+    glovo = _float_or_none(row.get("Glovo_mean"))
+    delta_abs = _float_or_none(row.get("mean_difference_abs"))
+    p_value = _float_or_none(row.get("p_value"))
+    if deliveroo is None or glovo is None:
+        return f"Item {item_idx} ({item_label}): dati medi non disponibili nel riepilogo questionario."
+    leader = "Deliveroo" if deliveroo > glovo else "Glovo" if glovo > deliveroo else "nessuna app"
+    diff = abs(deliveroo - glovo)
+    significance = "differenza statisticamente significativa" if p_value is not None and p_value < 0.05 else "differenza non significativa"
+    if statistical:
+        return (
+            f"Item {item_idx} ({item_label}): Deliveroo media {deliveroo:.2f}, Glovo {glovo:.2f}; "
+            f"scarto {diff:.2f}, p={p_value:.3f} ({significance})."
+        )
+    return (
+        f"Item {item_idx} ({item_label}): {leader} risulta piu alto nella media "
+        f"({deliveroo:.2f} vs {glovo:.2f}); scarto medio {delta_abs if delta_abs is not None else diff:.2f}."
+    )
+
+
 def _comparison_or_blank(
     title: str,
     left_image: str,
@@ -732,6 +841,26 @@ def _fallback_reference_texts() -> dict[str, str]:
         "manual_problem_list": "",
         "manual_evaluator_table": "",
         "table_footnote": "Output generato dalla pipeline di analisi.",
+        "heuristic_final_summary": "La valutazione euristica evidenzia che le criticita piu rilevanti non riguardano soltanto la quantita di problemi individuati, ma la loro collocazione nei momenti decisionali del flusso d'ordine: scelta del prodotto, configurazione del carrello, checkout, pagamento e controllo dello stato dell'ordine.",
+        "deliveroo_relevant_problems": "In Deliveroo le criticita piu rilevanti si concentrano sulla trasparenza informativa, sulla gestione del flusso d'ordine e sul sovraccarico promozionale, con effetti diretti su controllo percepito e recupero degli errori.",
+        "glovo_relevant_problems": "In Glovo emergono criticita legate alla coerenza del checkout, alla visibilita delle informazioni e alla presenza di elementi commerciali o accessori che competono con il task principale.",
+        "shared_criticalities": "Il confronto mostra pattern ricorrenti del dominio food delivery: conferma dell'ordine, trasparenza informativa, controllo del carrello, annullamento e feedback post-ordine.",
+        "dark_patterns_intro": "Oltre ai problemi di usabilita in senso stretto, alcune criticita osservate possono essere lette come frizioni persuasive o dark pattern: scelte di interfaccia che orientano l'attenzione, riducono la trasparenza o rendono meno immediata un'azione utile per l'utente.\n\nNel food delivery questi pattern sono particolarmente sensibili perche compaiono in fasi economicamente rilevanti: scelta dei prodotti, esposizione a contenuti sponsorizzati, modifica del carrello, conferma dell'ordine e gestione del post-acquisto.",
+        "dark_patterns_deliveroo": "In Deliveroo i pattern piu evidenti riguardano la gestione dell'attenzione e la riduzione della trasparenza nei momenti di acquisto. I contenuti promozionali competono con le informazioni funzionali, mentre carrello e conferma dell'ordine non sempre rendono esplicito stato e conseguenze dell'azione.",
+        "dark_patterns_glovo": "In Glovo i pattern piu critici emergono dall'integrazione di elementi commerciali o accessori in flussi operativi gia complessi: upselling nel carrello, contenuti sponsorizzati poco distinguibili e funzioni social non strettamente necessarie.",
+        "dark_patterns_impact": "Queste scelte non impediscono il completamento del task, ma possono ridurre controllo percepito, fiducia e capacita di recupero in caso di errore. L'impatto diventa piu serio quando la frizione compare vicino a checkout, pagamento o tracking dell'ordine.",
+        "user_test_statistical_significance": "I tempi dei task sono stati confrontati tra Deliveroo e Glovo considerando gli stessi utenti sulle due applicazioni. Il risultato distingue differenze descrittive da differenze statisticamente piu robuste.",
+        "effectiveness_efficiency_joint": "La sola efficienza temporale non basta per valutare l'usabilita del flusso. Nei task di food delivery e necessario leggere insieme tempo, successo, errori e osservazioni qualitative.\n\nUn'interazione veloce puo risultare problematica se porta l'utente a perdere il controllo del carrello, a non comprendere lo stato dell'ordine o a confermare un pagamento senza verifica esplicita.",
+        "qualitative_observations": "Le note qualitative collegano i dati numerici alle frizioni osservate: indirizzo, carrello, checkout, contenuti commerciali e tracking diventano punti in cui l'utente puo perdere orientamento o fiducia.",
+        "questionnaire_statistical_comparison": "Il confronto tra item del questionario evidenzia dove la percezione soggettiva separa maggiormente le due applicazioni e aiuta a collegare opinioni, prestazioni e problemi euristici.",
+        "questionnaire_synthesis": "Il questionario mostra la percezione soggettiva degli utenti dopo l'interazione. I risultati vanno letti come complemento dei test: tempi ed errori descrivono la prestazione osservabile, mentre le risposte soggettive indicano fiducia, chiarezza, soddisfazione e disponibilita a riutilizzare o consigliare il servizio.",
+        "ueq_interpretation": "Le scale UEQ distinguono qualita pragmatica dell'interazione, legata a chiarezza, efficienza e controllo, e qualita edonica, legata a stimolazione, attrattiva e originalita. Il punto centrale e capire quali dimensioni confermano le criticita osservate nei test.",
+        "ueq_confirmations_contradictions": "Il confronto tra UEQ e test utente permette di individuare convergenze e contraddizioni. Quando una dimensione soggettiva conferma una criticita osservata, il problema diventa piu robusto; quando i dati divergono, l'app puo essere percepita positivamente pur introducendo frizioni operative specifiche.",
+        "nps_interpreted": "Il Net Promoter Score sintetizza la disponibilita degli utenti a consigliare l'applicazione. Un NPS piu alto indica maggiore raccomandabilita percepita, ma non elimina eventuali criticita operative nei task o problemi euristici ad alta severita.",
+        "conclusions_overall": "L'analisi mostra che Deliveroo e Glovo presentano entrambe un livello funzionale adeguato per completare i principali task di food delivery, ma introducono frizioni diverse lungo il percorso d'ordine.\n\nDeliveroo appare maggiormente critica nella gestione della trasparenza informativa, del carrello e del sovraccarico promozionale. Glovo presenta invece criticita piu evidenti nella coerenza del checkout, nella visibilita di alcune funzioni e nella distinzione tra contenuti funzionali, commerciali e accessori.",
+        "integrated_evidence": "Le tre fonti di evidenza convergono su alcune aree critiche comuni. La valutazione euristica individua problemi legati a controllo, prevenzione dell'errore e trasparenza; i test utente mostrano frizioni pratiche in indirizzo, carrello e checkout; il questionario misura la percezione soggettiva di chiarezza, efficienza e fiducia.",
+        "priority_recommendations": "Gli interventi prioritari dovrebbero concentrarsi sulle fasi ad alto rischio del flusso d'ordine: configurazione, carrello, checkout, pagamento e tracking.\n\nPer Deliveroo: rendere il carrello sempre visibile e recuperabile, migliorare la trasparenza informativa su prodotti e allergeni, ridurre il sovraccarico promozionale e introdurre conferme piu chiare prima delle azioni economicamente rilevanti.\n\nPer Glovo: rendere il checkout piu prevedibile, distinguere chiaramente contenuti sponsorizzati e organici, migliorare la visibilita delle funzioni utili e rafforzare i feedback sullo stato dell'ordine.",
+        "final_verdict_argument": "Nel complesso, nessuna delle due applicazioni risulta priva di criticita. Entrambe permettono di completare i task principali, ma mostrano problemi ricorrenti nei momenti in cui l'utente dovrebbe percepire massimo controllo.\n\nLa differenza principale riguarda il tipo di frizione: Deliveroo tende a generare sovraccarico informativo e ambiguita nel recupero del carrello, mentre Glovo tende a distribuire le criticita tra checkout, funzioni accessorie e trasparenza dei contenuti commerciali.",
     }
 
 
@@ -766,6 +895,27 @@ def _appendix_specs(
         _appendix_asset_or_blank(title, root / folder, texts, available_templates, theme=theme, include_empty=include_empty)
         for title, folder, theme in _appendix_entries(systems, task_count)
     ]
+    return [spec for spec in specs if spec is not None]
+
+
+def _guided_appendix_specs(texts: dict[str, str], available_templates: set[str]) -> list[dict[str, Any]]:
+    entries = [
+        ("Appendice A1 - Screenshot delle applicazioni", "Inserire screenshot rappresentativi di Deliveroo e Glovo nelle schermate principali: Home, ricerca, pagina ristorante, carrello, checkout e tracking ordine.\n\nChecklist: Home Deliveroo; Home Glovo; Ricerca/filtri; Pagina ristorante; Carrello; Checkout; Tracking ordine."),
+        ("Appendice A2 - Evidenze visive problemi Deliveroo", "Inserire screenshot dei problemi Deliveroo piu rilevanti: carrello poco visibile, allergeni/informazioni incomplete, conferma pagamento, banner promozionali, gestione indirizzo."),
+        ("Appendice A3 - Evidenze visive problemi Glovo", "Inserire screenshot dei problemi Glovo piu rilevanti: checkout, link account oscurato, sponsorizzati non marcati, preferiti non consultabili, tracking/accettazione ordine."),
+        ("Appendice A4 - Evidenze visive dark pattern", "Inserire screenshot dei pattern persuasivi discussi nella sezione dark pattern: promozioni invasive, upselling, sponsorizzati poco marcati, conferma debole prima del pagamento."),
+        ("Appendice A5 - Materiali dei test utente", "Inserire o linkare le slide/task consegnate agli utenti prima del test. Checklist: introduzione al test; task 1; task 2; task 3; istruzioni comuni; eventuale modulo consenso/privacy."),
+        ("Appendice A6 - Tabelle complete tempi utente", "Inserire le tabelle complete dei tempi raccolti per tutti gli utenti, separate per componente o consolidate in una tabella unica."),
+        ("Appendice A7 - Note qualitative dei test", "Inserire le note complete raccolte durante i test, mantenendo anonimato degli utenti e raggruppando le osservazioni per app e task."),
+        ("Appendice A8 - Export valutazione problemi esperti", "Inserire screenshot o link all'export Formbricks usato per calcolare severita, priorita e valutazioni dei problemi euristici."),
+        ("Appendice A9 - Export questionario utenti", "Inserire screenshot o link all'export Formbricks del questionario utenti, da cui derivano item, UEQ e NPS."),
+        ("Appendice A10 - Tabelle dei calcoli statistici", "Inserire tabelle complete con test statistici: t-test/Wilcoxon sui tempi, Fisher/McNemar sull'efficacia, confronti item questionario, correzioni per confronti multipli e intervalli di confidenza."),
+        ("Appendice A11 - Tabelle problemi complete", "Inserire o linkare le tabelle complete dei problemi euristici per Deliveroo e Glovo, incluse descrizioni estese, euristiche violate, valutatori e severita."),
+        ("Appendice A12 - Repository e materiali finali", "Inserire link o QR code alla repository del progetto e alla cartella contenente dati, script, grafici, presentazione finale e report PDF esportato."),
+    ]
+    specs = []
+    for title, body in entries:
+        specs.append(_text_spec(title, {**texts, "__appendix_guided_body": f"INSERIRE SCREENSHOT QUI\n\n{body}\n\nNota: questa slide serve come prova documentale a supporto della discussione orale."}, "__appendix_guided_body", available_templates))
     return [spec for spec in specs if spec is not None]
 
 
@@ -1093,6 +1243,14 @@ def _read_csv_rows(path: Path) -> list[list[str]]:
         return [row for row in csv.reader(handle, dialect) if any(cell.strip() for cell in row)]
 
 
+def _first_existing_path(paths: list[str]) -> Path | None:
+    for path in paths:
+        target = resolve_path(path)
+        if target.exists():
+            return target
+    return None
+
+
 def _app_from_row(row: dict[str, str]) -> str:
     for key in ("app", "application", "brand", "platform", "servizio"):
         value = row.get(key)
@@ -1146,6 +1304,13 @@ def _safe_int(value: Any) -> int:
         return int(float(str(value)))
     except (TypeError, ValueError):
         return 0
+
+
+def _float_or_none(value: Any) -> float | None:
+    try:
+        return float(str(value).replace(",", "."))
+    except (TypeError, ValueError):
+        return None
 
 
 def _findings_from_markdown(text: str) -> list[str]:

@@ -9,7 +9,7 @@
 |---|---|
 | `validate` | Valida i CSV normalizzati |
 | `clean-outputs` | Rimuove artefatti rigenerabili senza toccare dati, template e testi statici |
-| `full-pipeline` | Rigenera analisi, asset, testi, slide pack e, con `--generate-slides`, entrambi i PPTX finali |
+| `full-pipeline` | Rigenera analisi, asset, testi, slide pack e, con `--generate-slides`, il PPTX finale |
 | `generate-slides` | Crea un PPTX dalla config indicata |
 | `build-slide-pack` | Prepara testi e asset narrativi per le slide |
 | `quality-check` | Controlla dati, output e documentazione |
@@ -26,9 +26,11 @@ python -m src.cli full-pipeline --plot-style both --generate-slides --export-pdf
 Con `--generate-slides`, la pipeline completa produce:
 
 - `outputs/slides/final_report.pptx`
-- `outputs/slides/user_task_deck.pptx`
+- `outputs/final/final_report.pptx`
+- `outputs/final/final_report_quality_gate.md`
+- `outputs/final/final_report_changelog.md`
 
-Con `--export-pdf`, esporta anche i PDF dei deck generati.
+Con `--export-pdf`, esporta anche il PDF del deck generato.
 
 > [!tip]
 > `full-pipeline` pulisce automaticamente `outputs/` e `reports/` prima di rigenerare gli artefatti. Il comando `all` resta disponibile per compatibilità, ma non è il flusso production consigliato.
@@ -44,9 +46,8 @@ Rimuove solo output rigenerabili. Non tocca `data/`, `slides/templates/`, `slide
 ## Import Formbricks
 
 ```powershell
-python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/formbricks_questionnaire_demo_12_users.csv
-python -m src.cli import-formbricks-heuristics-discovery --input data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv
-python -m src.cli import-formbricks-heuristics-ratings --input data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv --output data/templates/heuristics_consolidated_problems_demo.csv
+python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/users_questionnaire_export.csv
+python -m src.cli heuristics severity-pipeline --problems data/processed/heuristics/clean_problems.csv --ratings-export data/formbricks_raw/heuristics/severity_ratings_export.csv --out outputs/heuristics --strict
 ```
 
 ## Euristiche deduplicate
@@ -68,9 +69,10 @@ python -m src.cli heuristics severity-pipeline --problems data/processed/heurist
 python -m src.cli validate-slide-template
 python -m src.cli validate-slide-assets
 python -m src.cli generate-slides --auto --overwrite
-python -m src.cli generate-slides --config slides/config/user_task_deck.yml --overwrite
 python -m src.cli build-slide-pack --export-pdf
 ```
+
+La presentazione finale da revisionare manualmente si trova in `outputs/final/final_report.pptx`. La copia in `outputs/slides/final_report.pptx` resta l'output tecnico del generatore.
 
 ## Note
 

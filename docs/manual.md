@@ -27,30 +27,24 @@ python -m pip install -r requirements.txt
 
 | Dato | Cartella |
 |---|---|
-| Questionario Formbricks | `data/formbricks_raw/questionnaire/` |
-| Euristiche discovery | `data/formbricks_raw/heuristics_discovery/` |
-| Euristiche ratings | `data/formbricks_raw/heuristics_ratings/` |
+| Questionario Formbricks | `data/formbricks_raw/questionnaire/users_questionnaire_export.csv` |
+| Problemi euristici consolidati | `data/processed/heuristics/clean_problems.csv` |
+| Severita euristiche | `data/formbricks_raw/heuristics/severity_ratings_export.csv` |
 | Tempi osservazionali | `data/raw/users_time.csv` |
-
-> [!info]
-> I dati demo inclusi sono inventati: 12 utenti e 6 esperti, con split 3 ED e 3 EU.
 
 ## Step 2 - Importare i dati Formbricks
 
 ```powershell
-python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/formbricks_questionnaire_demo_12_users.csv
-python -m src.cli import-formbricks-heuristics-discovery --input data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv
+python -m src.cli import-formbricks-questionnaire --input data/formbricks_raw/questionnaire/users_questionnaire_export.csv
 ```
 
-## Step 3 - Completare la review euristica
+## Step 3 - Rigenerare le euristiche finali
 
-- [ ] Aprire `data/processed/heuristics_review.csv`
-- [ ] Compilare `problem_group_id`
-- [ ] Preparare o verificare il file problemi consolidati
-- [ ] Importare i ratings
+Verificare i 40 problemi consolidati e importare le severita finali:
 
 ```powershell
-python -m src.cli import-formbricks-heuristics-ratings --input data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv --output data/templates/heuristics_consolidated_problems_demo.csv
+python -m src.cli heuristics validate-clean --problems data/processed/heuristics/clean_problems.csv
+python -m src.cli heuristics severity-pipeline --problems data/processed/heuristics/clean_problems.csv --ratings-export data/formbricks_raw/heuristics/severity_ratings_export.csv --out outputs/heuristics --strict
 ```
 
 ## Step 4 - Lanciare la pipeline completa
@@ -79,11 +73,15 @@ python -m src.cli clean-outputs
 | Output | Percorso |
 |---|---|
 | Grafici | `outputs/figures/` |
+| Grafici final report | `outputs/assets/final_report/` |
 | Tabelle | `outputs/tables/`, `outputs/tables/markdown/` |
+| Tabelle final report | `data/processed/final_report/` |
 | Snippet utili | `outputs/texts/snippets/` |
-| Slide finali | `outputs/slides/final_report.pptx` |
+| Slide finali per revisione | `outputs/final/final_report.pptx` |
+| Quality gate finale | `outputs/final/final_report_quality_gate.md` |
+| Changelog finale | `outputs/final/final_report_changelog.md` |
 | Slide task partecipanti | `outputs/slides/user_task_deck.pptx` |
-| PDF | `outputs/slides/final_report.pdf`, `outputs/slides/user_task_deck.pdf` |
+| PDF | `outputs/final/final_report.pdf`, `outputs/slides/user_task_deck.pdf` |
 | Manifest | `outputs/slide_manifest.md` |
 
 ## Checklist finale

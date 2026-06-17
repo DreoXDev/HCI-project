@@ -44,6 +44,9 @@ auto_slides:
   include_asset_manifest: false
   include_empty_appendices: false
   final_delivery: true
+  user_task_deck_source: slides/assets/user_task_deck/user_task_deck.pptx
+  user_task_deck_pdf: slides/assets/user_task_deck/user_task_deck.pdf
+  user_task_deck_render_dir: outputs/slide_assets/imported_user_task_deck
   table_rows_per_slide: 10
   task_count: 3
   appendix_assets_root: slides/assets/appendices

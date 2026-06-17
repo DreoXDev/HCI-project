@@ -30,6 +30,9 @@ Scale, item chiave e percezione d'uso
 **05 Sintesi finale**
 Confronto, raccomandazioni e prossimi passi
 
+**06 Appendice**
+Materiali di supporto e tabelle complete
+
 ## problem_description
 Negli ultimi anni le applicazioni di **food delivery** sono diventate uno strumento sempre più presente nella vita quotidiana degli utenti, permettendo di ordinare pasti, prodotti essenziali e spesa direttamente da smartphone.
 
@@ -154,36 +157,38 @@ La valutazione quantitativa delle criticità deve essere letta come supporto all
 L'obiettivo non e produrre un verdetto automatico, ma individuare le aree di intervento più importanti per migliorare l'esperienza utente.
 
 ## user_test_objective
-Per valutare **efficacia** ed **efficienza** dei due servizi, sono stati svolti **user test** basati su task rappresentativi del processo di ordinazione.
+Per valutare **efficacia** ed **efficienza** dei due servizi, abbiamo chiesto agli utenti di svolgere gli stessi task su Deliveroo e Glovo.
 
-Durante i test sono stati osservati:
+Ogni partecipante ha lavorato su un task alla volta. Durante l'attivita poteva pensare ad alta voce, segnalare dubbi, fermarsi in caso di blocco e non doveva completare acquisti reali.
+
+Durante i test abbiamo osservato:
 - completamento del task
 - errori
 - richieste di aiuto
 - tempo impiegato
 
-Il confronto tra **Deliveroo** e **Glovo** permette di rilevare differenze concrete nel modo in cui gli utenti attraversano flussi simili.
+Il confronto tra **Deliveroo** e **Glovo** mostra dove flussi simili diventano piu semplici, piu lenti o piu difficili da portare a termine.
 
 ## user_test_tasks
-I task simulano un flusso di ordinazione identico per entrambe le app:
+Le task simulano lo stesso flusso di ordinazione in entrambe le app:
 
 1. Inserire l'indirizzo di consegna: Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI.
-2. Trovare Bun Burgers nella lista dei ristoranti di Hamburger, aggiungere un Menù Cheeseburger Singolo con Patatine Normali e una bibita a piacere, procedere fino al checkout senza confermare l'ordine e tornare alla Home.
-3. Aprire il carrello, modificare l'ordine da Cheeseburger Singolo a Cheeseburger Doppio, aumentare la quantità da 1 a 2 e verificare il checkout.
+2. Trovare Bun Burgers nella lista di ristoranti di Hamburger, aggiungere un Menù Cheeseburger Singolo con Patatine Normali e una bibita a piacere. Procedere fino al Checkout, NON confermare l'ordine, poi tornare alla Home.
+3. Aprire il carrello, modificare l'ordine da Cheeseburger Singolo a Cheeseburger Doppio, aumentare la quantita da 1 a 2 e controllare che il checkout sia corretto.
 
 ## task_deck_purpose
 Questa presentazione serve a guidarti durante il test utente su Deliveroo e Glovo.
-Dovrai svolgere 3 task in entrambe le applicazioni. Lo scopo delle task e' di analizzare la app: Non sei sotto esaminazione, la app lo e'!
-Durante l'attivita' puoi pensare ad alta voce, segnalare dubbi, difficolta' o passaggi poco chiari.
+Dovrai svolgere 3 task in entrambe le applicazioni. Lo scopo delle task e di analizzare la app: Non sei sotto esaminazione, la app lo e!
+Durante l'attivita puoi pensare ad alta voce, segnalare dubbi, difficolta o passaggi poco chiari.
 
 ## task_deck_before_start
 Prima di iniziare:
 - svolgi un task alla volta
 - avvisa quando inizi e quando pensi di aver completato il task
-- se qualcosa non e' chiaro, dillo ad alta voce
+- se qualcosa non e chiaro, dillo ad alta voce
 - non inserire dati personali o completare acquisti reali.
 
-Se un task non puo' essere completato per motivi tecnici, fermati e descrivi cosa ti ha bloccato.
+Se un task non puo essere completato per motivi tecnici, fermati e descrivi cosa ti ha bloccato.
 
 ## user_task_1
 Inserisci come indirizzo di consegna:
@@ -198,37 +203,45 @@ Apri Glovo, e inserisci come indirizzo di consegna:
 Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI
 
 ## user_task_2
-Trova Bun Burgers dalla lista dei ristoranti di hamburger, aggiungi un Menù Cheeseburger Singolo e procedi fino al checkout senza confermare l'ordine.
+Partendo dalla schermata Home:
+Trova la lista di ristoranti di Hamburger. In questa lista trova il ristorante "Bun Burgers".
+Aggiungi un Menù Cheeseburger Singolo, con Patatine Normali e una bibita a piacere.
+Procedi fino al Checkout (NON confermare l'ordine)
+Ora torna alla Home.
 
 ## user_task_2_deliveroo
 Partendo dalla schermata Home:
-Trova la lista di ristoranti di Hamburger. In questa lista trova il ristorante Bun Burgers.
+Trova la lista di ristoranti di Hamburger. In questa lista trova il ristorante "Bun Burgers".
 Aggiungi un Menù Cheeseburger Singolo, con Patatine Normali e una bibita a piacere.
 Procedi fino al Checkout (NON confermare l'ordine)
 Ora torna alla Home.
 
 ## user_task_2_glovo
 Partendo dalla schermata Home:
-Trova la lista di ristoranti di Hamburger. In questa lista trova il ristorante Bun Burgers.
+Trova la lista di ristoranti di Hamburger. In questa lista trova il ristorante "Bun Burgers".
 Aggiungi un Menù Cheeseburger Singolo, con Patatine Normali e una bibita a piacere.
 Procedi fino al Checkout (NON confermare l'ordine)
 Ora torna alla Home.
 
 ## user_task_3
-Modifica l'ordine del task precedente: Cheeseburger Singolo in Cheeseburger Doppio e quantita da 1 a 2.
+Partendo dalla schermata Home:
+Apri il carrello con i prodotti che hai aggiunto nel Task Precedente, e modifica l'ordine nei seguenti modi:
+1. Anziche un Cheeseburger Singolo, scegli il Cheeseburger Doppio
+2. Adesso, Anziche 1 Menu Cheeseburger Doppio, aumenta a 2
+Raggiungi il Checkout e assicurati che l'ordine modificato sia corretto.
 
 ## user_task_3_deliveroo
 Partendo dalla schermata Home:
 Apri il carrello con i prodotti che hai aggiunto nel Task Precedente, e modifica l'ordine nei seguenti modi:
-1. Anziche' un Cheeseburger Singolo, scegli il Cheeseburger Doppio
-2. Adesso, anziche' 1 Menu Cheeseburger Doppio, aumenta a 2
+1. Anziche un Cheeseburger Singolo, scegli il Cheeseburger Doppio
+2. Adesso, Anziche 1 Menu Cheeseburger Doppio, aumenta a 2
 Raggiungi il Checkout e assicurati che l'ordine modificato sia corretto.
 
 ## user_task_3_glovo
 Partendo dalla schermata Home:
 Apri il carrello con i prodotti che hai aggiunto nel Task Precedente, e modifica l'ordine nei seguenti modi:
-1. Anziche' un Cheeseburger Singolo, scegli il Cheeseburger Doppio
-2. Adesso, anziche' 1 Menu Cheeseburger Doppio, aumenta a 2
+1. Anziche un Cheeseburger Singolo, scegli il Cheeseburger Doppio
+2. Adesso, Anziche 1 Menu Cheeseburger Doppio, aumenta a 2
 Raggiungi il Checkout e assicurati che l'ordine modificato sia corretto.
 
 ## user_task_4
@@ -286,13 +299,22 @@ Successo, errori e richieste di aiuto determinano la classificazione usata nei g
 L'**efficienza** considera il tempo necessario per completare i task, confrontando le prestazioni tra app e tra attività.
 
 ## task_result_placeholder
-I risultati del task mostrano come successo, errori e tempi cambiano tra Deliveroo e Glovo.
+Il task va letto combinando successo, errori e tempo: una differenza di durata diventa rilevante soprattutto quando coincide con esitazioni, richieste di aiuto o perdita di controllo nel flusso.
 
 ## task_error_placeholder
 La slide mostra gli errori medi osservati per il task. Usarla insieme alla slide di efficacia per distinguere task completati rapidamente da task completati con frizioni operative.
 
 ## users_time_summary
 La lettura congiunta di **tempi**, successo ed errori permette di distinguere task rapidi ma problematici da task più lunghi ma completati correttamente.
+
+## user_test_statistical_significance
+I tempi dei task sono stati confrontati usando gli stessi **24 partecipanti** su Deliveroo e Glovo, quindi il confronto e **appaiato**.
+
+Per ogni task la pipeline seleziona un test appaiato sui tempi di completamento:
+- paired t-test quando la distribuzione delle differenze e compatibile con l'assunzione di normalita
+- Wilcoxon signed-rank quando la distribuzione delle differenze non supporta tale assunzione
+
+La soglia di significativita e **alpha = 0,05**. Un p-value inferiore a 0,05 indica una differenza statisticamente significativa tra le due app per quel task; un p-value superiore indica che la differenza osservata va trattata come descrittiva.
 
 ## questionnaire_intro
 Una buona applicazione non deve soltanto funzionare correttamente: deve anche risultare **comprensibile**, *piacevole*, prevedibile e adatta alle aspettative degli utenti.
@@ -305,7 +327,7 @@ La composizione del campione del questionario viene usata per contestualizzare i
 Stato raccolta: **dati finali**, 24 risposte finite su 24 previste.
 
 ## questionnaire_item_placeholder
-La distribuzione delle risposte evidenzia differenze nella percezione degli utenti sulle due applicazioni.
+Insight calcolato automaticamente dalla tabella `questionnaire_items_summary.csv` per la domanda mostrata.
 
 ## questionnaire_comparison_intro
 Nelle slide successive vengono presentati alcuni **confronti tra sistemi** sulle domande più rappresentative.
@@ -313,7 +335,7 @@ Nelle slide successive vengono presentati alcuni **confronti tra sistemi** sulle
 L'obiettivo e osservare se le differenze percepite dagli utenti sono coerenti con le evidenze emerse nei test e nella **valutazione euristica**.
 
 ## questionnaire_stat_placeholder
-Il confronto tra sistemi aiuta a leggere quali item UEQ separano maggiormente Deliveroo e Glovo.
+Insight statistico calcolato automaticamente dalla tabella `questionnaire_items_summary.csv` per la domanda mostrata.
 
 ## ueq_scale
 La scala **UEQ** consente di misurare l'esperienza d'uso lungo dimensioni come:
@@ -338,7 +360,7 @@ Il grafico riassume le scale **UEQ** e permette di individuare rapidamente le di
 ## nps_intro
 Il **Net Promoter Score** misura la disponibilita degli utenti a consigliare un servizio.
 
-Il punteggio sintetizza **promotori**, passivi e **detrattori**, offrendo una lettura immediata della soddisfazione complessiva.
+Il grafico confronta Deliveroo e Glovo nella stessa vista e sintetizza **promotori**, passivi e **detrattori**, offrendo una lettura immediata della soddisfazione complessiva.
 
 ## nps_placeholder
 La distribuzione NPS distingue promotori, passivi e detrattori per l'app selezionata.

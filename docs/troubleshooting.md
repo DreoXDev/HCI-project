@@ -33,6 +33,8 @@ data/processed/heuristics/raw_problems_table.csv
 data/templates/heuristics_consolidated_problems_template.csv
 ```
 
+Questo path viene creato localmente con `python -m src.cli create-templates` ed e ignorato da Git.
+
 Compila `data/processed/heuristics/consolidated_problems.csv`. Quando hai la seconda survey:
 
 ```powershell

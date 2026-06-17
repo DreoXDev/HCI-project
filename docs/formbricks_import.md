@@ -57,7 +57,7 @@ data/processed/heuristics/expert_profiles.csv
 reports/heuristics_raw_report.md
 ```
 
-Poi si modifica manualmente il template `data/templates/heuristics_consolidated_problems_template.csv` e si salva il risultato come `data/processed/heuristics/consolidated_problems.csv`.
+Poi si modifica manualmente il template generato localmente con `python -m src.cli create-templates` e si salva il risultato come `data/processed/heuristics/consolidated_problems.csv`.
 
 Survey severità:
 
@@ -81,7 +81,7 @@ La pipeline di analisi legge:
 data/raw/users_time.csv
 ```
 
-Questo file non e un export Formbricks. Deve essere compilato dagli osservatori durante i test utenti usando il template `data/examples/users_time_template.xlsx`.
+Questo file non e un export Formbricks. Deve essere compilato dagli osservatori durante i test utenti usando il template generato localmente da `python -m src.cli create-templates`.
 
 ## Tag e mapping
 

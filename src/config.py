@@ -45,7 +45,6 @@ def ensure_output_dirs(config: dict[str, Any]) -> None:
         "outputs/figures/dark/user_tests/tasks",
         "outputs/figures/dark/heuristics",
         "data/processed",
-        "data/templates",
         "data/formbricks_raw/questionnaire",
         "data/formbricks_raw/heuristics",
         "data/formbricks_raw/user_tests",
@@ -64,4 +63,3 @@ def ensure_output_dirs(config: dict[str, Any]) -> None:
     )
     for directory in base_dirs:
         resolve_path(directory).mkdir(parents=True, exist_ok=True)
-

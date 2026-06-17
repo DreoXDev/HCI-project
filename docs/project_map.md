@@ -16,9 +16,8 @@ Comandi principali:
 ```powershell
 python -m src.cli validate
 python -m src.cli clean-outputs
-python -m src.cli all --plot-style both
-python -m src.cli import-formbricks-heuristics-discovery --input data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv
-python -m src.cli import-formbricks-heuristics-ratings --input data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv
+python -m src.cli full-pipeline --plot-style both --generate-slides --no-export-pdf --overwrite
+python -m src.cli heuristics severity-pipeline --problems data/processed/heuristics/clean_problems.csv --ratings-export data/formbricks_raw/heuristics/severity_ratings_export.csv --out outputs/heuristics --strict
 python -m src.cli generate-slides --auto --overwrite
 ```
 
@@ -39,16 +38,12 @@ config/formbricks_heuristics_mapping.yml
 ```txt
 data/raw/
 data/formbricks_raw/
-data/templates/
-data/examples/
 ```
 
 - `data/raw/users_time.csv`: dataset osservazionale manuale dei test.
 - `data/formbricks_raw/questionnaire/`: export Formbricks questionario. I CSV reali sono ignorati da git.
-- `data/formbricks_raw/heuristics_discovery/`: survey discovery problemi euristici.
-- `data/formbricks_raw/heuristics_ratings/`: survey rating dei problemi consolidati.
-- `data/templates/`: template da compilare.
-- `data/examples/`: esempi leggeri versionabili.
+- `data/formbricks_raw/heuristics/`: export Formbricks euristiche. I CSV reali sono ignorati da git.
+- I template operativi si generano localmente con `python -m src.cli create-templates` e non sono versionati.
 
 ## Codice
 

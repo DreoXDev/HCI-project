@@ -28,7 +28,7 @@ python -m src.cli full-pipeline --plot-style both --generate-slides --no-export-
 
 Questo comando genera entrambi i deck:
 
-- `outputs/slides/final_report.pptx`
+- `outputs/final/final_report.pptx`
 - `outputs/slides/user_task_deck.pptx`
 
 Per rigenerare solo la presentazione separata da mostrare ai partecipanti durante i task:

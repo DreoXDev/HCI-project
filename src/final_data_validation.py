@@ -153,11 +153,36 @@ def _validate_evaluator_outputs(result: FinalDataValidationResult) -> None:
     path = resolve_path("outputs/tables/heuristics_evaluators_slide.csv")
     if not path.exists():
         result.warnings.append("WARNING: tabella valutatori slide non ancora generata")
-        return
-    df = pd.read_csv(path, encoding="utf-8-sig")
-    column = "Valutatore" if "Valutatore" in df.columns else df.columns[0]
-    count = df[column].dropna().astype(str).str.strip().nunique()
-    result.add(count == 8, "tabella valutatori slide: 8 esperti", f"tabella valutatori slide: {count}/8 esperti")
+    else:
+        df = pd.read_csv(path, encoding="utf-8-sig")
+        column = "Valutatore" if "Valutatore" in df.columns else df.columns[0]
+        count = df[column].dropna().astype(str).str.strip().nunique()
+        result.add(count == 8, "tabella valutatori slide: 8 esperti", f"tabella valutatori slide: {count}/8 esperti")
+
+    profiles_path = resolve_path("outputs/tables/heuristics_expert_profiles.csv")
+    expertise_path = resolve_path("outputs/figures/dark/heuristics/expertise_matrix.png")
+    if profiles_path.exists():
+        profiles = pd.read_csv(profiles_path, encoding="utf-8-sig")
+        profile_count = profiles["evaluator_id"].dropna().astype(str).str.strip().nunique() if "evaluator_id" in profiles.columns else 0
+        result.add(profile_count == 8, "matrice expertise: 8 profili valutatore", f"matrice expertise: {profile_count}/8 profili valutatore")
+    else:
+        result.errors.append(f"ERROR: profili expertise mancanti: {profiles_path}")
+    result.add(expertise_path.exists(), "grafico matrice expertise presente", f"grafico matrice expertise mancante: {expertise_path}")
+
+    expected = {
+        "deliveroo": [f"P{idx:03d}" for idx in range(1, 21)],
+        "glovo": [f"P{idx:03d}" for idx in range(21, 41)],
+    }
+    for slug, expected_ids in expected.items():
+        matrix_path = resolve_path(f"outputs/tables/problem_evaluator_matrix_{slug}.csv")
+        if not matrix_path.exists():
+            result.warnings.append(f"WARNING: matrice problemi-valutatori {slug} non ancora generata")
+            continue
+        matrix = pd.read_csv(matrix_path, encoding="utf-8-sig")
+        problem_cols = [column for column in matrix.columns if re.fullmatch(r"P\d{3}", str(column))]
+        evaluator_count = matrix["evaluator"].dropna().astype(str).str.strip().nunique() if "evaluator" in matrix.columns else 0
+        result.add(problem_cols == expected_ids, f"matrice {slug}: 20 problemi finali", f"matrice {slug}: colonne problema errate ({len(problem_cols)}): {', '.join(problem_cols[:25])}")
+        result.add(evaluator_count == 8, f"matrice {slug}: 8 valutatori", f"matrice {slug}: {evaluator_count}/8 valutatori")
 
 
 def _validate_existing_outputs(result: FinalDataValidationResult) -> None:

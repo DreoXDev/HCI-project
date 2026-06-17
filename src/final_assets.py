@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import shutil
 
 import matplotlib
@@ -8,6 +9,7 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
+from matplotlib.patches import Circle, Ellipse, FancyArrowPatch
 import pandas as pd
 import seaborn as sns
 from scipy import stats
@@ -65,7 +67,91 @@ def problem_evaluator_matrix(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([matrix, total_row])
 
 
+def _final_problem_evaluator_outputs(config: dict) -> bool:
+    problems_path = resolve_path("data/processed/heuristics/clean_problems.csv")
+    matrix_path = resolve_path("data/processed/heuristics/expert_problem_matrix.csv")
+    if not problems_path.exists() or not matrix_path.exists():
+        return False
+
+    problems = pd.read_csv(problems_path, encoding="utf-8-sig")
+    ratings = pd.read_csv(matrix_path, encoding="utf-8-sig")
+    if problems.empty or ratings.empty or "problem_id" not in problems.columns or "problem_id" not in ratings.columns:
+        return False
+
+    expert_cols = [column for column in ratings.columns if re.fullmatch(r"E[DU]\d+", str(column))]
+    if not expert_cols:
+        return False
+
+    merged = problems[["problem_id", "app"]].merge(ratings[["problem_id", *expert_cols]], on="problem_id", how="left")
+    systems = [config["project"]["system_1"], config["project"]["system_2"]]
+    coverage_rows = []
+    text_lines = ["# Copertura problemi euristici", ""]
+    for system in systems:
+        slug = system.lower()
+        subset = merged[merged["app"].astype(str).str.casefold() == system.casefold()].copy()
+        if subset.empty:
+            continue
+
+        subset["problem_order"] = subset["problem_id"].astype(str).str.extract(r"(\d+)").astype(int)
+        subset = subset.sort_values("problem_order")
+        problem_ids = subset["problem_id"].astype(str).tolist()
+        heat = subset.set_index("problem_id")[expert_cols].T.apply(pd.to_numeric, errors="coerce")
+        heat = heat.reindex(columns=problem_ids)
+
+        matrix = heat.copy()
+        matrix["mean_by_evaluator"] = matrix.mean(axis=1).round(2)
+        export_table(matrix.reset_index(names="evaluator"), f"outputs/tables/problem_evaluator_matrix_{slug}.csv", 2)
+
+        fig, ax = plt.subplots(figsize=(max(9, len(problem_ids) * 0.45), max(4.2, len(expert_cols) * 0.38)))
+        sns.heatmap(
+            heat,
+            cmap="YlOrRd",
+            vmin=0,
+            vmax=4,
+            cbar_kws={"label": "Severita 0-4"},
+            linewidths=0.4,
+            linecolor="#E5E7EB",
+            ax=ax,
+        )
+        style_axis(ax, f"Matrice problemi-valutatori {system}", "Problemi finali", "Valutatori")
+        save_figure(fig, f"outputs/figures/heuristics/problem_evaluator_matrix_{slug}.png", config)
+
+        problem_means = heat.mean(axis=0).sort_values(ascending=False)
+        evaluator_means = heat.mean(axis=1).sort_values(ascending=False)
+        top_problem = str(problem_means.index[0]) if not problem_means.empty else "n.d."
+        top_mean = float(problem_means.iloc[0]) if not problem_means.empty else 0.0
+        top_evaluators = ", ".join(evaluator_means.head(2).index.astype(str)) if not evaluator_means.empty else "n.d."
+        resolve_path(f"outputs/texts/snippets/problem_evaluator_matrix_{slug}.md").write_text(
+            f"# Matrice problemi-valutatori {system}\n\n"
+            f"La matrice usa i {len(problem_ids)} problemi finali e gli {len(expert_cols)} valutatori ufficiali. "
+            f"Il problema con severita media piu alta e `{top_problem}` ({top_mean:.2f}/4). "
+            f"I valutatori con media piu alta sono {top_evaluators}.\n",
+            encoding="utf-8",
+        )
+
+        coverage_rows.append(
+            {
+                "system": system,
+                "problem_count": len(problem_ids),
+                "evaluator_count": len(expert_cols),
+                "rating_cells": int(heat.notna().sum().sum()),
+                "top_mean_problem": top_problem,
+                "top_mean_severity": round(top_mean, 2),
+            }
+        )
+        text_lines.append(f"- {system}: {len(problem_ids)} problemi finali x {len(expert_cols)} valutatori = {int(heat.notna().sum().sum())} valutazioni di severita.")
+
+    if not coverage_rows:
+        return False
+    export_table(pd.DataFrame(coverage_rows), "outputs/tables/heuristics_problem_coverage.csv", 2)
+    resolve_path("outputs/texts/snippets/heuristics_problem_coverage.md").write_text("\n".join(text_lines) + "\n", encoding="utf-8")
+    return True
+
+
 def generate_problem_evaluator_outputs(config: dict, data: dict[str, pd.DataFrame]) -> None:
+    if _final_problem_evaluator_outputs(config):
+        return
+
     systems = [(config["project"]["system_1"], data.get("heuristics_system_1", pd.DataFrame())), (config["project"]["system_2"], data.get("heuristics_system_2", pd.DataFrame()))]
     coverage_rows = []
     text_lines = ["# Copertura problemi euristici", ""]
@@ -113,10 +199,9 @@ def generate_problem_evaluator_outputs(config: dict, data: dict[str, pd.DataFram
 
 
 def generate_expertise_matrix_assets(config: dict) -> None:
-    profiles_path = resolve_path("data/processed/heuristics/expert_profiles.csv")
-    if not profiles_path.exists():
+    profiles = _load_final_expert_profiles()
+    if profiles.empty:
         return
-    profiles = pd.read_csv(profiles_path)
     required = {"evaluator_id", "expert_group", "usability_experience", "domain_experience"}
     if profiles.empty or not required.issubset(profiles.columns):
         return
@@ -131,50 +216,178 @@ def generate_expertise_matrix_assets(config: dict) -> None:
         "usability_experience",
         "domain_experience",
     ]
-    export_table(profiles[[column for column in slide_columns if column in profiles.columns]], "outputs/tables/heuristics_expert_profiles.csv", 2)
-
-    levels = {"bassa": 1, "media": 2, "alta": 3}
-
-    def score(value: object) -> float:
-        return float(levels.get(str(value).strip().lower(), 0))
+    slide_table = profiles[[column for column in slide_columns if column in profiles.columns]].copy()
+    export_table(slide_table, "outputs/tables/heuristics_expert_profiles.csv", 2)
+    export_table(slide_table, "data/processed/heuristics/expert_profiles.csv", 2)
 
     plot_df = profiles.copy()
-    plot_df["usability_score"] = plot_df["usability_experience"].map(score)
-    plot_df["domain_score"] = plot_df["domain_experience"].map(score)
+    plot_df["usability_score"] = plot_df["usability_experience"].map(_experience_score)
+    plot_df["domain_score"] = plot_df["domain_experience"].map(_experience_score)
     plot_df = plot_df[(plot_df["usability_score"] > 0) & (plot_df["domain_score"] > 0)]
     if plot_df.empty:
         return
 
-    fig, ax = plt.subplots(figsize=(7.8, 5.2))
-    palette = {"EU": "#38BDF8", "ED": "#A78BFA"}
-    sns.scatterplot(
-        data=plot_df,
-        x="domain_score",
-        y="usability_score",
-        hue="expert_group",
-        palette=palette,
-        s=180,
-        edgecolor="#E5E7EB",
-        linewidth=1.2,
-        ax=ax,
-    )
-    for row in plot_df.itertuples():
-        ax.text(row.domain_score + 0.04, row.usability_score + 0.04, str(row.evaluator_id), fontsize=10, weight="bold")
-    ax.set_xlim(0.6, 3.5)
-    ax.set_ylim(0.6, 3.5)
-    ax.set_xticks([1, 2, 3], ["Bassa", "Media", "Alta"])
-    ax.set_yticks([1, 2, 3], ["Bassa", "Media", "Alta"])
-    ax.legend(title="Gruppo", frameon=False, loc="lower right")
-    style_axis(ax, "Matrice di expertise", "Esperienza di dominio", "Esperienza di usabilita")
+    fig, ax = plt.subplots(figsize=(8.8, 6.2))
+    fig.patch.set_facecolor("#111827")
+    ax.set_facecolor("#F2F4F6")
+    ax.set_xlim(0, 10.8)
+    ax.set_ylim(0, 10.8)
+    ax.axvline(5, color="#CBD5E1", linestyle=":", linewidth=2.2, alpha=0.85)
+    ax.axhline(5, color="#CBD5E1", linestyle=":", linewidth=2.2, alpha=0.85)
+    arrow_style = dict(arrowstyle="-|>", color="#020617", linewidth=4, mutation_scale=24, shrinkA=0, shrinkB=0)
+    ax.add_patch(FancyArrowPatch((0.65, 0.65), (10.35, 0.65), **arrow_style))
+    ax.add_patch(FancyArrowPatch((0.65, 0.65), (0.65, 10.35), **arrow_style))
+    ax.set_xticks([0, 5, 10], ["0", "5", "10"])
+    ax.set_yticks([0, 5, 10], ["0", "5", "10"])
+    ax.tick_params(axis="both", colors="#111827", labelsize=10, length=0)
+
+    palette = {"EU": "#75A9FF", "ED": "#F2A7D9"}
+    for _, row in plot_df.sort_values("evaluator_id").iterrows():
+        evaluator = str(row["evaluator_id"])
+        group = str(row.get("expert_group") or evaluator[:2]).upper()
+        color = palette.get(group, "#CBD5E1")
+        jitter_x, jitter_y = _expertise_marker_offset(evaluator)
+        x = float(row["domain_score"]) + jitter_x
+        y = float(row["usability_score"]) + jitter_y
+        _draw_person_marker(ax, x, y, color)
+        label_x, label_y = _expertise_label_position(evaluator, x, y)
+        ax.text(
+            label_x,
+            label_y,
+            evaluator,
+            ha="center",
+            va="top",
+            fontsize=12,
+            fontweight="bold",
+            color="#F8FAFC",
+            bbox={"boxstyle": "round,pad=0.15", "facecolor": "#111827", "edgecolor": "none", "alpha": 0.72},
+            zorder=6,
+        )
+
+    ax.text(5.5, -0.18, "ESPERIENZA DI DOMINIO", ha="center", va="top", fontsize=16, fontweight="bold", color="#F8FAFC", transform=ax.get_xaxis_transform())
+    ax.text(-0.06, 0.52, "ESPERIENZA DI USABILITA", ha="right", va="center", rotation=90, fontsize=16, fontweight="bold", color="#F8FAFC", transform=ax.transAxes)
+    ax.set_title("Matrice di expertise dei valutatori", fontsize=18, fontweight="bold", color="#F8FAFC", pad=16)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.grid(False)
     save_figure(fig, "outputs/figures/heuristics/expertise_matrix.png", config)
 
     counts = profiles["expert_group"].fillna("n.d.").value_counts().to_dict()
     resolve_path("outputs/texts/snippets/heuristics_expertise_matrix.md").write_text(
         "# Matrice di expertise\n\n"
-        f"La matrice posiziona {len(profiles)} valutatori rispetto a esperienza di usabilita ed esperienza di dominio. "
+        f"La matrice posiziona {len(plot_df)} valutatori rispetto a esperienza di usabilita ed esperienza di dominio. "
         f"Distribuzione gruppi: {counts}.\n",
         encoding="utf-8",
     )
+
+
+def _load_final_expert_profiles() -> pd.DataFrame:
+    ratings_path = resolve_path("data/formbricks_raw/heuristics/severity_ratings_export.csv")
+    rows: list[dict[str, object]] = []
+    if ratings_path.exists():
+        ratings = pd.read_csv(ratings_path, encoding="utf-8-sig")
+        columns = list(ratings.columns)
+        id_col = _find_profile_column(columns, ["id esperto", "evaluator"])
+        gender_col = _find_profile_column(columns, ["genere"])
+        age_col = _find_profile_column(columns, ["eta", "età"])
+        occupation_col = _find_profile_column(columns, ["professione", "occupazione"])
+        familiarity_col = _find_profile_column(columns, ["familiarita", "familiarità"])
+        usability_col = _find_profile_column(columns, ["usabilita", "usabilità"])
+        domain_col = _find_profile_column(columns, ["dominio"])
+        for _, row in ratings.iterrows():
+            evaluator_id = str(row.get(id_col, "")).strip() if id_col else ""
+            if not evaluator_id:
+                continue
+            rows.append(
+                {
+                    "evaluator_id": evaluator_id,
+                    "expert_group": re.match(r"^[A-Za-z]+", evaluator_id).group(0).upper() if re.match(r"^[A-Za-z]+", evaluator_id) else "",
+                    "gender": row.get(gender_col, "") if gender_col else "",
+                    "age_group": row.get(age_col, "") if age_col else "",
+                    "occupation": row.get(occupation_col, "") if occupation_col else "",
+                    "familiarity": row.get(familiarity_col, "") if familiarity_col else "",
+                    "usability_experience": row.get(usability_col, "") if usability_col else "",
+                    "domain_experience": row.get(domain_col, "") if domain_col else "",
+                }
+            )
+    profiles = pd.DataFrame(rows).drop_duplicates("evaluator_id") if rows else pd.DataFrame()
+    if len(profiles) >= 8:
+        return profiles.sort_values("evaluator_id", key=lambda s: s.map(_expertise_sort_key)).reset_index(drop=True)
+
+    profiles_path = resolve_path("data/processed/heuristics/expert_profiles.csv")
+    if profiles_path.exists():
+        fallback = pd.read_csv(profiles_path)
+        if "expert_group" not in fallback.columns and "evaluator_id" in fallback.columns:
+            fallback["expert_group"] = fallback["evaluator_id"].astype(str).str.extract(r"^([A-Za-z]+)", expand=False).str.upper()
+        return fallback
+    return profiles
+
+
+def _find_profile_column(columns: list[str], aliases: list[str]) -> str:
+    for column in columns:
+        normalized = _normalize_profile_text(column)
+        if any(_normalize_profile_text(alias) in normalized for alias in aliases):
+            return column
+    return ""
+
+
+def _normalize_profile_text(value: object) -> str:
+    text = str(value).casefold()
+    replacements = {"à": "a", "è": "e", "é": "e", "ì": "i", "ò": "o", "ù": "u"}
+    for source, target in replacements.items():
+        text = text.replace(source, target)
+    return re.sub(r"[^a-z0-9]+", " ", text).strip()
+
+
+def _experience_score(value: object) -> float:
+    text = str(value).strip().casefold()
+    levels = {"bassa": 2.5, "media": 5.0, "alta": 8.0}
+    if text in levels:
+        return levels[text]
+    match = re.search(r"\d+(?:[.,]\d+)?", text)
+    return float(match.group(0).replace(",", ".")) if match else 0.0
+
+
+def _draw_person_marker(ax, x: float, y: float, color: str) -> None:
+    ax.add_patch(Ellipse((x, y - 0.06), width=0.78, height=0.52, facecolor=color, edgecolor="none", alpha=0.94, zorder=3))
+    ax.add_patch(Circle((x, y + 0.34), radius=0.25, facecolor=color, edgecolor="#F8FAFC", linewidth=1.8, zorder=4))
+
+
+def _expertise_label_position(evaluator_id: str, x: float, y: float) -> tuple[float, float]:
+    positions = {
+        "ED1": (8.65, 7.00),
+        "ED2": (6.80, 5.88),
+        "ED3": (6.24, 7.22),
+        "ED4": (9.44, 8.28),
+        "EU1": (6.34, 8.58),
+        "EU2": (7.42, 7.10),
+        "EU3": (5.00, 6.98),
+        "EU4": (7.12, 8.92),
+    }
+    return positions.get(evaluator_id, (x, y - 0.62))
+
+
+def _expertise_marker_offset(evaluator_id: str) -> tuple[float, float]:
+    offsets = {
+        "ED1": (0.65, -0.08),
+        "ED2": (-0.20, -0.28),
+        "ED3": (-0.58, -0.10),
+        "ED4": (0.18, 0.06),
+        "EU1": (-0.58, 0.14),
+        "EU2": (0.34, -0.15),
+        "EU3": (0.00, 0.00),
+        "EU4": (0.05, 0.48),
+    }
+    return offsets.get(evaluator_id, (0.0, 0.0))
+
+
+def _expertise_sort_key(value: object) -> tuple[str, int, str]:
+    text = str(value)
+    match = re.match(r"^([A-Za-z]+)(\d+)$", text)
+    if not match:
+        return (text, 0, text)
+    prefix, number = match.groups()
+    return (prefix.upper(), int(number), text)
 
 
 def generate_questionnaire_item_outputs(config: dict, data: dict[str, pd.DataFrame]) -> None:

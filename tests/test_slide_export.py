@@ -335,11 +335,8 @@ def test_full_pipeline_generates_final_and_user_task_decks(monkeypatch: pytest.M
 
     results = cli.generate_full_pipeline_slide_decks(overwrite=True, timestamp=True)
 
-    assert results == ["slides/config/slide_deck.yml", "slides/config/user_task_deck.yml"]
-    assert calls == [
-        ("slides/config/slide_deck.yml", True, True),
-        ("slides/config/user_task_deck.yml", True, True),
-    ]
+    assert results == ["slides/config/slide_deck.yml"]
+    assert calls == [("slides/config/slide_deck.yml", True, True)]
 
 
 def test_reference_order_adds_appendix_placeholders_without_assets(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -361,6 +358,7 @@ def test_reference_order_adds_appendix_placeholders_without_assets(tmp_path: Pat
                 "reference_texts": "slides/content/reference_static_texts.md",
                 "task_count": 3,
                 "appendix_assets_root": "slides/assets/appendices",
+                "include_empty_appendices": True,
                 "include_sources": False,
             },
             "slides": [],

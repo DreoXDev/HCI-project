@@ -24,7 +24,7 @@ GLOVO_COLOR = "FFC244"
 SECTION_TITLE_SIZE_SHORT = 68
 SECTION_TITLE_SIZE_MEDIUM = 60
 SECTION_TITLE_SIZE_LONG = 52
-COVER_TITLE_SIZE = 66
+COVER_TITLE_SIZE = 60
 
 
 class SlideGenerationError(RuntimeError):
@@ -78,6 +78,9 @@ def generate_slides(
     original_slide_count = len(presentation.slides)
     missing_optional: list[Path] = []
     for spec in requested:
+        if spec.get("template_id") == "full_slide_image":
+            _add_full_slide_image(presentation, resolve_path(spec["image"]))
+            continue
         template_id = _resolved_spec_template_id(spec)
         source_slide = template_map[template_id]
         slide = _duplicate_slide(presentation, source_slide)
@@ -109,8 +112,11 @@ def generate_slides(
             )
         _clear_unresolved_placeholders(slide)
         _style_and_fit_slide_text_dark(slide, template_id=template_id)
+        if template_id == "cover":
+            _clean_cover_artifacts(slide)
 
     _remove_template_slides(presentation, original_slide_count)
+    _add_index_navigation_links(presentation)
     output.parent.mkdir(parents=True, exist_ok=True)
     presentation.save(str(output))
     return SlideGenerationResult(
@@ -180,6 +186,14 @@ def replace_placeholder_with_image(slide: Any, placeholder_name: str, image_path
         width=new_width,
         height=new_height,
     )
+
+
+def _add_full_slide_image(presentation: Any, image_path: Path) -> None:
+    if not image_path.exists():
+        raise SlideGenerationError(f"Missing full-slide image:\n{image_path}")
+    blank_layout = presentation.slide_layouts[6]
+    slide = presentation.slides.add_slide(blank_layout)
+    slide.shapes.add_picture(str(image_path), 0, 0, width=presentation.slide_width, height=presentation.slide_height)
 
 
 def _find_visual_image_placeholder(slide: Any, placeholder_name: str) -> Any | None:
@@ -290,7 +304,7 @@ def replace_placeholder_with_table(
 def _add_table_panel(slide: Any, left: int, top: int, width: int, height: int) -> None:
     from pptx.enum.shapes import MSO_SHAPE
 
-    pad = 70000
+    pad = 190000
     panel = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left - pad, top - pad, width + pad * 2, height + pad * 2)
     panel.fill.solid()
     panel.fill.fore_color.rgb = _rgb("0B1220")
@@ -391,6 +405,8 @@ def _validate_requested_slides(slides: list[dict[str, Any]], templates: dict[str
         raise SlideGenerationError("No slides configured in slide_deck.yml.")
     missing = []
     for spec in slides:
+        if spec.get("template_id") == "full_slide_image":
+            continue
         template_id = _resolved_spec_template_id(spec)
         if template_id not in templates:
             missing.append(template_id)
@@ -448,6 +464,10 @@ def _validate_assets(deck_config: dict[str, Any]) -> None:
 def _asset_errors(deck_config: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     for spec in deck_config.get("slides", []):
+        if spec.get("template_id") == "full_slide_image":
+            target = resolve_path(spec.get("image", ""))
+            if not target.exists():
+                errors.append(f"Missing full-slide image:\n{target}")
         for path in (spec.get("images") or {}).values():
             target = resolve_path(path)
             if not target.exists():
@@ -579,7 +599,7 @@ def _write_rich_text(shape: Any, text: str, *, preferred: int | None = None, min
         paragraph.level = 1 if kind == "subbullet" else 0
         paragraph.alignment = PP_ALIGN.LEFT
         if kind in {"bullet", "subbullet"}:
-            paragraph.text = "- "
+            paragraph.text = "• "
         for segment, bold, italic in _rich_segments(line):
             run = paragraph.add_run()
             run.text = segment
@@ -635,7 +655,7 @@ def _segment_color(segment: str, *, bold: bool, italic: bool, kind: str) -> str:
     if "glovo" in text:
         return "FFC244"
     if any(token in text for token in ["ueq", "nps", "user test"]):
-        return "A78BFA"
+        return "38BDF8"
     if any(token in text for token in ["euristica", "priorità", "problemi"]):
         return "38BDF8"
     if kind == "heading" or bold:
@@ -828,6 +848,128 @@ def _remove_template_slides(presentation: Any, count: int) -> None:
         presentation.slides._sldIdLst.remove(slide_id)
 
 
+def _clean_cover_artifacts(slide: Any) -> None:
+    _layout_cover_text(slide)
+    for shape in list(slide.shapes):
+        if getattr(shape, "has_text_frame", False):
+            continue
+        left = int(getattr(shape, "left", 0))
+        top = int(getattr(shape, "top", 0))
+        width = int(getattr(shape, "width", 0))
+        height = int(getattr(shape, "height", 0))
+        small_template_icon = shape.shape_type == 13 and width <= 320000 and height <= 330000
+        in_author_date_band = 4500000 <= left <= 5200000 and 3950000 <= top <= 4700000
+        if small_template_icon and in_author_date_band:
+            _remove_shape(shape)
+
+
+def _layout_cover_text(slide: Any) -> None:
+    from pptx.util import Emu
+
+    for shape in slide.shapes:
+        if not getattr(shape, "has_text_frame", False):
+            continue
+        text = " ".join(_shape_text(shape).split())
+        if re.search(r"deliveroo\s+vs\s+glovo", text, flags=re.IGNORECASE):
+            shape.left = Emu(800000)
+            shape.top = Emu(2550000)
+            shape.width = Emu(10600000)
+            shape.height = Emu(1400000)
+        elif "Anno accademico" in text:
+            shape.left = Emu(4500000)
+            shape.top = Emu(5050000)
+            shape.width = Emu(3200000)
+            shape.height = Emu(260000)
+        elif "Gruppo HCI" in text:
+            shape.left = Emu(4500000)
+            shape.top = Emu(5400000)
+            shape.width = Emu(3200000)
+            shape.height = Emu(260000)
+
+
+def _add_index_navigation_links(presentation: Any) -> None:
+    index_slide = _find_slide_by_title(presentation, "Indice")
+    if index_slide is None:
+        return
+    targets = [
+        ("01 Contesto", "Obiettivi, ambiente e app analizzate", "Introduzione"),
+        ("02 Analisi esperta", "Valutatori, criticita e interventi", "Valutazione euristica"),
+        ("03 Test con utenti", "Task, tempi, errori e completamento", "Test utente"),
+        ("04 Questionario", "Scale, item chiave e percezione d'uso", "Questionario"),
+        ("05 Sintesi finale", "Confronto, raccomandazioni e prossimi passi", "Sintesi finale"),
+        ("06 Appendice", "Materiali di supporto e tabelle complete", "Appendice"),
+    ]
+    body_shape = _largest_text_body(index_slide)
+    if body_shape is None:
+        return
+    left = int(body_shape.left)
+    top = max(1500000, int(body_shape.top) - 140000)
+    width = int(body_shape.width)
+    _remove_shape(body_shape)
+    line_height = 520000
+    gap = 120000
+    for order, (label, subtitle, target_title) in enumerate(targets):
+        target_slide = _find_slide_by_title(presentation, target_title)
+        if target_slide is None:
+            continue
+        y = top + order * (line_height + gap)
+        box = index_slide.shapes.add_textbox(left, y, width, line_height)
+        _write_index_entry(box, label, subtitle)
+        box.click_action.target_slide = target_slide
+
+
+def _write_index_entry(shape: Any, title: str, subtitle: str) -> None:
+    from pptx.enum.text import PP_ALIGN
+    from pptx.util import Pt
+
+    frame = shape.text_frame
+    frame.clear()
+    frame.word_wrap = True
+    frame.margin_left = 0
+    frame.margin_right = 0
+    frame.margin_top = 0
+    frame.margin_bottom = 0
+    title_paragraph = frame.paragraphs[0]
+    title_paragraph.alignment = PP_ALIGN.LEFT
+    title_run = title_paragraph.add_run()
+    title_run.text = title
+    title_run.font.name = DECK_FONT_FAMILY
+    title_run.font.size = Pt(16)
+    title_run.font.bold = True
+    title_run.font.color.rgb = _rgb("F8FAFC")
+    subtitle_paragraph = frame.add_paragraph()
+    subtitle_paragraph.alignment = PP_ALIGN.LEFT
+    subtitle_run = subtitle_paragraph.add_run()
+    subtitle_run.text = subtitle
+    subtitle_run.font.name = DECK_FONT_FAMILY
+    subtitle_run.font.size = Pt(12)
+    subtitle_run.font.color.rgb = _rgb("E5E7EB")
+
+
+def _find_slide_by_title(presentation: Any, title: str) -> Any | None:
+    needle = _normalize_placeholder(title)
+    for slide in presentation.slides:
+        for shape in slide.shapes:
+            if not getattr(shape, "has_text_frame", False):
+                continue
+            text = _shape_text(shape).strip()
+            first_line = text.splitlines()[0].strip() if text else ""
+            if _normalize_placeholder(first_line) == needle:
+                return slide
+    return None
+
+
+def _largest_text_body(slide: Any) -> Any | None:
+    candidates = [
+        shape
+        for shape in slide.shapes
+        if getattr(shape, "has_text_frame", False)
+        and int(getattr(shape, "top", 0)) > 1200000
+        and len(_shape_text(shape).strip()) > 20
+    ]
+    return max(candidates, key=lambda shape: int(shape.width) * int(shape.height), default=None)
+
+
 def _find_placeholder_shape(slide: Any, placeholder_name: str) -> Any | None:
     normalized = _normalize_placeholder(placeholder_name)
     fallback = None
@@ -881,11 +1023,13 @@ def _slice_table_rows(rows: list[list[str]], *, start_row: int = 0, max_rows: in
 def _expand_table_bounds_if_needed(left: int, top: int, width: int, height: int) -> tuple[int, int, int, int]:
     slide_width = 12192000
     if width >= int(slide_width * 0.7):
-        return left, top, width, height
-    expanded_left = 571500
-    expanded_top = min(top, 1533525)
-    expanded_width = 11049000
-    expanded_height = 4750000
+        shrink_x = 260000
+        shrink_y = 180000
+        return left + shrink_x, top + shrink_y, width - shrink_x * 2, height - shrink_y * 2
+    expanded_width = 10280000
+    expanded_height = 4180000
+    expanded_left = int((slide_width - expanded_width) / 2)
+    expanded_top = 1710000
     return expanded_left, expanded_top, expanded_width, expanded_height
 
 

@@ -58,7 +58,7 @@ Il progetto usa il formato snake_case `users_time.csv`.
 python -m src.cli create-templates
 ```
 
-2. Compila `data/examples/users_time_template.xlsx` durante i test.
+2. Compila `data/templates/examples/users_time_template.xlsx` durante i test.
 3. Salva una copia pulita come:
 
 ```txt
@@ -104,4 +104,3 @@ users_time:
   enabled: true
   input_path: "data/raw/users_time.csv"
 ```
-

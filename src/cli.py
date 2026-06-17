@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
 import shutil
@@ -11,9 +11,11 @@ from .config import ensure_output_dirs, load_config, resolve_path
 from .asset_manifest import build_assets_manifest
 from .benchmark import analyze_ueq_benchmark
 from .data_loading import load_all
+from .data_integrity_audit import enforce_data_integrity_audit
 from .export import create_templates
 from .final_assets import generate_final_assets
 from .final_data_validation import format_final_data_validation, validate_final_data
+from .final_report import build_final_report_outputs, finalize_final_outputs
 from .formbricks_adapter import comparable, convert_questionnaire_export, load_formbricks_export
 from .formbricks_heuristics_pipeline import (
     analyze_final_heuristics_dataset,
@@ -61,6 +63,7 @@ from .validation import (
 
 GENERATED_OUTPUT_PATHS = [
     "outputs/figures",
+    "outputs/assets",
     "outputs/heuristics",
     "outputs/plots",
     "outputs/quality",
@@ -110,10 +113,15 @@ def clean_generated_outputs(config: dict) -> list[Path]:
             continue
         if target == root or root not in target.parents:
             raise RuntimeError(f"Refusing to remove outside project root: {target}")
-        if target.is_dir():
-            shutil.rmtree(target)
-        else:
-            target.unlink()
+        try:
+            if target.is_dir():
+                shutil.rmtree(target)
+            else:
+                target.unlink()
+        except PermissionError:
+            # A presentation may be open in PowerPoint during review. Keep moving:
+            # downstream generation with --overwrite will refresh what it can.
+            continue
         removed.append(target)
     ensure_output_dirs(config)
     for keep in OUTPUT_KEEP_FILES:
@@ -137,7 +145,7 @@ def import_formbricks_available(config: dict, include_unfinished: bool = False) 
         import_heuristics_raw_survey(h_path, config=config)
         print(f"OK: survey euristica raw importata da {h_path}. Completa data/processed/heuristics/consolidated_problems.csv prima della survey severità.")
     else:
-        print("WARNING: CSV euristiche raw Formbricks non trovato, uso eventuali file euristiche gia consolidati.")
+        print("OK: survey euristica raw non richiesta; uso i problemi finali consolidati.")
     return False
 
 
@@ -160,6 +168,12 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     analyze_ueq_benchmark(config)
     print("OK: asset finali generati")
     run_optional_final_heuristics(strict=False)
+    audit = enforce_data_integrity_audit()
+    print(f"OK: data integrity audit ({audit.problem_count} problemi, {audit.expert_count} esperti, {audit.rating_count} rating)")
+    print("\n[4b/8] Analisi final report...")
+    data = load_all(config)
+    build_final_report_outputs(config, data)
+    print("OK: analisi, asset e testi final report generati")
     print("\n[5/8] Testi slide/report...")
     generate_text_outputs(config)
     print("OK: testi generati")
@@ -458,7 +472,6 @@ def export_pdf_or_exit(pptx_path: str | Path) -> None:
 
 FULL_PIPELINE_SLIDE_CONFIGS = [
     "slides/config/slide_deck.yml",
-    "slides/config/user_task_deck.yml",
 ]
 
 
@@ -651,6 +664,7 @@ def main() -> None:
                 print(format_slide_generation_summary(result))
                 if args.export_pdf and not args.no_export_pdf:
                     export_pdf_or_exit(result.output)
+                finalize_final_outputs(result.output)
         return
     if args.command == "analyze-benchmark":
         analyze_ueq_benchmark(config, args.input or "data/raw/ueq_benchmark.csv")
@@ -690,7 +704,9 @@ def main() -> None:
         import_formbricks_available(config, include_unfinished=args.include_unfinished)
         return
     if args.command in {"import-formbricks-heuristics", "import-formbricks-heuristics-discovery"}:
-        source = args.input or config.get("paths", {}).get("heuristics_raw") or "data/formbricks_raw/heuristics_discovery/formbricks_heuristics_discovery_demo_6_experts.csv"
+        source = args.input or config.get("paths", {}).get("heuristics_raw")
+        if not source:
+            raise SystemExit("Specifica --input con il CSV reale della survey euristica discovery.")
         result = import_heuristics_raw_survey(source, config=config, mapping_path=args.mapping)
         for warning in result.warnings:
             print(f"WARNING: {warning}")
@@ -709,9 +725,10 @@ def main() -> None:
         print(review_path)
         return
     if args.command == "import-formbricks-heuristics-ratings":
-        ratings = args.input or config.get("paths", {}).get("heuristics_ratings") or "data/formbricks_raw/heuristics_ratings/formbricks_heuristics_ratings_demo_6_experts.csv"
-        demo_problems = resolve_path("data/templates/heuristics_consolidated_problems_demo.csv")
-        problems = args.output or (demo_problems if demo_problems.exists() else "data/templates/heuristics_consolidated_problems_template.csv")
+        ratings = args.input or config.get("paths", {}).get("heuristics_ratings")
+        if not ratings:
+            raise SystemExit("Specifica --input con il CSV reale della survey euristica ratings.")
+        problems = args.output or "data/processed/heuristics/clean_problems.csv"
         result = parse_severity_ratings(ratings, problems)
         for warning in result.warnings:
             print(f"WARNING: {warning}")
@@ -767,3 +784,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

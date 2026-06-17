@@ -133,7 +133,7 @@ con colonne `expert_id`, `problem_id`, `severity`.
 
 ## Contratto dati reali
 
-Per il deck finale la pipeline usa i dati reali quando sono presenti nei percorsi canonici. I dati demo restano utilizzabili solo come esempi o fallback di sviluppo, non come input del report finale.
+Per il deck finale la pipeline usa solo i dati reali presenti nei percorsi canonici. Dataset demo, esempi e template dati non fanno parte della repo finale.
 
 Percorsi attesi:
 
@@ -145,9 +145,8 @@ data/raw/user_testing_observations.csv
 data/formbricks_raw/questionnaire/users_questionnaire_export.csv
 ```
 
-Stato dati:
+Stato dati atteso:
 
-- `PARTIAL_DATA`: sono presenti meno di 24 utenti nel questionario o nei test osservazionali. Gli output sono rigenerabili e marcati come provvisori.
 - `FINAL_DATA`: sono presenti 24 utenti e 8 esperti; il quality gate puo passare a `READY_FOR_FINAL_SLIDES`.
 
 Naming ufficiale problemi:

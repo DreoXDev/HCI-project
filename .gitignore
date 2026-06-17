@@ -16,13 +16,22 @@ outputs/**
 reports/**
 !reports/.gitkeep
 
-data/processed/**
+data/**
+!data/.gitkeep
+!data/raw/
+!data/raw/.gitkeep
+!data/processed/
 !data/processed/.gitkeep
+!data/formbricks_raw/
+!data/formbricks_raw/.gitkeep
+!data/formbricks_raw/heuristics/
+!data/formbricks_raw/heuristics/.gitkeep
+!data/formbricks_raw/questionnaire/
+!data/formbricks_raw/questionnaire/.gitkeep
+!data/formbricks_raw/user_tests/
+!data/formbricks_raw/user_tests/.gitkeep
 
-data/formbricks_raw/**/*.csv
-!data/formbricks_raw/**/*demo*.csv
-data/raw/formbricks/**/*.csv
-data/_backup_before_final_data/
+slides/assets/user_task_deck/**
 
 notebooks/outputs/
 

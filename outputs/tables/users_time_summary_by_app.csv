@@ -1,3 +1,0 @@
-﻿app,n_task_runs,n_users,mean_time_sec,median_time_sec,success_rate,mean_errors,mean_help_requests
-Deliveroo,72,24,66.67,59.24,1.0,0.0,0.0
-Glovo,72,24,48.19,38.11,1.0,0.0,0.0

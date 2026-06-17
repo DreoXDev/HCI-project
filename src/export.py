@@ -154,9 +154,9 @@ def create_templates(directory: str | Path = "data/templates", overwrite: bool =
         if _write_text_if_needed(path, content, overwrite):
             created.append(path)
 
-    examples = resolve_path("data/examples")
+    examples = target / "examples"
     examples.mkdir(parents=True, exist_ok=True)
-    overwrite_examples = overwrite and target == resolve_path("data/templates")
+    overwrite_examples = overwrite
     users_time_template = pd.DataFrame(columns=TEMPLATE_COLUMNS)
     users_time_example = pd.DataFrame(USERS_TIME_EXAMPLE, columns=TEMPLATE_COLUMNS)
     for path, df in [

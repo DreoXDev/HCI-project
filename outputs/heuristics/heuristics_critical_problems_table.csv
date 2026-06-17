@@ -1,9 +1,0 @@
-problem_id,app,screen,heuristic,title,mean_severity,median_severity,std_severity,min_severity,max_severity,ratings_count
-P010,Deliveroo,Generale,E7;E10,Mancanza di trasparenza informativa,3.5,3.5,0.53,3,4,8
-P012,Deliveroo,Checkout / ordine,E3;E5,Assenza di barriere di conferma per transazioni finanziarie gravi,3.38,4.0,0.92,2,4,8
-P032,Glovo,Checkout / ordine,E3;E5,Assenza di barriere di conferma per transazioni finanziarie gravi,3.38,3.5,0.74,2,4,8
-P026,Glovo,Ricerca / filtri,E7;E10,Mancanza di trasparenza informativa,3.38,3.0,0.52,3,4,8
-P030,Glovo,Generale,E3;E7,Assenza di un'interfaccia di consultazione per i partner preferiti,3.12,3.0,0.64,2,4,8
-P017,Deliveroo,Checkout / ordine,E3,Comando di annullamento controintuitivo,3.0,3.0,0.53,2,4,8
-P024,Glovo,Checkout / ordine,E6;E8,"Oscuramento funzionale della sezione ""Link Account"" nel carrello",3.0,3.0,0.76,2,4,8
-P034,Glovo,Checkout / ordine,E3,Comando annullamento controintuitivo,3.0,3.0,0.76,2,4,8

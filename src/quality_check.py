@@ -7,6 +7,7 @@ import pandas as pd
 
 from .config import resolve_path
 from .data_loading import load_all
+from .data_integrity_audit import run_data_integrity_audit
 from .formbricks_heuristics_pipeline import import_severity_formbricks, validate_clean_problems
 from .questionnaire import numeric_items
 from .report_quality.final_deck_text_audit import audit_final_deck_text
@@ -68,6 +69,12 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
             _check(False, "", f"Import severita reale non riuscito: {exc}", rows)
     else:
         _check(False, "", "severity_ratings_export.csv mancante", rows)
+    try:
+        integrity = run_data_integrity_audit()
+        _check(integrity.valid, "Audit integrita dati 40x8=320 superato", f"Audit integrita dati fallito: {'; '.join(integrity.failures)}", rows)
+        _check(integrity.mapping_path.exists(), "Mapping canonico problem_id esportato", "Mapping canonico problem_id mancante", rows)
+    except Exception as exc:
+        _check(False, "", f"Audit integrita dati non eseguibile: {exc}", rows)
 
     users_validation = validate_users_time_file(
         users_time_file(config),

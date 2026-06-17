@@ -45,6 +45,8 @@ data/processed/heuristics/raw_problems_table.csv
 data/templates/heuristics_consolidated_problems_template.csv
 ```
 
+Il file sopra e un template locale generato da `python -m src.cli create-templates`; non viene versionato nella repo pubblica.
+
 Creare manualmente:
 
 ```txt

@@ -16,8 +16,6 @@ paths:
   heuristics_ratings: "data/formbricks_raw/heuristics/severity_ratings_export.csv"
   user_tests_raw: "data/formbricks_raw/user_tests/user_tests.csv"
   users_time: "data/raw/users_time.csv"
-  heuristics_system_1: "data/raw/heuristics_deliveroo.csv"
-  heuristics_system_2: "data/raw/heuristics_glovo.csv"
   questionnaire_system_1: "data/raw/questionnaire_deliveroo.csv"
   questionnaire_system_2: "data/raw/questionnaire_glovo.csv"
   output_figures: "outputs/figures"

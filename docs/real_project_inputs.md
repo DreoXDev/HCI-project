@@ -26,11 +26,9 @@ outputs/reports/real_input_status.md
 
 ## Completezza
 
-- Dati attuali: 8 esperti, 18 utenti, 108 righe osservazionali long.
-- Dati finali attesi: 8 esperti, 24 utenti, 144 righe osservazionali long.
-- Con 18 utenti il quality gate deve indicare `PARTIAL_READY_FOR_REVIEW`.
-- Con 24 utenti il quality gate deve indicare `READY_FOR_FINAL_SLIDES`.
+- Dati finali: 8 esperti, 24 utenti, 144 righe osservazionali long.
+- Il quality gate deve indicare `READY_FOR_FINAL_SLIDES`.
 
-## Regola anti-demo
+## Regola anti-confusione
 
-I file demo possono restare in `data/templates` o `data/examples`, ma non devono essere referenziati da `config.yaml` o dal deck finale quando i dati reali sono disponibili.
+La repo non mantiene dataset demo o template dati nei percorsi `data/`: i path canonici devono puntare solo a input reali o derivati finali.

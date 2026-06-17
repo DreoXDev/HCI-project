@@ -1,3 +1,0 @@
-﻿system,effectiveness,efficiency_seconds,ueq,nps,heuristic_penalty,effectiveness_norm,efficiency_norm,ueq_norm,nps_norm,heuristic_norm,final_score
-Deliveroo,1.0,66.19,4.04,-50.0,2.35,1.0,0.0,0.51,0.25,0.41,0.48
-Glovo,1.0,47.71,4.04,4.17,2.36,1.0,0.28,0.51,0.52,0.41,0.58
