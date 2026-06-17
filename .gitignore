@@ -22,6 +22,7 @@ data/processed/**
 data/formbricks_raw/**/*.csv
 !data/formbricks_raw/**/*demo*.csv
 data/raw/formbricks/**/*.csv
+data/_backup_before_final_data/
 
 notebooks/outputs/
 

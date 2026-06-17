@@ -13,6 +13,7 @@ from .benchmark import analyze_ueq_benchmark
 from .data_loading import load_all
 from .export import create_templates
 from .final_assets import generate_final_assets
+from .final_data_validation import format_final_data_validation, validate_final_data
 from .formbricks_adapter import comparable, convert_questionnaire_export, load_formbricks_export
 from .formbricks_heuristics_pipeline import (
     analyze_final_heuristics_dataset,
@@ -60,6 +61,9 @@ from .validation import (
 
 GENERATED_OUTPUT_PATHS = [
     "outputs/figures",
+    "outputs/heuristics",
+    "outputs/plots",
+    "outputs/quality",
     "outputs/reports",
     "outputs/slides",
     "outputs/slide_assets",
@@ -416,7 +420,7 @@ def analyze(config: dict, data: dict[str, pd.DataFrame]) -> None:
     Path(paths["output_text"]).mkdir(parents=True, exist_ok=True)
     Path(paths["output_text"], "user_test_summary.txt").write_text("\n".join(snippets), encoding="utf-8")
     Path(paths["output_text"], "final_comparison_summary.txt").write_text(
-        f"Pipeline completata per {systems[0]} vs {systems[1]}. Consultare outputs/figures e outputs/tables/markdown.",
+        f"Pipeline completata per {systems[0]} vs {systems[1]}. Le evidenze finali sono state sintetizzate in grafici, tabelle e slide.",
         encoding="utf-8",
     )
     if users_time_enabled(config):
@@ -474,6 +478,7 @@ def main() -> None:
         "command",
         choices=[
             "validate",
+            "validate-final-data",
             "validate-users-time",
             "analyze",
             "generate-report",
@@ -559,6 +564,17 @@ def main() -> None:
         )
         print("\n".join(result.messages))
         print(resolve_path("outputs/reports/users_time_validation_report.md"))
+        return
+    if args.command == "validate-final-data":
+        result = validate_final_data(config, strict=args.strict)
+        report = format_final_data_validation(result)
+        target = resolve_path("outputs/reports/final_data_validation.md")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(report, encoding="utf-8")
+        print(report)
+        print(target)
+        if args.strict and not result.ok:
+            raise SystemExit(1)
         return
     if args.command == "validate-slide-template":
         target = args.template or "slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx"

@@ -272,8 +272,8 @@ def replace_placeholder_with_table(
     if effective_widths and len(effective_widths) == len(rows[0]):
         for idx, ratio in enumerate(effective_widths):
             table.columns[idx].width = int(width * float(ratio))
-    font_size = max(5.6, font_size)
-    header_font_size = max(5.8, header_font_size)
+    font_size = max(6.0, font_size)
+    header_font_size = max(6.3, header_font_size)
     for row_idx, row in enumerate(rows):
         for col_idx, value in enumerate(row):
             cell = table.cell(row_idx, col_idx)
@@ -327,7 +327,7 @@ def replace_placeholder_with_text_box(slide: Any, placeholder_name: str, text: s
     paragraph.text = _compact(text, 1400)
     for run in paragraph.runs:
         run.font.name = DECK_FONT_FAMILY
-        run.font.size = _pt(_fit_font_size(box, paragraph.text, preferred=20, minimum=11))
+        run.font.size = _pt(_fit_font_size(box, paragraph.text, preferred=22, minimum=12))
         run.font.color.rgb = _rgb("F8FAFC")
 
 
@@ -559,7 +559,7 @@ def _rewrite_markdown_shape_if_needed(shape: Any) -> None:
         _write_rich_text(shape, text)
 
 
-def _write_rich_text(shape: Any, text: str, *, preferred: int | None = None, minimum: int = 9, title_like: bool = False) -> None:
+def _write_rich_text(shape: Any, text: str, *, preferred: int | None = None, minimum: int = 10, title_like: bool = False) -> None:
     from pptx.enum.text import PP_ALIGN
 
     frame = shape.text_frame
@@ -746,7 +746,7 @@ def _single_line_title_size(shape: Any, text: str, *, minimum: int = 18) -> int 
     return minimum
 
 
-def _fit_font_size(shape: Any, text: str, *, preferred: int | None = None, minimum: int = 8) -> int | None:
+def _fit_font_size(shape: Any, text: str, *, preferred: int | None = None, minimum: int = 9) -> int | None:
     compact = " ".join(str(text).split())
     if not compact:
         return None
@@ -759,11 +759,11 @@ def _fit_font_size(shape: Any, text: str, *, preferred: int | None = None, minim
     if preferred is not None:
         max_size = preferred
     elif is_title_like:
-        max_size = 38
+        max_size = 40
     elif area < 1800000 * 600000:
-        max_size = 16
+        max_size = 18
     else:
-        max_size = 20
+        max_size = 22
     min_size = minimum if not is_title_like else max(22, minimum)
     for size in range(max_size, min_size - 1, -1):
         chars_per_line = max(8, int(width / max(size * 6200, 1)))

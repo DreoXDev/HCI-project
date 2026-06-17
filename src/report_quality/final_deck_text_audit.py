@@ -12,13 +12,23 @@ BANNED_PATTERNS = [
     "Spazio per",
     "Output generato",
     "Verificare la lettura",
+    "TODO",
+    "FIXME",
+    "Lorem ipsum",
     "outputs/",
     "slides/assets/",
     "data/raw/",
     "INSERIRE QUI",
     "Asset generati",
+    "[object Object]",
+    "NaN",
+    "None",
+    "null",
+    "undefined",
+    "PARTIAL_DATA",
     "rimuovendo il menu appena aggiunto",
 ]
+TOKEN_PATTERNS = {"TODO", "FIXME", "NaN", "None", "null", "undefined"}
 
 
 @dataclass
@@ -45,7 +55,7 @@ def audit_final_deck_text(
         for text in _slide_texts(slide):
             normalized = text.replace("\\", "/")
             for pattern in BANNED_PATTERNS:
-                if pattern.casefold() in normalized.casefold():
+                if _contains_banned(normalized, pattern):
                     findings.append(DeckTextFinding(slide_number, pattern, _compact(normalized)))
             if "`" in normalized:
                 findings.append(DeckTextFinding(slide_number, "backtick Markdown", _compact(normalized)))
@@ -83,6 +93,12 @@ def _write_audit(findings: list[DeckTextFinding], output_path: str | Path) -> Pa
             lines.append(f"| {finding.slide_number} | {finding.pattern} | {safe_text} |")
     target.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return target
+
+
+def _contains_banned(text: str, pattern: str) -> bool:
+    if pattern in TOKEN_PATTERNS:
+        return re.search(rf"(?<![A-Za-z0-9_]){re.escape(pattern)}(?![A-Za-z0-9_])", text, flags=re.IGNORECASE) is not None
+    return pattern.casefold() in text.casefold()
 
 
 def _compact(text: str, limit: int = 180) -> str:

@@ -784,11 +784,16 @@ def write_final_heuristics_outputs(
     _plot_final_heuristics(problem_summary, matrix, heuristic_summary, app_summary, final, charts_dir)
     _write_final_texts(problem_summary, heuristic_summary, app_summary, clean, texts_dir)
     aliases = {
+        "problem_ratings_long.csv": processed_root / "problem_ratings_long.csv",
+        "problem_severity_summary.csv": processed_root / "problem_severity_summary.csv",
+        "top_problems_by_severity.png": charts_dir / "top_problems.png",
+        "severity_by_app.png": charts_dir / "severity_by_app.png",
+        "violated_heuristics_by_app.png": charts_dir / "problem_count_by_heuristic.png",
+        "heuristics_summary.md": texts_dir / "summary.md",
         "heuristics_top_problems.png": charts_dir / "top_problems.png",
         "heuristics_problem_expert_heatmap.png": charts_dir / "problem_expert_heatmap.png",
         "heuristics_by_app.png": charts_dir / "severity_by_app.png",
         "heuristics_by_heuristic.png": charts_dir / "severity_by_heuristic.png",
-        "heuristics_summary.md": texts_dir / "summary.md",
         "heuristics_top_findings.md": texts_dir / "top_findings.md",
     }
     for alias, source in aliases.items():
@@ -801,6 +806,24 @@ def write_final_heuristics_outputs(
             else:
                 target.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
             paths.append(target)
+    plot_aliases = {
+        resolve_path("outputs/plots/heuristics/top_problems_by_severity.png"): charts_dir / "top_problems.png",
+        resolve_path("outputs/plots/heuristics/severity_by_app.png"): charts_dir / "severity_by_app.png",
+        resolve_path("outputs/plots/heuristics/violated_heuristics_by_app.png"): charts_dir / "problem_count_by_heuristic.png",
+    }
+    for target, source in plot_aliases.items():
+        if source.exists():
+            import shutil
+
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+            paths.append(target)
+    summary_text = texts_dir / "summary.md"
+    if summary_text.exists():
+        heuristics_summary = resolve_path("outputs/texts/heuristics_summary.md")
+        heuristics_summary.parent.mkdir(parents=True, exist_ok=True)
+        heuristics_summary.write_text(summary_text.read_text(encoding="utf-8"), encoding="utf-8")
+        paths.append(heuristics_summary)
     summary_text = texts_dir / "summary.md"
     if summary_text.exists():
         conclusions = resolve_path("outputs/text_snippets/heuristic_conclusions.md")

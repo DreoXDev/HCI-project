@@ -1,0 +1,9 @@
+﻿item_number,item,Deliveroo_mean,Glovo_mean,Deliveroo_median,Glovo_median,mean_difference_abs,median_difference_abs,p_value
+26,conservativo-innovativo,3.58,4.96,3.5,5.0,1.37,1.5,0.0
+10,originale-convenzionale,5.08,3.58,5.0,4.0,1.5,1.0,0.0
+1,fastidioso-piacevole,4.0,5.0,4.0,5.0,1.0,1.0,0.0
+15,usuale-moderno,3.88,5.0,4.0,5.0,1.12,1.0,0.01
+21,chiaro-confuso,4.12,2.96,4.0,3.0,1.17,1.0,0.01
+25,congeniale-ostile,4.08,3.04,4.0,3.0,1.04,1.0,0.01
+12,buono-scarso,4.0,3.0,4.0,3.0,1.0,1.0,0.01
+20,inefficiente-efficiente,4.5,5.38,5.0,5.0,0.88,0.0,0.01

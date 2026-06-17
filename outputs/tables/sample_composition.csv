@@ -1,0 +1,25 @@
+﻿value,count,system,field
+Maschio,17,Deliveroo,genere
+Femmina,7,Deliveroo,genere
+Meno di 25 Anni,18,Deliveroo,eta
+Più di 45 Anni,4,Deliveroo,eta
+Tra i 25 e i 45 Anni,2,Deliveroo,eta
+1,12,Deliveroo,familiarita delivery
+2,7,Deliveroo,familiarita delivery
+3,5,Deliveroo,familiarita delivery
+Studente,14,Deliveroo,situazione lavorativa
+Impiegato,8,Deliveroo,situazione lavorativa
+Altro,1,Deliveroo,situazione lavorativa
+Disoccupato,1,Deliveroo,situazione lavorativa
+Maschio,17,Glovo,genere
+Femmina,7,Glovo,genere
+Meno di 25 Anni,18,Glovo,eta
+Più di 45 Anni,4,Glovo,eta
+Tra i 25 e i 45 Anni,2,Glovo,eta
+1,12,Glovo,familiarita delivery
+2,7,Glovo,familiarita delivery
+3,5,Glovo,familiarita delivery
+Studente,14,Glovo,situazione lavorativa
+Impiegato,8,Glovo,situazione lavorativa
+Altro,1,Glovo,situazione lavorativa
+Disoccupato,1,Glovo,situazione lavorativa

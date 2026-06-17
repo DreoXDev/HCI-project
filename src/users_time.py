@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from scipy import stats
+import shutil
 
 from .adapters.formbricks.normalization import comparable
 from .config import resolve_path
@@ -111,6 +112,8 @@ def validate_users_time_long(
 
     if "task_id" in normalized.columns:
         normalized["task_id"] = normalized["task_id"].map(_normalize_task_id)
+    if "task_name" not in normalized.columns and "task_label" in normalized.columns:
+        normalized["task_name"] = normalized["task_label"]
     if "task_name" not in normalized.columns and "task_id" in normalized.columns:
         names = _task_name_map(tasks)
         normalized["task_name"] = normalized["task_id"].map(names).fillna(normalized["task_id"])
@@ -131,7 +134,7 @@ def validate_users_time_long(
         messages.append("ERROR: `completion_time_sec` deve essere numerico e >= 0")
 
     for column in ["errors_count", "help_requests"]:
-        values = pd.to_numeric(normalized[column], errors="coerce")
+        values = pd.to_numeric(normalized[column], errors="coerce").fillna(0)
         invalid = values.isna() | (values < 0) | (values % 1 != 0)
         if invalid.any():
             messages.append(f"ERROR: `{column}` deve essere un intero >= 0")
@@ -295,13 +298,39 @@ def analyze_users_time(
     markdown_dir = tables_dir / "markdown"
     tables_dir.mkdir(parents=True, exist_ok=True)
     markdown_dir.mkdir(parents=True, exist_ok=True)
+    df.to_csv(tables_dir / "users_time_clean.csv", index=False, encoding="utf-8-sig")
     summary.to_csv(tables_dir / "users_time_summary.csv", index=False)
     summary.to_markdown(markdown_dir / "users_time_summary.md", index=False)
+    summary.to_csv(tables_dir / "users_time_summary_by_app_task.csv", index=False, encoding="utf-8-sig")
+    summary.to_markdown(markdown_dir / "users_time_summary_by_app_task.md", index=False)
+    by_app = summarize_users_time_by_app(df)
+    by_app.to_csv(tables_dir / "users_time_summary_by_app.csv", index=False, encoding="utf-8-sig")
     stat_tests.to_csv(tables_dir / "users_time_stat_tests.csv", index=False)
 
     _plot_users_time(df, summary, config, output_figures_dir)
     write_users_time_interpretation(summary, output_text_dir, config)
+    write_user_testing_summary(summary, by_app, output_text_dir)
+    export_user_testing_plot_aliases(output_figures_dir)
     return {"summary": summary, "stat_tests": stat_tests}
+
+
+def summarize_users_time_by_app(df: pd.DataFrame) -> pd.DataFrame:
+    summary = (
+        df.groupby("app", sort=True)
+        .agg(
+            n_task_runs=("user_id", "size"),
+            n_users=("user_id", "nunique"),
+            mean_time_sec=("completion_time_sec", "mean"),
+            median_time_sec=("completion_time_sec", "median"),
+            success_rate=("success", "mean"),
+            mean_errors=("errors_count", "mean"),
+            mean_help_requests=("help_requests", "mean"),
+        )
+        .reset_index()
+    )
+    numeric = ["mean_time_sec", "median_time_sec", "success_rate", "mean_errors", "mean_help_requests"]
+    summary[numeric] = summary[numeric].round(2)
+    return summary
 
 
 def _plot_users_time(df: pd.DataFrame, summary: pd.DataFrame, config: dict, output_figures_dir: str | Path) -> None:
@@ -316,6 +345,14 @@ def _plot_users_time(df: pd.DataFrame, summary: pd.DataFrame, config: dict, outp
     ax.set_ylabel("Secondi")
     ax.grid(axis="y", alpha=0.25)
     save_figure(fig, out / "users_time_mean_by_task.png")
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    sns.barplot(data=summary, x="task_id", y="median_time_sec", hue="app", palette=palette, ax=ax)
+    ax.set_title("Tempo mediano per task")
+    ax.set_xlabel("Task")
+    ax.set_ylabel("Secondi")
+    ax.grid(axis="y", alpha=0.25)
+    save_figure(fig, out / "users_time_median_by_task.png")
 
     fig, ax = plt.subplots(figsize=(10, 5))
     sns.boxplot(data=df, x="task_id", y="completion_time_sec", hue="app", palette=palette, ax=ax)
@@ -341,6 +378,14 @@ def _plot_users_time(df: pd.DataFrame, summary: pd.DataFrame, config: dict, outp
     ax.set_ylabel("Errori medi")
     ax.grid(axis="y", alpha=0.25)
     save_figure(fig, out / "users_time_errors_by_task.png")
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.boxplot(data=df, x="app", y="completion_time_sec", hue="app", palette=palette, legend=False, ax=ax)
+    ax.set_title("Distribuzione tempi per app")
+    ax.set_xlabel("")
+    ax.set_ylabel("Secondi")
+    ax.grid(axis="y", alpha=0.25)
+    save_figure(fig, out / "users_time_distribution_by_app.png")
 
 
 def write_users_time_interpretation(summary: pd.DataFrame, output_text_dir: str | Path, config: dict) -> None:
@@ -377,3 +422,35 @@ def write_users_time_interpretation(summary: pd.DataFrame, output_text_dir: str 
     target = resolve_path(output_text_dir) / "users_time_interpretation.md"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_user_testing_summary(summary: pd.DataFrame, by_app: pd.DataFrame, output_text_dir: str | Path) -> None:
+    lines = ["# User testing summary", ""]
+    if summary.empty:
+        lines.append("Dataset osservazionale non disponibile.")
+    else:
+        total_users = int(summary["n_users"].max()) if "n_users" in summary else 0
+        lines.append(f"Dataset finale: {total_users} utenti osservati su Deliveroo e Glovo.")
+        for row in by_app.itertuples(index=False):
+            lines.append(
+                f"- {row.app}: media {row.mean_time_sec:.2f}s, mediana {row.median_time_sec:.2f}s, "
+                f"successo {row.success_rate:.0%}, errori medi {row.mean_errors:.2f}."
+            )
+    target = resolve_path(output_text_dir).parent / "user_testing_summary.md"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def export_user_testing_plot_aliases(output_figures_dir: str | Path) -> None:
+    root = resolve_path(output_figures_dir) / "dark"
+    aliases = {
+        "users_time_mean_by_task.png": "mean_time_by_task_app.png",
+        "users_time_median_by_task.png": "median_time_by_task_app.png",
+        "users_time_distribution_by_app.png": "time_distribution_by_app.png",
+    }
+    out = resolve_path("outputs/plots/user_testing")
+    out.mkdir(parents=True, exist_ok=True)
+    for source_name, alias_name in aliases.items():
+        source = root / source_name
+        if source.exists():
+            shutil.copy2(source, out / alias_name)

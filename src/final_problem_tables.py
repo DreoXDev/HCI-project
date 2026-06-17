@@ -6,6 +6,7 @@ from typing import Any
 import pandas as pd
 
 from .config import resolve_path
+from .tables import export_table
 
 
 PRIORITY_ORDER = {"A": 0, "B": 1, "C": 2, "unrated": 9, "": 9}
@@ -33,19 +34,21 @@ def generate_final_problem_tables(
         slide_path = out / f"final_problems_{suffix}_slide.csv"
         app_table.to_csv(full_path, index=False, encoding="utf-8-sig")
         slide = app_table[
-            ["problem_id", "title", "slide_description", "heuristic", "severity_mean", "priority_band"]
+            ["problem_id", "title", "description", "heuristic", "severity_mean", "priority_band"]
         ].rename(
             columns={
                 "problem_id": "ID",
-                "title": "Problema",
-                "slide_description": "Descrizione",
+                "title": "Titolo",
+                "description": "Descrizione",
                 "heuristic": "Euristiche",
-                "severity_mean": "Severita",
+                "severity_mean": "Severita media",
                 "priority_band": "Priorita",
             }
         )
         slide.to_csv(slide_path, index=False, encoding="utf-8-sig")
-        paths.extend([full_path, slide_path])
+        markdown_path = out / "markdown" / f"problems_{suffix}_by_severity.md"
+        export_table(slide, markdown_path, 2)
+        paths.extend([full_path, slide_path, markdown_path])
     return paths
 
 
@@ -63,10 +66,9 @@ def build_final_problem_table(clean: pd.DataFrame, summary: pd.DataFrame) -> pd.
     merged["priority_band"] = merged["severity_mean"].map(_priority_band)
     merged["priority_rank"] = merged["priority_band"].map(PRIORITY_ORDER).fillna(9).astype(int)
     merged["source_count_sort"] = pd.to_numeric(merged.get("source_count", 0), errors="coerce").fillna(0)
-    merged["slide_description"] = merged["description"].map(_slide_description)
     merged = merged.sort_values(
-        ["app", "priority_rank", "severity_mean", "problem_id"],
-        ascending=[True, True, False, True],
+        ["app", "severity_mean", "source_count_sort", "problem_id"],
+        ascending=[True, False, False, True],
         kind="mergesort",
     )
     columns = [
@@ -74,7 +76,6 @@ def build_final_problem_table(clean: pd.DataFrame, summary: pd.DataFrame) -> pd.
         "app",
         "title",
         "description",
-        "slide_description",
         "heuristic",
         "source_count",
         "notes",
@@ -98,13 +99,3 @@ def _priority_band(value: Any) -> str:
     if number >= 2.0:
         return "B"
     return "C"
-
-
-def _slide_description(value: Any) -> str:
-    text = " ".join(str(value).split())
-    if not text or text.lower() == "nan":
-        return ""
-    for delimiter in [". ", "; "]:
-        if delimiter in text and len(text.split(delimiter, 1)[0]) >= 80:
-            return text.split(delimiter, 1)[0].strip().rstrip(".") + "."
-    return text

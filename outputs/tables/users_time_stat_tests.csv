@@ -1,0 +1,4 @@
+task_id,task_name,metric,test,p_value,interpretation
+T01,Task 1,completion_time_sec,Wilcoxon signed-rank,0.0022,Differenza significativa
+T02,Task 2,completion_time_sec,Wilcoxon signed-rank,0.5677,Differenza non significativa
+T03,Task 3,completion_time_sec,Wilcoxon signed-rank,0.0003,Differenza significativa

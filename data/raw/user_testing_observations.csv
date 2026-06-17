@@ -1,9 +1,15 @@
-﻿observer,app,note
-Valentina,Deliveroo,"Durante i test è stata riscontrata un'anomalia nel sistema di geolocalizzazione: l'applicazione ha impedito a un utente di impostare l'indirizzo esatto previsto dal task. Infatti, dopo aver digitato la via e selezionato il suggerimento corretto dal menu a tendina, in fase di conferma il sistema ha modificato arbitrariamente la scelta, proponendo un indirizzo differente nelle vicinanze."
-Valentina,Deliveroo,"Molti utenti riscontrano che, nel modificare l’ordine aumentando le dosi di uno stesso prodotto, risulta impossibile modificare singolarmente gli attributi di ogni prodotto, obbligando l’utente a comprare due prodotti identici."
-Valentina,Glovo,"Alcuni utenti hanno riscontrato poca reattività dell’applicazione quando si è trattato di modificare l’ordine direttamente dal carrello, non vedendo in tempo reale gli aggiornamenti sulle quantità."
-Jacopo,Deliveroo,"Durante i test è stata riscontrata un'anomalia nel sistema di geolocalizzazione: l'applicazione ha impedito a un utente di impostare l'indirizzo esatto previsto dal task. Infatti, dopo aver digitato la via e selezionato il suggerimento corretto dal menu a tendina, in fase di conferma il sistema ha modificato arbitrariamente la scelta, proponendo un indirizzo differente nelle vicinanze."
-Jacopo,Deliveroo,Difficoltà nella terza task nel trovare il carrello all’interno dell’app.
-Jacopo,Deliveroo,Interfaccia controintuitiva per modificare l’ordine.
-Jacopo,Glovo,"Problema nella terza task per U5, l’applicazione non permette di vedere il carrello direttamente da ordini per mancato login (non necessariamente richiesto per le task). L’utente è dovuto risalire all’ordine passando direttamente dalla pagina del ristorante."
-Samuele,Deliveroo,3 User lamentavano della confusione creata dalla posizione del carrello una volta tornati alla home page (task 3).
+﻿observation_id,observer,app,related_task_id,observation_text
+VAL-D-01,Valentina,Deliveroo,T1,"Durante i test è stata riscontrata un'anomalia nel sistema di geolocalizzazione: l'applicazione ha impedito a un utente di impostare l'indirizzo esatto previsto dal task. Infatti, dopo aver digitato la via e selezionato il suggerimento corretto dal menu a tendina, in fase di conferma il sistema ha modificato arbitrariamente la scelta, proponendo un indirizzo differente nelle vicinanze."
+VAL-D-02,Valentina,Deliveroo,T3,"Molti utenti riscontrano che, nel modificare l’ordine aumentando le dosi di uno stesso prodotto, risulta impossibile modificare singolarmente gli attributi di ogni prodotto, obbligando l’utente a comprare due prodotti identici."
+VAL-G-01,Valentina,Glovo,T3,"Alcuni utenti hanno riscontrato poca reattività dell’applicazione quando si è trattato di modificare l’ordine direttamente dal carrello, non vedendo in tempo reale gli aggiornamenti sulle quantità."
+JAC-D-01,Jacopo,Deliveroo,T1,"Durante i test è stata riscontrata un'anomalia nel sistema di geolocalizzazione: l'applicazione ha impedito a un utente di impostare l'indirizzo esatto previsto dal task. Infatti, dopo aver digitato la via e selezionato il suggerimento corretto dal menu a tendina, in fase di conferma il sistema ha modificato arbitrariamente la scelta, proponendo un indirizzo differente nelle vicinanze."
+JAC-D-02,Jacopo,Deliveroo,T3,Difficoltà nella terza task nel trovare il carrello all’interno dell’app.
+JAC-D-03,Jacopo,Deliveroo,T3,Interfaccia controintuitiva per modificare l’ordine.
+JAC-G-01,Jacopo,Glovo,T3,"Problema nella terza task per U5, l’applicazione non permette di vedere il carrello direttamente da ordini per mancato login (non necessariamente richiesto per le task). L’utente è dovuto risalire all’ordine passando direttamente dalla pagina del ristorante."
+SAM-D-01,Samuele,Deliveroo,T3,3 User lamentavano della confusione creata dalla posizione del carrello una volta tornati alla home page (task 3).
+RIC-D-01,Riccardo,Deliveroo,,Diversi utenti trovano la GUI sovraccarica e confusionaria. In particolare sono distraenti gli annunci Pop-Up
+RIC-D-02,Riccardo,Deliveroo,T3,Diversi utenti si lamentano del fatto che il carrello non è facile da controllare
+RIC-D-03,Riccardo,Deliveroo,T1,"Durante il Task 1D di U6 l’app non accetta l’indirizzo inserito, bensì automaticamente lo sostituisce con l’indirizzo di una strada adiacente all’indirizzo inserito"
+RIC-D-04,Riccardo,Deliveroo,T1,"Un utente non trova il modo per inserire l’indirizzo nella home page, invece inserendo l’indirizzo nella sezione “Addresses” dello spazio utente"
+RIC-G-01,Riccardo,Glovo,T3,Diversi utenti incontrano un Bug della GUI nell’area di checkout
+RIC-G-02,Riccardo,Glovo,,"Diversi utenti trovano la GUI controintuitiva, particolarmente nella home page"

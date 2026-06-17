@@ -113,12 +113,19 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
             df = pd.read_csv(full_table, encoding="utf-8-sig")
             _check("description" in df and df["description"].astype(str).str.len().gt(40).all(), f"Descrizioni complete presenti per {app}", f"Descrizioni mancanti o troppo brevi per {app}", rows)
             _check("description" in df and not df["description"].astype(str).str.contains(r"\.\.\.", regex=True).any(), f"Nessuna ellissi nelle descrizioni {app}", f"Ellissi trovata nelle descrizioni {app}", rows)
-            if {"priority_rank", "severity_mean", "problem_id"}.issubset(df.columns):
+            if {"severity_mean", "problem_id"}.issubset(df.columns):
                 sortable = df.copy()
-                sortable["priority_rank"] = pd.to_numeric(sortable["priority_rank"], errors="coerce").fillna(9)
                 sortable["severity_mean"] = pd.to_numeric(sortable["severity_mean"], errors="coerce").fillna(-1)
-                sorted_df = sortable.sort_values(["priority_rank", "severity_mean", "problem_id"], ascending=[True, False, True], kind="mergesort")
-                _check(df["problem_id"].tolist() == sorted_df["problem_id"].tolist(), f"Problemi {app} ordinati per priorita/severita", f"Problemi {app} non ordinati per priorita/severita", rows)
+                sort_columns = ["severity_mean"]
+                ascending = [False]
+                if "source_count" in sortable.columns:
+                    sortable["source_count"] = pd.to_numeric(sortable["source_count"], errors="coerce").fillna(0)
+                    sort_columns.append("source_count")
+                    ascending.append(False)
+                sort_columns.append("problem_id")
+                ascending.append(True)
+                sorted_df = sortable.sort_values(sort_columns, ascending=ascending, kind="mergesort")
+                _check(df["problem_id"].tolist() == sorted_df["problem_id"].tolist(), f"Problemi {app} ordinati per severita", f"Problemi {app} non ordinati per severita", rows)
 
     deck_findings = audit_final_deck_text()
     _check(not deck_findings, "Deck finale senza placeholder o path tecnici", f"Deck finale contiene {len(deck_findings)} testo/i vietato/i", rows)

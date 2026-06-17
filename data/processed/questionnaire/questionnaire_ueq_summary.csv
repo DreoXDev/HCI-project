@@ -1,0 +1,13 @@
+﻿app,dimension,n_scores,mean_score_minus3_plus3,std_dev
+Deliveroo,Attrattività,144,-0.056,1.358
+Deliveroo,Comprensibilità,96,0.198,1.476
+Deliveroo,Efficienza,96,0.135,1.433
+Deliveroo,Affidabilità/controllo,96,0.625,1.409
+Deliveroo,Stimolazione,96,-0.292,1.241
+Deliveroo,Novità,96,-0.469,1.323
+Glovo,Attrattività,144,0.833,1.118
+Glovo,Comprensibilità,96,1.135,1.28
+Glovo,Efficienza,96,0.781,1.309
+Glovo,Affidabilità/controllo,96,1.062,1.257
+Glovo,Stimolazione,96,0.333,1.28
+Glovo,Novità,96,0.74,1.371

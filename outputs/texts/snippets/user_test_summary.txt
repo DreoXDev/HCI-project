@@ -1,0 +1,3 @@
+Il test evidenzia una differenza statisticamente significativa tra Deliveroo e Glovo per Task 1 (p = 0.005), con Glovo mediamente più rapido.
+Il test non evidenzia una differenza statisticamente significativa tra Deliveroo e Glovo per Task 2 (p = 0.963).
+Il test evidenzia una differenza statisticamente significativa tra Deliveroo e Glovo per Task 3 (p = 0.000), con Glovo mediamente più rapido.

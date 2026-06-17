@@ -327,9 +327,9 @@ def _problem_table_specs(auto: dict[str, Any], texts: dict[str, str], available_
                     "max_rows": int(auto.get("problem_tables", {}).get("max_rows_per_slide", 4)) if isinstance(auto.get("problem_tables"), dict) else 4,
                     "paginate": True,
                     "title_prefix": f"Problemi {app}",
-                    "font_size": 5.8,
-                    "header_font_size": 6.0,
-                    "max_cell_chars": 240,
+                    "font_size": 6.1,
+                    "header_font_size": 6.4,
+                    "max_cell_chars": 220,
                     "column_widths": [0.07, 0.22, 0.44, 0.11, 0.08, 0.08],
                 },
             }
@@ -857,12 +857,12 @@ def _rows_per_slide_for_table(rows: list[list[str]], preferred: int) -> int:
 def _table_render_options(rows: list[list[str]]) -> dict[str, Any]:
     columns = len(rows[0]) if rows else 0
     if columns >= 9:
-        return {"font_size": 5.8, "header_font_size": 6.0, "max_cell_chars": 34}
+        return {"font_size": 6.2, "header_font_size": 6.5, "max_cell_chars": 36}
     if columns >= 7:
-        return {"font_size": 6.2, "header_font_size": 6.5, "max_cell_chars": 42}
+        return {"font_size": 6.6, "header_font_size": 6.9, "max_cell_chars": 44}
     if columns >= 5:
-        return {"font_size": 6.8, "header_font_size": 7.0, "max_cell_chars": 56}
-    return {"font_size": 7.3, "header_font_size": 7.6, "max_cell_chars": 72}
+        return {"font_size": 7.2, "header_font_size": 7.5, "max_cell_chars": 58}
+    return {"font_size": 7.8, "header_font_size": 8.1, "max_cell_chars": 74}
 
 
 def _dedupe_missing_assets(specs: list[dict[str, Any]], used_assets: set[str], excludes: list[str]) -> list[dict[str, Any]]:

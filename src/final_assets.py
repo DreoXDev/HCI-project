@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import shutil
 
 import matplotlib
 
@@ -32,6 +33,7 @@ def generate_final_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:
     generate_users_time_task_assets(config)
     generate_sample_assets(config, data)
     generate_subgroup_assets(config, data)
+    export_questionnaire_final_aliases()
 
 
 def _problem_id_column(df: pd.DataFrame) -> str:
@@ -367,3 +369,38 @@ def generate_subgroup_assets(config: dict, data: dict[str, pd.DataFrame]) -> Non
     warning = "I sottogruppi con meno di 5 partecipanti sono descrittivi e non robusti."
     resolve_path("outputs/texts/snippets/subgroup_conclusions.md").write_text(f"# Analisi sottogruppi\n\n{warning}\n", encoding="utf-8")
 
+
+def export_questionnaire_final_aliases() -> None:
+    aliases = {
+        "outputs/figures/dark/sample/gender_distribution.png": "outputs/plots/questionnaire/demographics_gender.png",
+        "outputs/figures/dark/sample/age_distribution.png": "outputs/plots/questionnaire/demographics_age.png",
+        "outputs/figures/dark/sample/occupation_distribution.png": "outputs/plots/questionnaire/demographics_profession.png",
+        "outputs/figures/dark/sample/familiarity_distribution.png": "outputs/plots/questionnaire/familiarity_delivery.png",
+        "outputs/figures/dark/questionnaire/ueq_scales.png": "outputs/plots/questionnaire/ueq_dimensions_by_app.png",
+        "outputs/figures/dark/questionnaire/nps_comparison.png": "outputs/plots/questionnaire/nps_by_app.png",
+    }
+    for source_raw, target_raw in aliases.items():
+        source = resolve_path(source_raw)
+        if not source.exists():
+            continue
+        target = resolve_path(target_raw)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+
+    summary = resolve_path("data/processed/questionnaire/questionnaire_ueq_summary.csv")
+    nps = resolve_path("data/processed/questionnaire/questionnaire_nps_summary.csv")
+    lines = ["# Questionnaire summary", ""]
+    if summary.exists():
+        df = pd.read_csv(summary)
+        for row in df.itertuples(index=False):
+            app = getattr(row, "app", "")
+            dimension = getattr(row, "dimension", "")
+            mean = getattr(row, "mean_score_minus3_plus3", "")
+            lines.append(f"- {app} - {dimension}: media UEQ normalizzata {mean}.")
+    if nps.exists():
+        df = pd.read_csv(nps)
+        for row in df.itertuples(index=False):
+            lines.append(f"- {row.app}: NPS {row.nps} su {row.n_responses} risposte.")
+    target = resolve_path("outputs/texts/questionnaire_summary.md")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("\n".join(lines) + "\n", encoding="utf-8")

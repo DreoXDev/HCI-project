@@ -9,10 +9,10 @@ Gruppo HCI
 Anno accademico 2025/2026
 
 ## DATA_STATUS_LABEL
-Dati parziali
+Dati finali
 
 ## data_status_note
-I risultati includono tutti gli 8 esperti della valutazione di severita e 18 utenti su 24 previsti. La lettura e gia utile per la revisione del report, ma diventera finale dopo l'inserimento del quarto blocco utenti.
+FINAL_DATA: i risultati includono tutti gli 8 esperti della valutazione di severità, 24 utenti nel test osservazionale e 24 risposte finite al questionario.
 
 ## index
 **01 Contesto**
@@ -168,8 +168,8 @@ Il confronto tra **Deliveroo** e **Glovo** permette di rilevare differenze concr
 I task simulano un flusso di ordinazione identico per entrambe le app:
 
 1. Inserire l'indirizzo di consegna: Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI.
-2. Trovare Bun Burgers nella lista dei ristoranti di Hamburger, aggiungere un Menu Cheeseburger Singolo con Patatine Normali e una bibita a piacere, procedere fino al checkout senza confermare l'ordine e tornare alla Home.
-3. Aprire il carrello, modificare l'ordine da Cheeseburger Singolo a Cheeseburger Doppio, aumentare la quantita da 1 a 2 e verificare il checkout.
+2. Trovare Bun Burgers nella lista dei ristoranti di Hamburger, aggiungere un Menù Cheeseburger Singolo con Patatine Normali e una bibita a piacere, procedere fino al checkout senza confermare l'ordine e tornare alla Home.
+3. Aprire il carrello, modificare l'ordine da Cheeseburger Singolo a Cheeseburger Doppio, aumentare la quantità da 1 a 2 e verificare il checkout.
 
 ## task_deck_purpose
 Questa presentazione serve a guidarti durante il test utente su Deliveroo e Glovo.
@@ -198,19 +198,19 @@ Apri Glovo, e inserisci come indirizzo di consegna:
 Piazza dell'Ateneo Nuovo, 1, 20126 Milano MI
 
 ## user_task_2
-Trova Bun Burgers dalla lista dei ristoranti di hamburger, aggiungi un Menu Cheeseburger Singolo e procedi fino al checkout senza confermare l'ordine.
+Trova Bun Burgers dalla lista dei ristoranti di hamburger, aggiungi un Menù Cheeseburger Singolo e procedi fino al checkout senza confermare l'ordine.
 
 ## user_task_2_deliveroo
 Partendo dalla schermata Home:
 Trova la lista di ristoranti di Hamburger. In questa lista trova il ristorante Bun Burgers.
-Aggiungi un Menu Cheeseburger Singolo, con Patatine Normali e una bibita a piacere.
+Aggiungi un Menù Cheeseburger Singolo, con Patatine Normali e una bibita a piacere.
 Procedi fino al Checkout (NON confermare l'ordine)
 Ora torna alla Home.
 
 ## user_task_2_glovo
 Partendo dalla schermata Home:
 Trova la lista di ristoranti di Hamburger. In questa lista trova il ristorante Bun Burgers.
-Aggiungi un Menu Cheeseburger Singolo, con Patatine Normali e una bibita a piacere.
+Aggiungi un Menù Cheeseburger Singolo, con Patatine Normali e una bibita a piacere.
 Procedi fino al Checkout (NON confermare l'ordine)
 Ora torna alla Home.
 
@@ -269,7 +269,7 @@ SURVEY FORMBRICKS
 ## user_test_sample
 La composizione del campione dei test utente aiuta a leggere **tempi**, **errori** e successo dei task in relazione al profilo dei partecipanti.
 
-Stato raccolta: **dati parziali**, 18 utenti disponibili su 24 previsti. Le slide vanno aggiornate dopo l'arrivo dell'ultimo blocco da 6 utenti.
+Stato raccolta: **dati finali**, 24 utenti disponibili su 24 previsti.
 
 ## effectiveness_intro
 L'**efficacia** misura quanto spesso gli utenti riescono a completare correttamente i task assegnati.
@@ -302,7 +302,7 @@ Il questionario raccoglie la **percezione soggettiva** dei partecipanti e comple
 ## questionnaire_sample
 La composizione del campione del questionario viene usata per contestualizzare i risultati **UEQ** e **NPS**.
 
-Stato raccolta: **dati parziali**, 18 risposte disponibili su 24 previste.
+Stato raccolta: **dati finali**, 24 risposte finite su 24 previste.
 
 ## questionnaire_item_placeholder
 La distribuzione delle risposte evidenzia differenze nella percezione degli utenti sulle due applicazioni.

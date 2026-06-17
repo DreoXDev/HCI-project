@@ -17,14 +17,14 @@ problem_tables:
   split_by_app: true
   sort_by: [priority_band, severity_mean_desc, source_count_desc, problem_id]
   include_description: true
-  max_rows_per_slide: 4
+  max_rows_per_slide: 5
 
 metadata:
   project_title: "Deliveroo vs Glovo"
   subtitle: "Analisi trasversale di usabilità"
   authors: "Gruppo HCI"
   date: "Anno accademico 2025/2026"
-  data_status_label: "Dati parziali"
+  data_status_label: "Dati finali"
 
 auto_slides:
   enabled: true
@@ -48,7 +48,7 @@ auto_slides:
   task_count: 3
   appendix_assets_root: slides/assets/appendices
   problem_tables:
-    max_rows_per_slide: 4
+    max_rows_per_slide: 5
   # Lasciare vuoto per generare tutte le slide possibili dagli asset esistenti.
   # Impostare un numero se serve produrre solo un sottoinsieme per revisione rapida.
   max_slides:

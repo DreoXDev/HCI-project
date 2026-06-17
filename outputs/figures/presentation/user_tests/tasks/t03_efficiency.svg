@@ -1,0 +1,1046 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="459.65pt" height="315.935pt" viewBox="0 0 459.65 315.935" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-06-17T15:39:18.786039</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.9, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 315.935 
+L 459.65 315.935 
+L 459.65 0 
+L 0 0 
+L 0 315.935 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 45.31 291.505 
+L 452.45 291.505 
+L 452.45 29.505 
+L 45.31 29.505 
+L 45.31 291.505 
+z
+" style="fill: none"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 65.667 291.505 
+L 228.523 291.505 
+L 228.523 41.98119 
+L 65.667 41.98119 
+z
+" clip-path="url(#pf9e66d2d1c)" style="fill: #19b3a7"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 269.237 291.505 
+L 432.093 291.505 
+L 432.093 155.60341 
+L 269.237 155.60341 
+z
+" clip-path="url(#pf9e66d2d1c)" style="fill: #e8ba5b"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <defs>
+       <path id="m4268f5d9fe" d="M 0 0 
+L 0 3.5 
+" style="stroke: #6b7280; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m4268f5d9fe" x="147.095" y="291.505" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <!-- Deliveroo -->
+      <g style="fill: #6b7280" transform="translate(119.276172 306.535) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-44" d="M 1446 -26 
+L 1446 954 
+L 2317 954 
+Q 2643 954 2905 1053 
+Q 3168 1152 3353 1334 
+Q 3539 1517 3635 1776 
+Q 3731 2035 3731 2349 
+Q 3731 2675 3635 2931 
+Q 3539 3187 3353 3366 
+Q 3168 3546 2905 3638 
+Q 2643 3731 2317 3731 
+L 1446 3731 
+L 1446 4710 
+L 2259 4710 
+Q 2893 4710 3366 4524 
+Q 3840 4339 4160 4019 
+Q 4480 3699 4637 3286 
+Q 4794 2874 4794 2419 
+L 4794 2278 
+Q 4794 1856 4637 1443 
+Q 4480 1030 4160 700 
+Q 3840 371 3366 172 
+Q 2893 -26 2259 -26 
+L 1446 -26 
+z
+M 525 -26 
+L 525 4710 
+L 1574 4710 
+L 1574 -26 
+L 525 -26 
+z
+" transform="scale(0.015625)"/>
+        <path id="Sora-Bold-65" d="M 2074 -122 
+Q 1626 -122 1283 32 
+Q 941 186 713 445 
+Q 486 704 368 1027 
+Q 250 1350 250 1690 
+L 250 1818 
+Q 250 2170 368 2493 
+Q 486 2816 710 3072 
+Q 934 3328 1270 3478 
+Q 1606 3629 2035 3629 
+Q 2598 3629 2985 3376 
+Q 3373 3123 3577 2716 
+Q 3782 2310 3782 1830 
+L 3782 1485 
+L 678 1485 
+L 678 2067 
+L 3162 2067 
+L 2829 1798 
+Q 2829 2112 2739 2336 
+Q 2650 2560 2474 2678 
+Q 2298 2797 2035 2797 
+Q 1766 2797 1580 2675 
+Q 1395 2554 1299 2320 
+Q 1203 2086 1203 1747 
+Q 1203 1434 1292 1200 
+Q 1382 966 1574 838 
+Q 1766 710 2074 710 
+Q 2355 710 2534 819 
+Q 2714 928 2778 1088 
+L 3718 1088 
+Q 3642 736 3418 461 
+Q 3194 186 2854 32 
+Q 2515 -122 2074 -122 
+z
+" transform="scale(0.015625)"/>
+        <path id="Sora-Bold-6c" d="M 512 0 
+L 512 4672 
+L 1542 4672 
+L 1542 0 
+L 512 0 
+z
+M 96 3917 
+L 96 4672 
+L 1542 4672 
+L 1542 3917 
+L 96 3917 
+z
+" transform="scale(0.015625)"/>
+        <path id="Sora-Bold-69" d="M 634 0 
+L 634 3507 
+L 1658 3507 
+L 1658 0 
+L 634 0 
+z
+M 166 2752 
+L 166 3507 
+L 1658 3507 
+L 1658 2752 
+L 166 2752 
+z
+M 1030 3853 
+Q 742 3853 604 4003 
+Q 467 4154 467 4384 
+Q 467 4621 604 4771 
+Q 742 4922 1030 4922 
+Q 1318 4922 1456 4771 
+Q 1594 4621 1594 4384 
+Q 1594 4154 1456 4003 
+Q 1318 3853 1030 3853 
+z
+" transform="scale(0.015625)"/>
+        <path id="Sora-Bold-76" d="M 1146 0 
+L 96 3507 
+L 1152 3507 
+L 2138 0 
+L 1146 0 
+z
+M 1466 0 
+L 1466 851 
+L 2496 851 
+L 2496 0 
+L 1466 0 
+z
+M 1843 0 
+L 2694 3507 
+L 3680 3507 
+L 2771 0 
+L 1843 0 
+z
+" transform="scale(0.015625)"/>
+        <path id="Sora-Bold-72" d="M 467 0 
+L 467 3507 
+L 1280 3507 
+L 1280 2003 
+L 1261 2003 
+Q 1261 2746 1577 3149 
+Q 1894 3552 2496 3552 
+L 2630 3552 
+L 2630 2669 
+L 2374 2669 
+Q 1952 2669 1721 2441 
+Q 1491 2214 1491 1786 
+L 1491 0 
+L 467 0 
+z
+" transform="scale(0.015625)"/>
+        <path id="Sora-Bold-6f" d="M 2176 -122 
+Q 1715 -122 1356 22 
+Q 998 166 752 416 
+Q 506 666 378 989 
+Q 250 1312 250 1670 
+L 250 1818 
+Q 250 2182 381 2512 
+Q 512 2842 765 3091 
+Q 1018 3341 1376 3485 
+Q 1734 3629 2176 3629 
+Q 2630 3629 2985 3485 
+Q 3341 3341 3590 3091 
+Q 3840 2842 3974 2512 
+Q 4109 2182 4109 1818 
+L 4109 1670 
+Q 4109 1312 3981 989 
+Q 3853 666 3606 416 
+Q 3360 166 3001 22 
+Q 2643 -122 2176 -122 
+z
+M 2176 742 
+Q 2477 742 2675 870 
+Q 2874 998 2979 1228 
+Q 3085 1459 3085 1741 
+Q 3085 2042 2976 2269 
+Q 2867 2496 2665 2630 
+Q 2464 2765 2176 2765 
+Q 1894 2765 1689 2630 
+Q 1485 2496 1379 2269 
+Q 1274 2042 1274 1741 
+Q 1274 1459 1376 1228 
+Q 1478 998 1683 870 
+Q 1888 742 2176 742 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-44"/>
+       <use xlink:href="#Sora-Bold-65" transform="translate(78.099991 0)"/>
+       <use xlink:href="#Sora-Bold-6c" transform="translate(140.499985 0)"/>
+       <use xlink:href="#Sora-Bold-69" transform="translate(171.999969 0)"/>
+       <use xlink:href="#Sora-Bold-76" transform="translate(205.399963 0)"/>
+       <use xlink:href="#Sora-Bold-65" transform="translate(265.09996 0)"/>
+       <use xlink:href="#Sora-Bold-72" transform="translate(327.499954 0)"/>
+       <use xlink:href="#Sora-Bold-6f" transform="translate(369.599945 0)"/>
+       <use xlink:href="#Sora-Bold-6f" transform="translate(437.699936 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2">
+      <g>
+       <use xlink:href="#m4268f5d9fe" x="350.665" y="291.505" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <!-- Glovo -->
+      <g style="fill: #6b7280" transform="translate(333.577187 306.535) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-47" d="M 2739 -122 
+Q 2112 -122 1645 86 
+Q 1178 294 874 646 
+Q 570 998 422 1427 
+Q 275 1856 275 2285 
+L 275 2426 
+Q 275 2867 422 3289 
+Q 570 3712 867 4057 
+Q 1165 4403 1609 4608 
+Q 2054 4813 2637 4813 
+Q 3270 4813 3756 4579 
+Q 4243 4346 4537 3933 
+Q 4832 3520 4877 2976 
+L 3827 2976 
+Q 3789 3232 3625 3424 
+Q 3462 3616 3209 3725 
+Q 2957 3834 2637 3834 
+Q 2330 3834 2090 3725 
+Q 1850 3616 1680 3417 
+Q 1510 3219 1424 2947 
+Q 1338 2675 1338 2349 
+Q 1338 2010 1430 1731 
+Q 1523 1453 1702 1251 
+Q 1882 1050 2147 941 
+Q 2413 832 2739 832 
+Q 3174 832 3494 1011 
+Q 3814 1190 3955 1485 
+L 3827 768 
+L 3827 1882 
+L 4794 1882 
+L 4794 883 
+Q 4493 397 3965 137 
+Q 3437 -122 2739 -122 
+z
+M 2605 1677 
+L 2605 2432 
+L 5178 2432 
+L 5178 1677 
+L 2605 1677 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-47"/>
+       <use xlink:href="#Sora-Bold-6c" transform="translate(83.299988 0)"/>
+       <use xlink:href="#Sora-Bold-6f" transform="translate(114.799973 0)"/>
+       <use xlink:href="#Sora-Bold-76" transform="translate(182.899963 0)"/>
+       <use xlink:href="#Sora-Bold-6f" transform="translate(242.59996 0)"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_3">
+      <path d="M 45.31 291.505 
+L 452.45 291.505 
+" clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #e5e7eb; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4">
+      <defs>
+       <path id="mc7fda0f0a4" d="M 0 0 
+L -3.5 0 
+" style="stroke: #6b7280; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#mc7fda0f0a4" x="45.31" y="291.505" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <!-- 0 -->
+      <g style="fill: #6b7280" transform="translate(29.917344 295.52) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-30" d="M 2445 -122 
+Q 1888 -122 1491 60 
+Q 1094 243 848 556 
+Q 602 870 483 1283 
+Q 365 1696 365 2157 
+L 365 2522 
+Q 365 3162 589 3680 
+Q 813 4198 1273 4505 
+Q 1734 4813 2445 4813 
+Q 3155 4813 3612 4505 
+Q 4070 4198 4294 3680 
+Q 4518 3162 4518 2522 
+L 4518 2157 
+Q 4518 1696 4400 1283 
+Q 4282 870 4035 556 
+Q 3789 243 3395 60 
+Q 3002 -122 2445 -122 
+z
+M 2445 845 
+Q 2963 845 3216 1206 
+Q 3469 1568 3469 2330 
+Q 3469 3136 3209 3491 
+Q 2950 3846 2445 3846 
+Q 1926 3846 1670 3491 
+Q 1414 3136 1414 2342 
+Q 1414 1574 1667 1209 
+Q 1920 845 2445 845 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-30"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_5">
+      <path d="M 45.31 262.094907 
+L 452.45 262.094907 
+" clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #e5e7eb; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#mc7fda0f0a4" x="45.31" y="262.094907" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <!-- 10 -->
+      <g style="fill: #6b7280" transform="translate(25.209688 266.109907) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-31" d="M 1126 0 
+L 1126 3981 
+L 1408 3763 
+L 211 3763 
+L 211 4672 
+L 2170 4672 
+L 2170 0 
+L 1126 0 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-31"/>
+       <use xlink:href="#Sora-Bold-30" transform="translate(42.799988 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_7">
+      <path d="M 45.31 232.684813 
+L 452.45 232.684813 
+" clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #e5e7eb; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#mc7fda0f0a4" x="45.31" y="232.684813" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <!-- 20 -->
+      <g style="fill: #6b7280" transform="translate(22.965 236.699813) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-32" d="M 384 0 
+L 384 960 
+Q 384 1261 483 1485 
+Q 582 1709 800 1885 
+Q 1018 2061 1376 2214 
+L 2131 2541 
+Q 2419 2662 2556 2841 
+Q 2694 3021 2694 3296 
+Q 2694 3578 2521 3757 
+Q 2349 3936 2016 3936 
+Q 1683 3936 1510 3750 
+Q 1338 3565 1338 3251 
+L 320 3251 
+Q 320 3693 512 4048 
+Q 704 4403 1081 4608 
+Q 1459 4813 2016 4813 
+Q 2573 4813 2947 4614 
+Q 3322 4416 3517 4083 
+Q 3712 3750 3712 3334 
+L 3712 3258 
+Q 3712 2720 3417 2371 
+Q 3123 2022 2509 1754 
+L 1760 1427 
+Q 1568 1344 1488 1254 
+Q 1408 1165 1408 1011 
+L 1408 691 
+L 1158 902 
+L 3718 902 
+L 3718 0 
+L 384 0 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-32"/>
+       <use xlink:href="#Sora-Bold-30" transform="translate(63.199997 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_9">
+      <path d="M 45.31 203.27472 
+L 452.45 203.27472 
+" clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #e5e7eb; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#mc7fda0f0a4" x="45.31" y="203.27472" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <!-- 30 -->
+      <g style="fill: #6b7280" transform="translate(22.965 207.28972) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-33" d="M 1984 -122 
+Q 1440 -122 1040 80 
+Q 640 282 429 627 
+Q 218 973 218 1408 
+L 1229 1408 
+Q 1229 1114 1427 931 
+Q 1626 749 1984 749 
+Q 2221 749 2387 838 
+Q 2554 928 2643 1085 
+Q 2733 1242 2733 1440 
+Q 2733 1747 2537 1945 
+Q 2342 2144 1984 2144 
+Q 1792 2144 1648 2086 
+Q 1504 2029 1402 1946 
+L 928 2746 
+L 2342 3667 
+L 2285 3776 
+L 410 3776 
+L 410 4672 
+L 3558 4672 
+L 3558 3699 
+L 1926 2662 
+L 1414 2803 
+Q 1542 2842 1686 2864 
+Q 1830 2886 1997 2886 
+Q 2541 2886 2931 2707 
+Q 3322 2528 3536 2205 
+Q 3750 1882 3750 1453 
+L 3750 1376 
+Q 3750 947 3536 608 
+Q 3322 269 2928 73 
+Q 2534 -122 1984 -122 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-33"/>
+       <use xlink:href="#Sora-Bold-30" transform="translate(63.199997 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_11">
+      <path d="M 45.31 173.864627 
+L 452.45 173.864627 
+" clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #e5e7eb; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#mc7fda0f0a4" x="45.31" y="173.864627" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <!-- 40 -->
+      <g style="fill: #6b7280" transform="translate(22.525 177.879627) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-34" d="M 211 896 
+L 211 1990 
+L 1984 4806 
+L 2797 4275 
+L 1280 1862 
+L 1370 1728 
+L 4166 1728 
+L 4166 896 
+L 211 896 
+z
+M 2662 0 
+L 2662 3366 
+L 3629 3366 
+L 3629 0 
+L 2662 0 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-34"/>
+       <use xlink:href="#Sora-Bold-30" transform="translate(67.199997 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_13">
+      <path d="M 45.31 144.454533 
+L 452.45 144.454533 
+" clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #e5e7eb; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_14">
+      <g>
+       <use xlink:href="#mc7fda0f0a4" x="45.31" y="144.454533" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <!-- 50 -->
+      <g style="fill: #6b7280" transform="translate(22.832656 148.469533) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-35" d="M 2086 -122 
+Q 1530 -122 1126 92 
+Q 723 307 508 672 
+Q 294 1037 294 1478 
+L 1306 1478 
+Q 1306 1261 1405 1097 
+Q 1504 934 1683 841 
+Q 1862 749 2093 749 
+Q 2349 749 2525 854 
+Q 2701 960 2797 1142 
+Q 2893 1325 2893 1555 
+Q 2893 1792 2800 1974 
+Q 2707 2157 2531 2265 
+Q 2355 2374 2106 2374 
+Q 1875 2374 1689 2278 
+Q 1504 2182 1414 2035 
+L 429 2035 
+L 666 4672 
+L 3501 4672 
+L 3501 3776 
+L 1082 3776 
+L 1485 4045 
+L 1344 2528 
+L 1101 2592 
+Q 1293 2822 1565 2979 
+Q 1837 3136 2278 3136 
+Q 2790 3136 3152 2928 
+Q 3514 2720 3709 2371 
+Q 3904 2022 3904 1594 
+L 3904 1510 
+Q 3904 1082 3693 710 
+Q 3482 339 3075 108 
+Q 2669 -122 2086 -122 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-35"/>
+       <use xlink:href="#Sora-Bold-30" transform="translate(64.399994 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_15">
+      <path d="M 45.31 115.04444 
+L 452.45 115.04444 
+" clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #e5e7eb; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_16">
+      <g>
+       <use xlink:href="#mc7fda0f0a4" x="45.31" y="115.04444" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <!-- 60 -->
+      <g style="fill: #6b7280" transform="translate(22.36 119.05944) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-36" d="M 2298 -134 
+Q 1779 -134 1408 35 
+Q 1037 205 803 515 
+Q 570 826 458 1229 
+Q 346 1632 346 2093 
+L 346 2362 
+Q 346 3526 941 4118 
+Q 1536 4710 2694 4710 
+Q 2931 4710 3161 4697 
+Q 3392 4685 3610 4659 
+L 3610 3782 
+Q 3398 3802 3155 3818 
+Q 2912 3834 2656 3834 
+Q 2144 3834 1849 3664 
+Q 1555 3494 1433 3155 
+Q 1312 2816 1312 2317 
+L 1312 1830 
+L 1082 1677 
+Q 1088 2157 1277 2480 
+Q 1466 2803 1798 2963 
+Q 2131 3123 2566 3123 
+Q 3059 3123 3417 2928 
+Q 3776 2733 3968 2381 
+Q 4160 2029 4160 1549 
+Q 4160 1043 3929 662 
+Q 3699 282 3280 74 
+Q 2861 -134 2298 -134 
+z
+M 2266 736 
+Q 2547 736 2742 838 
+Q 2938 941 3043 1117 
+Q 3149 1293 3149 1530 
+Q 3149 1773 3046 1949 
+Q 2944 2125 2755 2224 
+Q 2566 2323 2291 2323 
+Q 2042 2323 1834 2236 
+Q 1626 2150 1504 1974 
+Q 1382 1798 1382 1530 
+Q 1382 1299 1481 1120 
+Q 1581 941 1779 838 
+Q 1978 736 2266 736 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-36"/>
+       <use xlink:href="#Sora-Bold-30" transform="translate(68.699982 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_17">
+      <path d="M 45.31 85.634347 
+L 452.45 85.634347 
+" clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #e5e7eb; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_18">
+      <g>
+       <use xlink:href="#mc7fda0f0a4" x="45.31" y="85.634347" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <!-- 70 -->
+      <g style="fill: #6b7280" transform="translate(23.24 89.649347) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-37" d="M 915 0 
+L 2554 3718 
+L 2483 3814 
+L 211 3814 
+L 211 4672 
+L 3750 4672 
+L 3750 4006 
+L 2029 0 
+L 915 0 
+z
+M 211 3059 
+L 211 4672 
+L 1062 4672 
+L 1062 3059 
+L 211 3059 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-37"/>
+       <use xlink:href="#Sora-Bold-30" transform="translate(60.699997 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_19">
+      <path d="M 45.31 56.224254 
+L 452.45 56.224254 
+" clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #e5e7eb; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_20">
+      <g>
+       <use xlink:href="#mc7fda0f0a4" x="45.31" y="56.224254" style="fill: #6b7280; stroke: #6b7280; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_11">
+      <!-- 80 -->
+      <g style="fill: #6b7280" transform="translate(22.58 60.239254) scale(0.11 -0.11)">
+       <defs>
+        <path id="Sora-Bold-38" d="M 2131 -134 
+Q 1568 -134 1149 32 
+Q 730 198 496 518 
+Q 262 838 262 1299 
+Q 262 1594 358 1821 
+Q 454 2048 630 2208 
+Q 806 2368 1043 2458 
+L 1043 2541 
+Q 864 2618 717 2749 
+Q 570 2880 486 3072 
+Q 403 3264 403 3520 
+Q 403 3955 630 4236 
+Q 858 4518 1251 4662 
+Q 1645 4806 2131 4806 
+Q 2630 4806 3020 4662 
+Q 3411 4518 3635 4236 
+Q 3859 3955 3859 3520 
+Q 3859 3264 3779 3072 
+Q 3699 2880 3552 2749 
+Q 3405 2618 3219 2541 
+L 3219 2458 
+Q 3456 2368 3635 2208 
+Q 3814 2048 3910 1821 
+Q 4006 1594 4006 1299 
+Q 4006 838 3772 518 
+Q 3539 198 3120 32 
+Q 2701 -134 2131 -134 
+z
+M 2131 730 
+Q 2394 730 2586 806 
+Q 2778 883 2886 1040 
+Q 2995 1197 2995 1421 
+Q 2995 1645 2889 1795 
+Q 2784 1946 2589 2026 
+Q 2394 2106 2131 2106 
+Q 1875 2106 1680 2026 
+Q 1485 1946 1382 1795 
+Q 1280 1645 1280 1421 
+Q 1280 1197 1382 1040 
+Q 1485 883 1680 806 
+Q 1875 730 2131 730 
+z
+M 2131 2880 
+Q 2464 2880 2656 3017 
+Q 2848 3155 2848 3418 
+Q 2848 3680 2656 3814 
+Q 2464 3949 2131 3949 
+Q 1798 3949 1606 3811 
+Q 1414 3674 1414 3418 
+Q 1414 3155 1609 3017 
+Q 1805 2880 2131 2880 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#Sora-Bold-38"/>
+       <use xlink:href="#Sora-Bold-30" transform="translate(66.699997 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="text_12">
+     <!-- Secondi -->
+     <g style="fill: #1f2937" transform="translate(15.96 186.137188) rotate(-90) scale(0.12 -0.12)">
+      <defs>
+       <path id="Sora-Bold-53" d="M 2150 -122 
+Q 1517 -122 1081 80 
+Q 646 282 422 630 
+Q 198 979 198 1434 
+L 1216 1434 
+Q 1216 1254 1315 1100 
+Q 1414 947 1619 854 
+Q 1824 762 2150 762 
+Q 2445 762 2643 838 
+Q 2842 915 2944 1052 
+Q 3046 1190 3046 1370 
+Q 3046 1594 2854 1725 
+Q 2662 1856 2234 1894 
+L 1882 1926 
+Q 1184 1984 768 2361 
+Q 352 2739 352 3360 
+Q 352 3808 566 4134 
+Q 781 4461 1165 4637 
+Q 1549 4813 2074 4813 
+Q 2624 4813 3017 4624 
+Q 3411 4435 3622 4092 
+Q 3834 3750 3834 3290 
+L 2810 3290 
+Q 2810 3462 2726 3606 
+Q 2643 3750 2480 3840 
+Q 2317 3930 2074 3930 
+Q 1843 3930 1686 3853 
+Q 1530 3776 1453 3645 
+Q 1376 3514 1376 3360 
+Q 1376 3162 1517 3014 
+Q 1658 2867 1978 2842 
+L 2336 2810 
+Q 2848 2765 3238 2589 
+Q 3629 2413 3849 2109 
+Q 4070 1805 4070 1370 
+Q 4070 922 3836 586 
+Q 3603 250 3174 64 
+Q 2746 -122 2150 -122 
+z
+" transform="scale(0.015625)"/>
+       <path id="Sora-Bold-63" d="M 2042 -122 
+Q 1587 -122 1251 28 
+Q 915 179 691 435 
+Q 467 691 358 1014 
+Q 250 1338 250 1683 
+L 250 1805 
+Q 250 2163 365 2492 
+Q 480 2822 704 3078 
+Q 928 3334 1264 3481 
+Q 1600 3629 2035 3629 
+Q 2509 3629 2873 3446 
+Q 3238 3264 3456 2937 
+Q 3674 2611 3699 2189 
+L 2694 2189 
+Q 2669 2426 2505 2589 
+Q 2342 2752 2035 2752 
+Q 1779 2752 1609 2624 
+Q 1440 2496 1357 2272 
+Q 1274 2048 1274 1741 
+Q 1274 1459 1350 1232 
+Q 1427 1005 1596 880 
+Q 1766 755 2042 755 
+Q 2246 755 2390 828 
+Q 2534 902 2620 1033 
+Q 2707 1165 2726 1338 
+L 3725 1338 
+Q 3706 902 3482 572 
+Q 3258 243 2886 60 
+Q 2515 -122 2042 -122 
+z
+" transform="scale(0.015625)"/>
+       <path id="Sora-Bold-6e" d="M 467 0 
+L 467 3507 
+L 1280 3507 
+L 1280 2003 
+L 1222 2003 
+Q 1222 2541 1360 2899 
+Q 1498 3258 1779 3437 
+Q 2061 3616 2464 3616 
+L 2509 3616 
+Q 3123 3616 3446 3216 
+Q 3770 2816 3770 2003 
+L 3770 0 
+L 2746 0 
+L 2746 2061 
+Q 2746 2342 2579 2521 
+Q 2413 2701 2131 2701 
+Q 1843 2701 1667 2518 
+Q 1491 2336 1491 2042 
+L 1491 0 
+L 467 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="Sora-Bold-64" d="M 1914 -115 
+Q 1542 -115 1238 19 
+Q 934 154 710 394 
+Q 486 634 368 960 
+Q 250 1286 250 1664 
+L 250 1811 
+Q 250 2189 362 2515 
+Q 474 2842 688 3088 
+Q 902 3334 1203 3472 
+Q 1504 3610 1875 3610 
+Q 2298 3610 2605 3427 
+Q 2912 3245 3085 2889 
+Q 3258 2534 3277 2016 
+L 3008 2266 
+L 3008 4672 
+L 4038 4672 
+L 4038 0 
+L 3226 0 
+L 3226 1453 
+L 3366 1453 
+Q 3347 954 3158 602 
+Q 2970 250 2650 67 
+Q 2330 -115 1914 -115 
+z
+M 2170 742 
+Q 2406 742 2601 848 
+Q 2797 954 2915 1158 
+Q 3034 1363 3034 1651 
+L 3034 1888 
+Q 3034 2170 2912 2362 
+Q 2790 2554 2592 2656 
+Q 2394 2758 2163 2758 
+Q 1907 2758 1705 2627 
+Q 1504 2496 1389 2269 
+Q 1274 2042 1274 1741 
+Q 1274 1434 1389 1210 
+Q 1504 986 1709 864 
+Q 1914 742 2170 742 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#Sora-Bold-53"/>
+      <use xlink:href="#Sora-Bold-65" transform="translate(66.699997 0)"/>
+      <use xlink:href="#Sora-Bold-63" transform="translate(129.099991 0)"/>
+      <use xlink:href="#Sora-Bold-6f" transform="translate(190.199982 0)"/>
+      <use xlink:href="#Sora-Bold-6e" transform="translate(258.299973 0)"/>
+      <use xlink:href="#Sora-Bold-64" transform="translate(323.499969 0)"/>
+      <use xlink:href="#Sora-Bold-69" transform="translate(393.799957 0)"/>
+     </g>
+    </g>
+   </g>
+   <g id="line2d_21">
+    <path clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #424242; stroke-width: 2.25; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_22">
+    <path clip-path="url(#pf9e66d2d1c)" style="fill: none; stroke: #424242; stroke-width: 2.25; stroke-linecap: square"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 45.31 291.505 
+L 45.31 29.505 
+" style="fill: none; stroke: #e5e7eb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 45.31 291.505 
+L 452.45 291.505 
+" style="fill: none; stroke: #e5e7eb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_13">
+    <!-- T03 - efficiency -->
+    <g style="fill: #1f2937" transform="translate(184.35 19.505) scale(0.16 -0.16)">
+     <defs>
+      <path id="Sora-Bold-54" d="M 1453 0 
+L 1453 3885 
+L 2502 3885 
+L 2502 0 
+L 1453 0 
+z
+M 141 3757 
+L 141 4672 
+L 3821 4672 
+L 3821 3757 
+L 141 3757 
+z
+" transform="scale(0.015625)"/>
+      <path id="Sora-Bold-20" transform="scale(0.015625)"/>
+      <path id="Sora-Bold-2d" d="M 282 1357 
+L 282 2266 
+L 2976 2266 
+L 2976 1357 
+L 282 1357 
+z
+" transform="scale(0.015625)"/>
+      <path id="Sora-Bold-66" d="M 544 0 
+L 544 3539 
+Q 544 4147 889 4441 
+Q 1235 4736 1907 4736 
+L 2355 4736 
+L 2355 3968 
+L 1862 3968 
+Q 1690 3968 1594 3872 
+Q 1498 3776 1498 3603 
+L 1498 0 
+L 544 0 
+z
+M 128 2688 
+L 128 3437 
+L 2406 3437 
+L 2406 2688 
+L 128 2688 
+z
+" transform="scale(0.015625)"/>
+      <path id="Sora-Bold-79" d="M 429 -1389 
+L 429 -518 
+L 1158 -518 
+Q 1325 -518 1440 -476 
+Q 1555 -435 1625 -339 
+Q 1696 -243 1741 -77 
+L 2605 3507 
+L 3578 3507 
+L 2598 -282 
+Q 2496 -691 2313 -934 
+Q 2131 -1178 1827 -1283 
+Q 1523 -1389 1056 -1389 
+L 429 -1389 
+z
+M 1530 77 
+L 1530 877 
+L 2272 877 
+L 2272 77 
+L 1530 77 
+z
+M 1107 77 
+L 32 3507 
+L 1062 3507 
+L 2080 77 
+L 1107 77 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#Sora-Bold-54"/>
+     <use xlink:href="#Sora-Bold-30" transform="translate(61.799988 0)"/>
+     <use xlink:href="#Sora-Bold-33" transform="translate(138.099976 0)"/>
+     <use xlink:href="#Sora-Bold-20" transform="translate(201.299973 0)"/>
+     <use xlink:href="#Sora-Bold-2d" transform="translate(222.299957 0)"/>
+     <use xlink:href="#Sora-Bold-20" transform="translate(273.199951 0)"/>
+     <use xlink:href="#Sora-Bold-65" transform="translate(294.199936 0)"/>
+     <use xlink:href="#Sora-Bold-66" transform="translate(356.59993 0)"/>
+     <use xlink:href="#Sora-Bold-66" transform="translate(394.799927 0)"/>
+     <use xlink:href="#Sora-Bold-69" transform="translate(432.999924 0)"/>
+     <use xlink:href="#Sora-Bold-63" transform="translate(466.399918 0)"/>
+     <use xlink:href="#Sora-Bold-69" transform="translate(527.499908 0)"/>
+     <use xlink:href="#Sora-Bold-65" transform="translate(560.899902 0)"/>
+     <use xlink:href="#Sora-Bold-6e" transform="translate(623.299896 0)"/>
+     <use xlink:href="#Sora-Bold-63" transform="translate(688.499893 0)"/>
+     <use xlink:href="#Sora-Bold-79" transform="translate(749.599884 0)"/>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pf9e66d2d1c">
+   <rect x="45.31" y="29.505" width="407.14" height="262"/>
+  </clipPath>
+ </defs>
+</svg>

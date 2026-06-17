@@ -1,0 +1,1249 @@
+﻿user_id,app,item_id,item_label,dimension,raw_value_1_7,score_minus3_plus3,positive_side
+U01,Deliveroo,1,Fastidioso/Piacevole,Attrattività,2,-2,right
+U01,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,1,-3,right
+U01,Deliveroo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U01,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U01,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,2,2,left
+U01,Deliveroo,6,Noioso/Appassionante,Stimolazione,2,-2,right
+U01,Deliveroo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U01,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,1,-3,right
+U01,Deliveroo,9,Veloce/Lento,Efficienza,2,2,left
+U01,Deliveroo,10,Originale/Convenzionale,Novità,6,-2,left
+U01,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,3,-1,right
+U01,Deliveroo,12,Buono/Scarso,Attrattività,3,1,left
+U01,Deliveroo,13,Complicato/Facile,Comprensibilità,1,-3,right
+U01,Deliveroo,14,Repellente/Attraente,Attrattività,1,-3,right
+U01,Deliveroo,15,Usuale/Moderno,Novità,1,-3,right
+U01,Deliveroo,16,Sgradevole/Gradevole,Attrattività,1,-3,right
+U01,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,5,-1,left
+U01,Deliveroo,18,Attivante/Soporifero,Stimolazione,6,-2,left
+U01,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U01,Deliveroo,20,Inefficiente/Efficiente,Efficienza,2,-2,right
+U01,Deliveroo,21,Chiaro/Confuso,Comprensibilità,6,-2,left
+U01,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,2,-2,right
+U01,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,7,-3,left
+U01,Deliveroo,24,Invitante/Non Invitante,Attrattività,5,-1,left
+U01,Deliveroo,25,Congeniale/Ostile,Attrattività,5,-1,left
+U01,Deliveroo,26,Conservativo/Innovativo,Novità,2,-2,right
+U01,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U01,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U01,Glovo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U01,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,4,0,left
+U01,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U01,Glovo,6,Noioso/Appassionante,Stimolazione,3,-1,right
+U01,Glovo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U01,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U01,Glovo,9,Veloce/Lento,Efficienza,4,0,left
+U01,Glovo,10,Originale/Convenzionale,Novità,5,-1,left
+U01,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U01,Glovo,12,Buono/Scarso,Attrattività,5,-1,left
+U01,Glovo,13,Complicato/Facile,Comprensibilità,5,1,right
+U01,Glovo,14,Repellente/Attraente,Attrattività,2,-2,right
+U01,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U01,Glovo,16,Sgradevole/Gradevole,Attrattività,3,-1,right
+U01,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U01,Glovo,18,Attivante/Soporifero,Stimolazione,3,1,left
+U01,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U01,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U01,Glovo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U01,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U01,Glovo,23,Ordinato/Sovraccarico,Efficienza,5,-1,left
+U01,Glovo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U01,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U01,Glovo,26,Conservativo/Innovativo,Novità,5,1,right
+U02,Deliveroo,1,Fastidioso/Piacevole,Attrattività,4,0,right
+U02,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U02,Deliveroo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U02,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,5,-1,left
+U02,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U02,Deliveroo,6,Noioso/Appassionante,Stimolazione,3,-1,right
+U02,Deliveroo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U02,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U02,Deliveroo,9,Veloce/Lento,Efficienza,5,-1,left
+U02,Deliveroo,10,Originale/Convenzionale,Novità,6,-2,left
+U02,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U02,Deliveroo,12,Buono/Scarso,Attrattività,6,-2,left
+U02,Deliveroo,13,Complicato/Facile,Comprensibilità,5,1,right
+U02,Deliveroo,14,Repellente/Attraente,Attrattività,5,1,right
+U02,Deliveroo,15,Usuale/Moderno,Novità,5,1,right
+U02,Deliveroo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U02,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U02,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U02,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,6,-2,left
+U02,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U02,Deliveroo,21,Chiaro/Confuso,Comprensibilità,4,0,left
+U02,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,3,-1,right
+U02,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U02,Deliveroo,24,Invitante/Non Invitante,Attrattività,5,-1,left
+U02,Deliveroo,25,Congeniale/Ostile,Attrattività,4,0,left
+U02,Deliveroo,26,Conservativo/Innovativo,Novità,4,0,right
+U02,Glovo,1,Fastidioso/Piacevole,Attrattività,4,0,right
+U02,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U02,Glovo,3,Creativo/Privo di Fantasia,Novità,2,2,left
+U02,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U02,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U02,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U02,Glovo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U02,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,3,-1,right
+U02,Glovo,9,Veloce/Lento,Efficienza,3,1,left
+U02,Glovo,10,Originale/Convenzionale,Novità,3,1,left
+U02,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U02,Glovo,12,Buono/Scarso,Attrattività,5,-1,left
+U02,Glovo,13,Complicato/Facile,Comprensibilità,5,1,right
+U02,Glovo,14,Repellente/Attraente,Attrattività,4,0,right
+U02,Glovo,15,Usuale/Moderno,Novità,6,2,right
+U02,Glovo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U02,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U02,Glovo,18,Attivante/Soporifero,Stimolazione,5,-1,left
+U02,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,6,-2,left
+U02,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U02,Glovo,21,Chiaro/Confuso,Comprensibilità,5,-1,left
+U02,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,2,-2,right
+U02,Glovo,23,Ordinato/Sovraccarico,Efficienza,6,-2,left
+U02,Glovo,24,Invitante/Non Invitante,Attrattività,3,1,left
+U02,Glovo,25,Congeniale/Ostile,Attrattività,4,0,left
+U02,Glovo,26,Conservativo/Innovativo,Novità,6,2,right
+U03,Deliveroo,1,Fastidioso/Piacevole,Attrattività,2,-2,right
+U03,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,2,-2,right
+U03,Deliveroo,3,Creativo/Privo di Fantasia,Novità,5,-1,left
+U03,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,5,-1,left
+U03,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,7,-3,left
+U03,Deliveroo,6,Noioso/Appassionante,Stimolazione,1,-3,right
+U03,Deliveroo,7,Non Interessante/Interessante,Stimolazione,2,-2,right
+U03,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U03,Deliveroo,9,Veloce/Lento,Efficienza,4,0,left
+U03,Deliveroo,10,Originale/Convenzionale,Novità,6,-2,left
+U03,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,3,-1,right
+U03,Deliveroo,12,Buono/Scarso,Attrattività,4,0,left
+U03,Deliveroo,13,Complicato/Facile,Comprensibilità,3,-1,right
+U03,Deliveroo,14,Repellente/Attraente,Attrattività,1,-3,right
+U03,Deliveroo,15,Usuale/Moderno,Novità,3,-1,right
+U03,Deliveroo,16,Sgradevole/Gradevole,Attrattività,1,-3,right
+U03,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U03,Deliveroo,18,Attivante/Soporifero,Stimolazione,5,-1,left
+U03,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,5,-1,left
+U03,Deliveroo,20,Inefficiente/Efficiente,Efficienza,4,0,right
+U03,Deliveroo,21,Chiaro/Confuso,Comprensibilità,7,-3,left
+U03,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,1,-3,right
+U03,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,7,-3,left
+U03,Deliveroo,24,Invitante/Non Invitante,Attrattività,7,-3,left
+U03,Deliveroo,25,Congeniale/Ostile,Attrattività,7,-3,left
+U03,Deliveroo,26,Conservativo/Innovativo,Novità,4,0,right
+U03,Glovo,1,Fastidioso/Piacevole,Attrattività,3,-1,right
+U03,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,4,0,right
+U03,Glovo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U03,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U03,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U03,Glovo,6,Noioso/Appassionante,Stimolazione,2,-2,right
+U03,Glovo,7,Non Interessante/Interessante,Stimolazione,1,-3,right
+U03,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U03,Glovo,9,Veloce/Lento,Efficienza,3,1,left
+U03,Glovo,10,Originale/Convenzionale,Novità,4,0,left
+U03,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,4,0,right
+U03,Glovo,12,Buono/Scarso,Attrattività,3,1,left
+U03,Glovo,13,Complicato/Facile,Comprensibilità,5,1,right
+U03,Glovo,14,Repellente/Attraente,Attrattività,1,-3,right
+U03,Glovo,15,Usuale/Moderno,Novità,4,0,right
+U03,Glovo,16,Sgradevole/Gradevole,Attrattività,3,-1,right
+U03,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U03,Glovo,18,Attivante/Soporifero,Stimolazione,5,-1,left
+U03,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U03,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U03,Glovo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U03,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U03,Glovo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U03,Glovo,24,Invitante/Non Invitante,Attrattività,5,-1,left
+U03,Glovo,25,Congeniale/Ostile,Attrattività,4,0,left
+U03,Glovo,26,Conservativo/Innovativo,Novità,4,0,right
+U04,Deliveroo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U04,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U04,Deliveroo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U04,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,5,-1,left
+U04,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,2,2,left
+U04,Deliveroo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U04,Deliveroo,7,Non Interessante/Interessante,Stimolazione,5,1,right
+U04,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U04,Deliveroo,9,Veloce/Lento,Efficienza,3,1,left
+U04,Deliveroo,10,Originale/Convenzionale,Novità,6,-2,left
+U04,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,2,-2,right
+U04,Deliveroo,12,Buono/Scarso,Attrattività,3,1,left
+U04,Deliveroo,13,Complicato/Facile,Comprensibilità,3,-1,right
+U04,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U04,Deliveroo,15,Usuale/Moderno,Novità,5,1,right
+U04,Deliveroo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U04,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U04,Deliveroo,18,Attivante/Soporifero,Stimolazione,3,1,left
+U04,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U04,Deliveroo,20,Inefficiente/Efficiente,Efficienza,3,-1,right
+U04,Deliveroo,21,Chiaro/Confuso,Comprensibilità,5,-1,left
+U04,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U04,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,6,-2,left
+U04,Deliveroo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U04,Deliveroo,25,Congeniale/Ostile,Attrattività,5,-1,left
+U04,Deliveroo,26,Conservativo/Innovativo,Novità,3,-1,right
+U04,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U04,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U04,Glovo,3,Creativo/Privo di Fantasia,Novità,5,-1,left
+U04,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U04,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,2,2,left
+U04,Glovo,6,Noioso/Appassionante,Stimolazione,3,-1,right
+U04,Glovo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U04,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U04,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U04,Glovo,10,Originale/Convenzionale,Novità,6,-2,left
+U04,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U04,Glovo,12,Buono/Scarso,Attrattività,3,1,left
+U04,Glovo,13,Complicato/Facile,Comprensibilità,5,1,right
+U04,Glovo,14,Repellente/Attraente,Attrattività,4,0,right
+U04,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U04,Glovo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U04,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U04,Glovo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U04,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U04,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U04,Glovo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U04,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,3,-1,right
+U04,Glovo,23,Ordinato/Sovraccarico,Efficienza,6,-2,left
+U04,Glovo,24,Invitante/Non Invitante,Attrattività,3,1,left
+U04,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U04,Glovo,26,Conservativo/Innovativo,Novità,3,-1,right
+U05,Deliveroo,1,Fastidioso/Piacevole,Attrattività,3,-1,right
+U05,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U05,Deliveroo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U05,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,4,0,left
+U05,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U05,Deliveroo,6,Noioso/Appassionante,Stimolazione,3,-1,right
+U05,Deliveroo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U05,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U05,Deliveroo,9,Veloce/Lento,Efficienza,3,1,left
+U05,Deliveroo,10,Originale/Convenzionale,Novità,5,-1,left
+U05,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U05,Deliveroo,12,Buono/Scarso,Attrattività,5,-1,left
+U05,Deliveroo,13,Complicato/Facile,Comprensibilità,3,-1,right
+U05,Deliveroo,14,Repellente/Attraente,Attrattività,2,-2,right
+U05,Deliveroo,15,Usuale/Moderno,Novità,3,-1,right
+U05,Deliveroo,16,Sgradevole/Gradevole,Attrattività,3,-1,right
+U05,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U05,Deliveroo,18,Attivante/Soporifero,Stimolazione,3,1,left
+U05,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,5,-1,left
+U05,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U05,Deliveroo,21,Chiaro/Confuso,Comprensibilità,5,-1,left
+U05,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U05,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,6,-2,left
+U05,Deliveroo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U05,Deliveroo,25,Congeniale/Ostile,Attrattività,5,-1,left
+U05,Deliveroo,26,Conservativo/Innovativo,Novità,3,-1,right
+U05,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U05,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U05,Glovo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U05,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U05,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U05,Glovo,6,Noioso/Appassionante,Stimolazione,3,-1,right
+U05,Glovo,7,Non Interessante/Interessante,Stimolazione,5,1,right
+U05,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U05,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U05,Glovo,10,Originale/Convenzionale,Novità,4,0,left
+U05,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U05,Glovo,12,Buono/Scarso,Attrattività,3,1,left
+U05,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U05,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U05,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U05,Glovo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U05,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U05,Glovo,18,Attivante/Soporifero,Stimolazione,2,2,left
+U05,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U05,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U05,Glovo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U05,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U05,Glovo,23,Ordinato/Sovraccarico,Efficienza,2,2,left
+U05,Glovo,24,Invitante/Non Invitante,Attrattività,3,1,left
+U05,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U05,Glovo,26,Conservativo/Innovativo,Novità,4,0,right
+U06,Deliveroo,1,Fastidioso/Piacevole,Attrattività,3,-1,right
+U06,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,2,-2,right
+U06,Deliveroo,3,Creativo/Privo di Fantasia,Novità,6,-2,left
+U06,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,5,-1,left
+U06,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U06,Deliveroo,6,Noioso/Appassionante,Stimolazione,1,-3,right
+U06,Deliveroo,7,Non Interessante/Interessante,Stimolazione,1,-3,right
+U06,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,2,-2,right
+U06,Deliveroo,9,Veloce/Lento,Efficienza,7,-3,left
+U06,Deliveroo,10,Originale/Convenzionale,Novità,7,-3,left
+U06,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,1,-3,right
+U06,Deliveroo,12,Buono/Scarso,Attrattività,6,-2,left
+U06,Deliveroo,13,Complicato/Facile,Comprensibilità,3,-1,right
+U06,Deliveroo,14,Repellente/Attraente,Attrattività,1,-3,right
+U06,Deliveroo,15,Usuale/Moderno,Novità,1,-3,right
+U06,Deliveroo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U06,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,6,-2,left
+U06,Deliveroo,18,Attivante/Soporifero,Stimolazione,7,-3,left
+U06,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,5,-1,left
+U06,Deliveroo,20,Inefficiente/Efficiente,Efficienza,2,-2,right
+U06,Deliveroo,21,Chiaro/Confuso,Comprensibilità,6,-2,left
+U06,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,2,-2,right
+U06,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U06,Deliveroo,24,Invitante/Non Invitante,Attrattività,7,-3,left
+U06,Deliveroo,25,Congeniale/Ostile,Attrattività,7,-3,left
+U06,Deliveroo,26,Conservativo/Innovativo,Novità,1,-3,right
+U06,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U06,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U06,Glovo,3,Creativo/Privo di Fantasia,Novità,7,-3,left
+U06,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,1,3,left
+U06,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U06,Glovo,6,Noioso/Appassionante,Stimolazione,1,-3,right
+U06,Glovo,7,Non Interessante/Interessante,Stimolazione,1,-3,right
+U06,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U06,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U06,Glovo,10,Originale/Convenzionale,Novità,6,-2,left
+U06,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,2,-2,right
+U06,Glovo,12,Buono/Scarso,Attrattività,4,0,left
+U06,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U06,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U06,Glovo,15,Usuale/Moderno,Novità,2,-2,right
+U06,Glovo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U06,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U06,Glovo,18,Attivante/Soporifero,Stimolazione,6,-2,left
+U06,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,1,3,left
+U06,Glovo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U06,Glovo,21,Chiaro/Confuso,Comprensibilità,5,-1,left
+U06,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,1,-3,right
+U06,Glovo,23,Ordinato/Sovraccarico,Efficienza,7,-3,left
+U06,Glovo,24,Invitante/Non Invitante,Attrattività,7,-3,left
+U06,Glovo,25,Congeniale/Ostile,Attrattività,4,0,left
+U06,Glovo,26,Conservativo/Innovativo,Novità,2,-2,right
+U07,Deliveroo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U07,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U07,Deliveroo,3,Creativo/Privo di Fantasia,Novità,5,-1,left
+U07,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U07,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U07,Deliveroo,6,Noioso/Appassionante,Stimolazione,5,1,right
+U07,Deliveroo,7,Non Interessante/Interessante,Stimolazione,5,1,right
+U07,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,7,3,right
+U07,Deliveroo,9,Veloce/Lento,Efficienza,2,2,left
+U07,Deliveroo,10,Originale/Convenzionale,Novità,6,-2,left
+U07,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U07,Deliveroo,12,Buono/Scarso,Attrattività,2,2,left
+U07,Deliveroo,13,Complicato/Facile,Comprensibilità,7,3,right
+U07,Deliveroo,14,Repellente/Attraente,Attrattività,5,1,right
+U07,Deliveroo,15,Usuale/Moderno,Novità,6,2,right
+U07,Deliveroo,16,Sgradevole/Gradevole,Attrattività,6,2,right
+U07,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U07,Deliveroo,18,Attivante/Soporifero,Stimolazione,3,1,left
+U07,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U07,Deliveroo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U07,Deliveroo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U07,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,6,2,right
+U07,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,2,2,left
+U07,Deliveroo,24,Invitante/Non Invitante,Attrattività,2,2,left
+U07,Deliveroo,25,Congeniale/Ostile,Attrattività,3,1,left
+U07,Deliveroo,26,Conservativo/Innovativo,Novità,5,1,right
+U07,Glovo,1,Fastidioso/Piacevole,Attrattività,3,-1,right
+U07,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U07,Glovo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U07,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,5,-1,left
+U07,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U07,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U07,Glovo,7,Non Interessante/Interessante,Stimolazione,5,1,right
+U07,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,2,-2,right
+U07,Glovo,9,Veloce/Lento,Efficienza,6,-2,left
+U07,Glovo,10,Originale/Convenzionale,Novità,3,1,left
+U07,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,3,-1,right
+U07,Glovo,12,Buono/Scarso,Attrattività,5,-1,left
+U07,Glovo,13,Complicato/Facile,Comprensibilità,2,-2,right
+U07,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U07,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U07,Glovo,16,Sgradevole/Gradevole,Attrattività,2,-2,right
+U07,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U07,Glovo,18,Attivante/Soporifero,Stimolazione,3,1,left
+U07,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,7,-3,left
+U07,Glovo,20,Inefficiente/Efficiente,Efficienza,3,-1,right
+U07,Glovo,21,Chiaro/Confuso,Comprensibilità,5,-1,left
+U07,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,3,-1,right
+U07,Glovo,23,Ordinato/Sovraccarico,Efficienza,6,-2,left
+U07,Glovo,24,Invitante/Non Invitante,Attrattività,5,-1,left
+U07,Glovo,25,Congeniale/Ostile,Attrattività,5,-1,left
+U07,Glovo,26,Conservativo/Innovativo,Novità,7,3,right
+U08,Deliveroo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U08,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U08,Deliveroo,3,Creativo/Privo di Fantasia,Novità,6,-2,left
+U08,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,4,0,left
+U08,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U08,Deliveroo,6,Noioso/Appassionante,Stimolazione,3,-1,right
+U08,Deliveroo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U08,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U08,Deliveroo,9,Veloce/Lento,Efficienza,3,1,left
+U08,Deliveroo,10,Originale/Convenzionale,Novità,6,-2,left
+U08,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,3,-1,right
+U08,Deliveroo,12,Buono/Scarso,Attrattività,6,-2,left
+U08,Deliveroo,13,Complicato/Facile,Comprensibilità,5,1,right
+U08,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U08,Deliveroo,15,Usuale/Moderno,Novità,5,1,right
+U08,Deliveroo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U08,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,6,-2,left
+U08,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U08,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,4,0,left
+U08,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U08,Deliveroo,21,Chiaro/Confuso,Comprensibilità,6,-2,left
+U08,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U08,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,6,-2,left
+U08,Deliveroo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U08,Deliveroo,25,Congeniale/Ostile,Attrattività,4,0,left
+U08,Deliveroo,26,Conservativo/Innovativo,Novità,3,-1,right
+U08,Glovo,1,Fastidioso/Piacevole,Attrattività,6,2,right
+U08,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U08,Glovo,3,Creativo/Privo di Fantasia,Novità,2,2,left
+U08,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U08,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U08,Glovo,6,Noioso/Appassionante,Stimolazione,6,2,right
+U08,Glovo,7,Non Interessante/Interessante,Stimolazione,6,2,right
+U08,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,7,3,right
+U08,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U08,Glovo,10,Originale/Convenzionale,Novità,1,3,left
+U08,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U08,Glovo,12,Buono/Scarso,Attrattività,2,2,left
+U08,Glovo,13,Complicato/Facile,Comprensibilità,7,3,right
+U08,Glovo,14,Repellente/Attraente,Attrattività,6,2,right
+U08,Glovo,15,Usuale/Moderno,Novità,6,2,right
+U08,Glovo,16,Sgradevole/Gradevole,Attrattività,6,2,right
+U08,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U08,Glovo,18,Attivante/Soporifero,Stimolazione,2,2,left
+U08,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,5,-1,left
+U08,Glovo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U08,Glovo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U08,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U08,Glovo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U08,Glovo,24,Invitante/Non Invitante,Attrattività,2,2,left
+U08,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U08,Glovo,26,Conservativo/Innovativo,Novità,6,2,right
+U09,Deliveroo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U09,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,7,3,right
+U09,Deliveroo,3,Creativo/Privo di Fantasia,Novità,5,-1,left
+U09,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U09,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U09,Deliveroo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U09,Deliveroo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U09,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U09,Deliveroo,9,Veloce/Lento,Efficienza,3,1,left
+U09,Deliveroo,10,Originale/Convenzionale,Novità,5,-1,left
+U09,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U09,Deliveroo,12,Buono/Scarso,Attrattività,3,1,left
+U09,Deliveroo,13,Complicato/Facile,Comprensibilità,5,1,right
+U09,Deliveroo,14,Repellente/Attraente,Attrattività,6,2,right
+U09,Deliveroo,15,Usuale/Moderno,Novità,6,2,right
+U09,Deliveroo,16,Sgradevole/Gradevole,Attrattività,6,2,right
+U09,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U09,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U09,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,1,3,left
+U09,Deliveroo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U09,Deliveroo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U09,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,6,2,right
+U09,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,5,-1,left
+U09,Deliveroo,24,Invitante/Non Invitante,Attrattività,2,2,left
+U09,Deliveroo,25,Congeniale/Ostile,Attrattività,2,2,left
+U09,Deliveroo,26,Conservativo/Innovativo,Novità,6,2,right
+U09,Glovo,1,Fastidioso/Piacevole,Attrattività,6,2,right
+U09,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U09,Glovo,3,Creativo/Privo di Fantasia,Novità,2,2,left
+U09,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,4,0,left
+U09,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U09,Glovo,6,Noioso/Appassionante,Stimolazione,5,1,right
+U09,Glovo,7,Non Interessante/Interessante,Stimolazione,6,2,right
+U09,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U09,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U09,Glovo,10,Originale/Convenzionale,Novità,5,-1,left
+U09,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U09,Glovo,12,Buono/Scarso,Attrattività,2,2,left
+U09,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U09,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U09,Glovo,15,Usuale/Moderno,Novità,6,2,right
+U09,Glovo,16,Sgradevole/Gradevole,Attrattività,6,2,right
+U09,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U09,Glovo,18,Attivante/Soporifero,Stimolazione,2,2,left
+U09,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U09,Glovo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U09,Glovo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U09,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,6,2,right
+U09,Glovo,23,Ordinato/Sovraccarico,Efficienza,2,2,left
+U09,Glovo,24,Invitante/Non Invitante,Attrattività,2,2,left
+U09,Glovo,25,Congeniale/Ostile,Attrattività,2,2,left
+U09,Glovo,26,Conservativo/Innovativo,Novità,6,2,right
+U10,Deliveroo,1,Fastidioso/Piacevole,Attrattività,3,-1,right
+U10,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U10,Deliveroo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U10,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U10,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U10,Deliveroo,6,Noioso/Appassionante,Stimolazione,3,-1,right
+U10,Deliveroo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U10,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,4,0,right
+U10,Deliveroo,9,Veloce/Lento,Efficienza,3,1,left
+U10,Deliveroo,10,Originale/Convenzionale,Novità,3,1,left
+U10,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,3,-1,right
+U10,Deliveroo,12,Buono/Scarso,Attrattività,4,0,left
+U10,Deliveroo,13,Complicato/Facile,Comprensibilità,4,0,right
+U10,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U10,Deliveroo,15,Usuale/Moderno,Novità,4,0,right
+U10,Deliveroo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U10,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,1,3,left
+U10,Deliveroo,18,Attivante/Soporifero,Stimolazione,5,-1,left
+U10,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,5,-1,left
+U10,Deliveroo,20,Inefficiente/Efficiente,Efficienza,3,-1,right
+U10,Deliveroo,21,Chiaro/Confuso,Comprensibilità,4,0,left
+U10,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,3,-1,right
+U10,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,5,-1,left
+U10,Deliveroo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U10,Deliveroo,25,Congeniale/Ostile,Attrattività,4,0,left
+U10,Deliveroo,26,Conservativo/Innovativo,Novità,3,-1,right
+U10,Glovo,1,Fastidioso/Piacevole,Attrattività,6,2,right
+U10,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U10,Glovo,3,Creativo/Privo di Fantasia,Novità,1,3,left
+U10,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,1,3,left
+U10,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U10,Glovo,6,Noioso/Appassionante,Stimolazione,5,1,right
+U10,Glovo,7,Non Interessante/Interessante,Stimolazione,6,2,right
+U10,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U10,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U10,Glovo,10,Originale/Convenzionale,Novità,1,3,left
+U10,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U10,Glovo,12,Buono/Scarso,Attrattività,2,2,left
+U10,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U10,Glovo,14,Repellente/Attraente,Attrattività,7,3,right
+U10,Glovo,15,Usuale/Moderno,Novità,7,3,right
+U10,Glovo,16,Sgradevole/Gradevole,Attrattività,6,2,right
+U10,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,1,3,left
+U10,Glovo,18,Attivante/Soporifero,Stimolazione,2,2,left
+U10,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U10,Glovo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U10,Glovo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U10,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,6,2,right
+U10,Glovo,23,Ordinato/Sovraccarico,Efficienza,2,2,left
+U10,Glovo,24,Invitante/Non Invitante,Attrattività,2,2,left
+U10,Glovo,25,Congeniale/Ostile,Attrattività,2,2,left
+U10,Glovo,26,Conservativo/Innovativo,Novità,7,3,right
+U11,Deliveroo,1,Fastidioso/Piacevole,Attrattività,3,-1,right
+U11,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U11,Deliveroo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U11,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,6,-2,left
+U11,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U11,Deliveroo,6,Noioso/Appassionante,Stimolazione,2,-2,right
+U11,Deliveroo,7,Non Interessante/Interessante,Stimolazione,2,-2,right
+U11,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,3,-1,right
+U11,Deliveroo,9,Veloce/Lento,Efficienza,2,2,left
+U11,Deliveroo,10,Originale/Convenzionale,Novità,4,0,left
+U11,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,4,0,right
+U11,Deliveroo,12,Buono/Scarso,Attrattività,5,-1,left
+U11,Deliveroo,13,Complicato/Facile,Comprensibilità,2,-2,right
+U11,Deliveroo,14,Repellente/Attraente,Attrattività,3,-1,right
+U11,Deliveroo,15,Usuale/Moderno,Novità,4,0,right
+U11,Deliveroo,16,Sgradevole/Gradevole,Attrattività,2,-2,right
+U11,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U11,Deliveroo,18,Attivante/Soporifero,Stimolazione,6,-2,left
+U11,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U11,Deliveroo,20,Inefficiente/Efficiente,Efficienza,2,-2,right
+U11,Deliveroo,21,Chiaro/Confuso,Comprensibilità,6,-2,left
+U11,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U11,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U11,Deliveroo,24,Invitante/Non Invitante,Attrattività,6,-2,left
+U11,Deliveroo,25,Congeniale/Ostile,Attrattività,4,0,left
+U11,Deliveroo,26,Conservativo/Innovativo,Novità,3,-1,right
+U11,Glovo,1,Fastidioso/Piacevole,Attrattività,6,2,right
+U11,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U11,Glovo,3,Creativo/Privo di Fantasia,Novità,2,2,left
+U11,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U11,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U11,Glovo,6,Noioso/Appassionante,Stimolazione,6,2,right
+U11,Glovo,7,Non Interessante/Interessante,Stimolazione,6,2,right
+U11,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U11,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U11,Glovo,10,Originale/Convenzionale,Novità,2,2,left
+U11,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,4,0,right
+U11,Glovo,12,Buono/Scarso,Attrattività,2,2,left
+U11,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U11,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U11,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U11,Glovo,16,Sgradevole/Gradevole,Attrattività,6,2,right
+U11,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U11,Glovo,18,Attivante/Soporifero,Stimolazione,2,2,left
+U11,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U11,Glovo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U11,Glovo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U11,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U11,Glovo,23,Ordinato/Sovraccarico,Efficienza,2,2,left
+U11,Glovo,24,Invitante/Non Invitante,Attrattività,2,2,left
+U11,Glovo,25,Congeniale/Ostile,Attrattività,2,2,left
+U11,Glovo,26,Conservativo/Innovativo,Novità,6,2,right
+U12,Deliveroo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U12,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U12,Deliveroo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U12,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U12,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U12,Deliveroo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U12,Deliveroo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U12,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,3,-1,right
+U12,Deliveroo,9,Veloce/Lento,Efficienza,4,0,left
+U12,Deliveroo,10,Originale/Convenzionale,Novità,5,-1,left
+U12,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U12,Deliveroo,12,Buono/Scarso,Attrattività,6,-2,left
+U12,Deliveroo,13,Complicato/Facile,Comprensibilità,5,1,right
+U12,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U12,Deliveroo,15,Usuale/Moderno,Novità,5,1,right
+U12,Deliveroo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U12,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,7,-3,left
+U12,Deliveroo,18,Attivante/Soporifero,Stimolazione,6,-2,left
+U12,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,5,-1,left
+U12,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U12,Deliveroo,21,Chiaro/Confuso,Comprensibilità,4,0,left
+U12,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U12,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U12,Deliveroo,24,Invitante/Non Invitante,Attrattività,5,-1,left
+U12,Deliveroo,25,Congeniale/Ostile,Attrattività,5,-1,left
+U12,Deliveroo,26,Conservativo/Innovativo,Novità,3,-1,right
+U12,Glovo,1,Fastidioso/Piacevole,Attrattività,4,0,right
+U12,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,7,3,right
+U12,Glovo,3,Creativo/Privo di Fantasia,Novità,5,-1,left
+U12,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,6,-2,left
+U12,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U12,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U12,Glovo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U12,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U12,Glovo,9,Veloce/Lento,Efficienza,5,-1,left
+U12,Glovo,10,Originale/Convenzionale,Novità,4,0,left
+U12,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U12,Glovo,12,Buono/Scarso,Attrattività,4,0,left
+U12,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U12,Glovo,14,Repellente/Attraente,Attrattività,4,0,right
+U12,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U12,Glovo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U12,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,6,-2,left
+U12,Glovo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U12,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,5,-1,left
+U12,Glovo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U12,Glovo,21,Chiaro/Confuso,Comprensibilità,5,-1,left
+U12,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U12,Glovo,23,Ordinato/Sovraccarico,Efficienza,5,-1,left
+U12,Glovo,24,Invitante/Non Invitante,Attrattività,5,-1,left
+U12,Glovo,25,Congeniale/Ostile,Attrattività,5,-1,left
+U12,Glovo,26,Conservativo/Innovativo,Novità,4,0,right
+U13,Deliveroo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U13,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U13,Deliveroo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U13,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,4,0,left
+U13,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U13,Deliveroo,6,Noioso/Appassionante,Stimolazione,5,1,right
+U13,Deliveroo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U13,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,4,0,right
+U13,Deliveroo,9,Veloce/Lento,Efficienza,2,2,left
+U13,Deliveroo,10,Originale/Convenzionale,Novità,3,1,left
+U13,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U13,Deliveroo,12,Buono/Scarso,Attrattività,3,1,left
+U13,Deliveroo,13,Complicato/Facile,Comprensibilità,3,-1,right
+U13,Deliveroo,14,Repellente/Attraente,Attrattività,5,1,right
+U13,Deliveroo,15,Usuale/Moderno,Novità,5,1,right
+U13,Deliveroo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U13,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U13,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U13,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U13,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U13,Deliveroo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U13,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U13,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U13,Deliveroo,24,Invitante/Non Invitante,Attrattività,2,2,left
+U13,Deliveroo,25,Congeniale/Ostile,Attrattività,3,1,left
+U13,Deliveroo,26,Conservativo/Innovativo,Novità,5,1,right
+U13,Glovo,1,Fastidioso/Piacevole,Attrattività,4,0,right
+U13,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U13,Glovo,3,Creativo/Privo di Fantasia,Novità,5,-1,left
+U13,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,5,-1,left
+U13,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U13,Glovo,6,Noioso/Appassionante,Stimolazione,3,-1,right
+U13,Glovo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U13,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,4,0,right
+U13,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U13,Glovo,10,Originale/Convenzionale,Novità,5,-1,left
+U13,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U13,Glovo,12,Buono/Scarso,Attrattività,3,1,left
+U13,Glovo,13,Complicato/Facile,Comprensibilità,3,-1,right
+U13,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U13,Glovo,15,Usuale/Moderno,Novità,4,0,right
+U13,Glovo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U13,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U13,Glovo,18,Attivante/Soporifero,Stimolazione,5,-1,left
+U13,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U13,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U13,Glovo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U13,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U13,Glovo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U13,Glovo,24,Invitante/Non Invitante,Attrattività,3,1,left
+U13,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U13,Glovo,26,Conservativo/Innovativo,Novità,5,1,right
+U14,Deliveroo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U14,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U14,Deliveroo,3,Creativo/Privo di Fantasia,Novità,6,-2,left
+U14,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U14,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U14,Deliveroo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U14,Deliveroo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U14,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U14,Deliveroo,9,Veloce/Lento,Efficienza,4,0,left
+U14,Deliveroo,10,Originale/Convenzionale,Novità,4,0,left
+U14,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U14,Deliveroo,12,Buono/Scarso,Attrattività,4,0,left
+U14,Deliveroo,13,Complicato/Facile,Comprensibilità,5,1,right
+U14,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U14,Deliveroo,15,Usuale/Moderno,Novità,4,0,right
+U14,Deliveroo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U14,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U14,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U14,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U14,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U14,Deliveroo,21,Chiaro/Confuso,Comprensibilità,4,0,left
+U14,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U14,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,5,-1,left
+U14,Deliveroo,24,Invitante/Non Invitante,Attrattività,3,1,left
+U14,Deliveroo,25,Congeniale/Ostile,Attrattività,4,0,left
+U14,Deliveroo,26,Conservativo/Innovativo,Novità,4,0,right
+U14,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U14,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U14,Glovo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U14,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U14,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U14,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U14,Glovo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U14,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U14,Glovo,9,Veloce/Lento,Efficienza,4,0,left
+U14,Glovo,10,Originale/Convenzionale,Novità,6,-2,left
+U14,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U14,Glovo,12,Buono/Scarso,Attrattività,4,0,left
+U14,Glovo,13,Complicato/Facile,Comprensibilità,5,1,right
+U14,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U14,Glovo,15,Usuale/Moderno,Novità,4,0,right
+U14,Glovo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U14,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U14,Glovo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U14,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U14,Glovo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U14,Glovo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U14,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U14,Glovo,23,Ordinato/Sovraccarico,Efficienza,4,0,left
+U14,Glovo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U14,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U14,Glovo,26,Conservativo/Innovativo,Novità,4,0,right
+U15,Deliveroo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U15,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U15,Deliveroo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U15,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U15,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U15,Deliveroo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U15,Deliveroo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U15,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U15,Deliveroo,9,Veloce/Lento,Efficienza,4,0,left
+U15,Deliveroo,10,Originale/Convenzionale,Novità,6,-2,left
+U15,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U15,Deliveroo,12,Buono/Scarso,Attrattività,4,0,left
+U15,Deliveroo,13,Complicato/Facile,Comprensibilità,6,2,right
+U15,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U15,Deliveroo,15,Usuale/Moderno,Novità,2,-2,right
+U15,Deliveroo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U15,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U15,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U15,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U15,Deliveroo,20,Inefficiente/Efficiente,Efficienza,4,0,right
+U15,Deliveroo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U15,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U15,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,4,0,left
+U15,Deliveroo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U15,Deliveroo,25,Congeniale/Ostile,Attrattività,4,0,left
+U15,Deliveroo,26,Conservativo/Innovativo,Novità,3,-1,right
+U15,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U15,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U15,Glovo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U15,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,6,-2,left
+U15,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,6,-2,left
+U15,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U15,Glovo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U15,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U15,Glovo,9,Veloce/Lento,Efficienza,4,0,left
+U15,Glovo,10,Originale/Convenzionale,Novità,4,0,left
+U15,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U15,Glovo,12,Buono/Scarso,Attrattività,3,1,left
+U15,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U15,Glovo,14,Repellente/Attraente,Attrattività,4,0,right
+U15,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U15,Glovo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U15,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U15,Glovo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U15,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U15,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U15,Glovo,21,Chiaro/Confuso,Comprensibilità,4,0,left
+U15,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U15,Glovo,23,Ordinato/Sovraccarico,Efficienza,4,0,left
+U15,Glovo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U15,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U15,Glovo,26,Conservativo/Innovativo,Novità,4,0,right
+U16,Deliveroo,1,Fastidioso/Piacevole,Attrattività,4,0,right
+U16,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U16,Deliveroo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U16,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,4,0,left
+U16,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U16,Deliveroo,6,Noioso/Appassionante,Stimolazione,3,-1,right
+U16,Deliveroo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U16,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U16,Deliveroo,9,Veloce/Lento,Efficienza,4,0,left
+U16,Deliveroo,10,Originale/Convenzionale,Novità,6,-2,left
+U16,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U16,Deliveroo,12,Buono/Scarso,Attrattività,3,1,left
+U16,Deliveroo,13,Complicato/Facile,Comprensibilità,6,2,right
+U16,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U16,Deliveroo,15,Usuale/Moderno,Novità,2,-2,right
+U16,Deliveroo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U16,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U16,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U16,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U16,Deliveroo,20,Inefficiente/Efficiente,Efficienza,4,0,right
+U16,Deliveroo,21,Chiaro/Confuso,Comprensibilità,5,-1,left
+U16,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U16,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,6,-2,left
+U16,Deliveroo,24,Invitante/Non Invitante,Attrattività,5,-1,left
+U16,Deliveroo,25,Congeniale/Ostile,Attrattività,4,0,left
+U16,Deliveroo,26,Conservativo/Innovativo,Novità,3,-1,right
+U16,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U16,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U16,Glovo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U16,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,5,-1,left
+U16,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,5,-1,left
+U16,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U16,Glovo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U16,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U16,Glovo,9,Veloce/Lento,Efficienza,4,0,left
+U16,Glovo,10,Originale/Convenzionale,Novità,3,1,left
+U16,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,4,0,right
+U16,Glovo,12,Buono/Scarso,Attrattività,3,1,left
+U16,Glovo,13,Complicato/Facile,Comprensibilità,5,1,right
+U16,Glovo,14,Repellente/Attraente,Attrattività,4,0,right
+U16,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U16,Glovo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U16,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U16,Glovo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U16,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U16,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U16,Glovo,21,Chiaro/Confuso,Comprensibilità,4,0,left
+U16,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U16,Glovo,23,Ordinato/Sovraccarico,Efficienza,4,0,left
+U16,Glovo,24,Invitante/Non Invitante,Attrattività,3,1,left
+U16,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U16,Glovo,26,Conservativo/Innovativo,Novità,4,0,right
+U17,Deliveroo,1,Fastidioso/Piacevole,Attrattività,3,-1,right
+U17,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,4,0,right
+U17,Deliveroo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U17,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,5,-1,left
+U17,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U17,Deliveroo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U17,Deliveroo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U17,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,4,0,right
+U17,Deliveroo,9,Veloce/Lento,Efficienza,5,-1,left
+U17,Deliveroo,10,Originale/Convenzionale,Novità,5,-1,left
+U17,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,3,-1,right
+U17,Deliveroo,12,Buono/Scarso,Attrattività,4,0,left
+U17,Deliveroo,13,Complicato/Facile,Comprensibilità,3,-1,right
+U17,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U17,Deliveroo,15,Usuale/Moderno,Novità,4,0,right
+U17,Deliveroo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U17,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,5,-1,left
+U17,Deliveroo,18,Attivante/Soporifero,Stimolazione,3,1,left
+U17,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,4,0,left
+U17,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U17,Deliveroo,21,Chiaro/Confuso,Comprensibilità,5,-1,left
+U17,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,3,-1,right
+U17,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U17,Deliveroo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U17,Deliveroo,25,Congeniale/Ostile,Attrattività,4,0,left
+U17,Deliveroo,26,Conservativo/Innovativo,Novità,4,0,right
+U17,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U17,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U17,Glovo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U17,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,5,-1,left
+U17,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U17,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U17,Glovo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U17,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U17,Glovo,9,Veloce/Lento,Efficienza,3,1,left
+U17,Glovo,10,Originale/Convenzionale,Novità,4,0,left
+U17,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U17,Glovo,12,Buono/Scarso,Attrattività,3,1,left
+U17,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U17,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U17,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U17,Glovo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U17,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U17,Glovo,18,Attivante/Soporifero,Stimolazione,3,1,left
+U17,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U17,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U17,Glovo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U17,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U17,Glovo,23,Ordinato/Sovraccarico,Efficienza,5,-1,left
+U17,Glovo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U17,Glovo,25,Congeniale/Ostile,Attrattività,5,-1,left
+U17,Glovo,26,Conservativo/Innovativo,Novità,4,0,right
+U18,Deliveroo,1,Fastidioso/Piacevole,Attrattività,2,-2,right
+U18,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U18,Deliveroo,3,Creativo/Privo di Fantasia,Novità,7,-3,left
+U18,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U18,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U18,Deliveroo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U18,Deliveroo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U18,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U18,Deliveroo,9,Veloce/Lento,Efficienza,5,-1,left
+U18,Deliveroo,10,Originale/Convenzionale,Novità,7,-3,left
+U18,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U18,Deliveroo,12,Buono/Scarso,Attrattività,6,-2,left
+U18,Deliveroo,13,Complicato/Facile,Comprensibilità,6,2,right
+U18,Deliveroo,14,Repellente/Attraente,Attrattività,1,-3,right
+U18,Deliveroo,15,Usuale/Moderno,Novità,3,-1,right
+U18,Deliveroo,16,Sgradevole/Gradevole,Attrattività,2,-2,right
+U18,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U18,Deliveroo,18,Attivante/Soporifero,Stimolazione,7,-3,left
+U18,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U18,Deliveroo,20,Inefficiente/Efficiente,Efficienza,7,3,right
+U18,Deliveroo,21,Chiaro/Confuso,Comprensibilità,4,0,left
+U18,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,3,-1,right
+U18,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,7,-3,left
+U18,Deliveroo,24,Invitante/Non Invitante,Attrattività,5,-1,left
+U18,Deliveroo,25,Congeniale/Ostile,Attrattività,6,-2,left
+U18,Deliveroo,26,Conservativo/Innovativo,Novità,2,-2,right
+U18,Glovo,1,Fastidioso/Piacevole,Attrattività,7,3,right
+U18,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,7,3,right
+U18,Glovo,3,Creativo/Privo di Fantasia,Novità,1,3,left
+U18,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,1,3,left
+U18,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,1,3,left
+U18,Glovo,6,Noioso/Appassionante,Stimolazione,6,2,right
+U18,Glovo,7,Non Interessante/Interessante,Stimolazione,5,1,right
+U18,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,7,3,right
+U18,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U18,Glovo,10,Originale/Convenzionale,Novità,1,3,left
+U18,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U18,Glovo,12,Buono/Scarso,Attrattività,2,2,left
+U18,Glovo,13,Complicato/Facile,Comprensibilità,4,0,right
+U18,Glovo,14,Repellente/Attraente,Attrattività,6,2,right
+U18,Glovo,15,Usuale/Moderno,Novità,7,3,right
+U18,Glovo,16,Sgradevole/Gradevole,Attrattività,6,2,right
+U18,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U18,Glovo,18,Attivante/Soporifero,Stimolazione,2,2,left
+U18,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,1,3,left
+U18,Glovo,20,Inefficiente/Efficiente,Efficienza,4,0,right
+U18,Glovo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U18,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,3,-1,right
+U18,Glovo,23,Ordinato/Sovraccarico,Efficienza,1,3,left
+U18,Glovo,24,Invitante/Non Invitante,Attrattività,1,3,left
+U18,Glovo,25,Congeniale/Ostile,Attrattività,2,2,left
+U18,Glovo,26,Conservativo/Innovativo,Novità,7,3,right
+U19,Deliveroo,1,Fastidioso/Piacevole,Attrattività,4,0,right
+U19,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U19,Deliveroo,3,Creativo/Privo di Fantasia,Novità,5,-1,left
+U19,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U19,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,2,2,left
+U19,Deliveroo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U19,Deliveroo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U19,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U19,Deliveroo,9,Veloce/Lento,Efficienza,3,1,left
+U19,Deliveroo,10,Originale/Convenzionale,Novità,5,-1,left
+U19,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U19,Deliveroo,12,Buono/Scarso,Attrattività,3,1,left
+U19,Deliveroo,13,Complicato/Facile,Comprensibilità,5,1,right
+U19,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U19,Deliveroo,15,Usuale/Moderno,Novità,4,0,right
+U19,Deliveroo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U19,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U19,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U19,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U19,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U19,Deliveroo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U19,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U19,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,4,0,left
+U19,Deliveroo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U19,Deliveroo,25,Congeniale/Ostile,Attrattività,2,2,left
+U19,Deliveroo,26,Conservativo/Innovativo,Novità,4,0,right
+U19,Glovo,1,Fastidioso/Piacevole,Attrattività,4,0,right
+U19,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U19,Glovo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U19,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U19,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U19,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U19,Glovo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U19,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U19,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U19,Glovo,10,Originale/Convenzionale,Novità,3,1,left
+U19,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U19,Glovo,12,Buono/Scarso,Attrattività,3,1,left
+U19,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U19,Glovo,14,Repellente/Attraente,Attrattività,4,0,right
+U19,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U19,Glovo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U19,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U19,Glovo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U19,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U19,Glovo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U19,Glovo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U19,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U19,Glovo,23,Ordinato/Sovraccarico,Efficienza,4,0,left
+U19,Glovo,24,Invitante/Non Invitante,Attrattività,3,1,left
+U19,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U19,Glovo,26,Conservativo/Innovativo,Novità,5,1,right
+U20,Deliveroo,1,Fastidioso/Piacevole,Attrattività,4,0,right
+U20,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,4,0,right
+U20,Deliveroo,3,Creativo/Privo di Fantasia,Novità,5,-1,left
+U20,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U20,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,6,-2,left
+U20,Deliveroo,6,Noioso/Appassionante,Stimolazione,2,-2,right
+U20,Deliveroo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U20,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,4,0,right
+U20,Deliveroo,9,Veloce/Lento,Efficienza,3,1,left
+U20,Deliveroo,10,Originale/Convenzionale,Novità,5,-1,left
+U20,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U20,Deliveroo,12,Buono/Scarso,Attrattività,5,-1,left
+U20,Deliveroo,13,Complicato/Facile,Comprensibilità,4,0,right
+U20,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U20,Deliveroo,15,Usuale/Moderno,Novità,3,-1,right
+U20,Deliveroo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U20,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U20,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U20,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U20,Deliveroo,20,Inefficiente/Efficiente,Efficienza,3,-1,right
+U20,Deliveroo,21,Chiaro/Confuso,Comprensibilità,5,-1,left
+U20,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,3,-1,right
+U20,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,5,-1,left
+U20,Deliveroo,24,Invitante/Non Invitante,Attrattività,5,-1,left
+U20,Deliveroo,25,Congeniale/Ostile,Attrattività,3,1,left
+U20,Deliveroo,26,Conservativo/Innovativo,Novità,4,0,right
+U20,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U20,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U20,Glovo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U20,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U20,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U20,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U20,Glovo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U20,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U20,Glovo,9,Veloce/Lento,Efficienza,3,1,left
+U20,Glovo,10,Originale/Convenzionale,Novità,4,0,left
+U20,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U20,Glovo,12,Buono/Scarso,Attrattività,3,1,left
+U20,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U20,Glovo,14,Repellente/Attraente,Attrattività,4,0,right
+U20,Glovo,15,Usuale/Moderno,Novità,3,-1,right
+U20,Glovo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U20,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,5,-1,left
+U20,Glovo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U20,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U20,Glovo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U20,Glovo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U20,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U20,Glovo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U20,Glovo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U20,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U20,Glovo,26,Conservativo/Innovativo,Novità,4,0,right
+U21,Deliveroo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U21,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,4,0,right
+U21,Deliveroo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U21,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,5,-1,left
+U21,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U21,Deliveroo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U21,Deliveroo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U21,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,6,2,right
+U21,Deliveroo,9,Veloce/Lento,Efficienza,5,-1,left
+U21,Deliveroo,10,Originale/Convenzionale,Novità,5,-1,left
+U21,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U21,Deliveroo,12,Buono/Scarso,Attrattività,3,1,left
+U21,Deliveroo,13,Complicato/Facile,Comprensibilità,5,1,right
+U21,Deliveroo,14,Repellente/Attraente,Attrattività,5,1,right
+U21,Deliveroo,15,Usuale/Moderno,Novità,3,-1,right
+U21,Deliveroo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U21,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U21,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U21,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U21,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U21,Deliveroo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U21,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U21,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U21,Deliveroo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U21,Deliveroo,25,Congeniale/Ostile,Attrattività,3,1,left
+U21,Deliveroo,26,Conservativo/Innovativo,Novità,2,-2,right
+U21,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U21,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U21,Glovo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U21,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U21,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U21,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U21,Glovo,7,Non Interessante/Interessante,Stimolazione,5,1,right
+U21,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U21,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U21,Glovo,10,Originale/Convenzionale,Novità,5,-1,left
+U21,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U21,Glovo,12,Buono/Scarso,Attrattività,2,2,left
+U21,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U21,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U21,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U21,Glovo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U21,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U21,Glovo,18,Attivante/Soporifero,Stimolazione,3,1,left
+U21,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U21,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U21,Glovo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U21,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U21,Glovo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U21,Glovo,24,Invitante/Non Invitante,Attrattività,3,1,left
+U21,Glovo,25,Congeniale/Ostile,Attrattività,2,2,left
+U21,Glovo,26,Conservativo/Innovativo,Novità,5,1,right
+U22,Deliveroo,1,Fastidioso/Piacevole,Attrattività,6,2,right
+U22,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,7,3,right
+U22,Deliveroo,3,Creativo/Privo di Fantasia,Novità,2,2,left
+U22,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,1,3,left
+U22,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U22,Deliveroo,6,Noioso/Appassionante,Stimolazione,6,2,right
+U22,Deliveroo,7,Non Interessante/Interessante,Stimolazione,7,3,right
+U22,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,4,0,right
+U22,Deliveroo,9,Veloce/Lento,Efficienza,2,2,left
+U22,Deliveroo,10,Originale/Convenzionale,Novità,2,2,left
+U22,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U22,Deliveroo,12,Buono/Scarso,Attrattività,1,3,left
+U22,Deliveroo,13,Complicato/Facile,Comprensibilità,7,3,right
+U22,Deliveroo,14,Repellente/Attraente,Attrattività,6,2,right
+U22,Deliveroo,15,Usuale/Moderno,Novità,6,2,right
+U22,Deliveroo,16,Sgradevole/Gradevole,Attrattività,6,2,right
+U22,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,1,3,left
+U22,Deliveroo,18,Attivante/Soporifero,Stimolazione,2,2,left
+U22,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,1,3,left
+U22,Deliveroo,20,Inefficiente/Efficiente,Efficienza,7,3,right
+U22,Deliveroo,21,Chiaro/Confuso,Comprensibilità,1,3,left
+U22,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,6,2,right
+U22,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,2,2,left
+U22,Deliveroo,24,Invitante/Non Invitante,Attrattività,2,2,left
+U22,Deliveroo,25,Congeniale/Ostile,Attrattività,2,2,left
+U22,Deliveroo,26,Conservativo/Innovativo,Novità,6,2,right
+U22,Glovo,1,Fastidioso/Piacevole,Attrattività,6,2,right
+U22,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U22,Glovo,3,Creativo/Privo di Fantasia,Novità,6,-2,left
+U22,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,1,3,left
+U22,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,1,3,left
+U22,Glovo,6,Noioso/Appassionante,Stimolazione,6,2,right
+U22,Glovo,7,Non Interessante/Interessante,Stimolazione,6,2,right
+U22,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,2,-2,right
+U22,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U22,Glovo,10,Originale/Convenzionale,Novità,2,2,left
+U22,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,6,2,right
+U22,Glovo,12,Buono/Scarso,Attrattività,1,3,left
+U22,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U22,Glovo,14,Repellente/Attraente,Attrattività,6,2,right
+U22,Glovo,15,Usuale/Moderno,Novità,6,2,right
+U22,Glovo,16,Sgradevole/Gradevole,Attrattività,6,2,right
+U22,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U22,Glovo,18,Attivante/Soporifero,Stimolazione,2,2,left
+U22,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,1,3,left
+U22,Glovo,20,Inefficiente/Efficiente,Efficienza,7,3,right
+U22,Glovo,21,Chiaro/Confuso,Comprensibilità,1,3,left
+U22,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,6,2,right
+U22,Glovo,23,Ordinato/Sovraccarico,Efficienza,2,2,left
+U22,Glovo,24,Invitante/Non Invitante,Attrattività,2,2,left
+U22,Glovo,25,Congeniale/Ostile,Attrattività,1,3,left
+U22,Glovo,26,Conservativo/Innovativo,Novità,6,2,right
+U23,Deliveroo,1,Fastidioso/Piacevole,Attrattività,4,0,right
+U23,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,3,-1,right
+U23,Deliveroo,3,Creativo/Privo di Fantasia,Novità,4,0,left
+U23,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,3,1,left
+U23,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U23,Deliveroo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U23,Deliveroo,7,Non Interessante/Interessante,Stimolazione,5,1,right
+U23,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U23,Deliveroo,9,Veloce/Lento,Efficienza,3,1,left
+U23,Deliveroo,10,Originale/Convenzionale,Novità,4,0,left
+U23,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U23,Deliveroo,12,Buono/Scarso,Attrattività,3,1,left
+U23,Deliveroo,13,Complicato/Facile,Comprensibilità,5,1,right
+U23,Deliveroo,14,Repellente/Attraente,Attrattività,5,1,right
+U23,Deliveroo,15,Usuale/Moderno,Novità,5,1,right
+U23,Deliveroo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U23,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,3,1,left
+U23,Deliveroo,18,Attivante/Soporifero,Stimolazione,3,1,left
+U23,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U23,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U23,Deliveroo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U23,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U23,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,3,1,left
+U23,Deliveroo,24,Invitante/Non Invitante,Attrattività,3,1,left
+U23,Deliveroo,25,Congeniale/Ostile,Attrattività,3,1,left
+U23,Deliveroo,26,Conservativo/Innovativo,Novità,5,1,right
+U23,Glovo,1,Fastidioso/Piacevole,Attrattività,6,2,right
+U23,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,6,2,right
+U23,Glovo,3,Creativo/Privo di Fantasia,Novità,2,2,left
+U23,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,2,2,left
+U23,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,2,2,left
+U23,Glovo,6,Noioso/Appassionante,Stimolazione,5,1,right
+U23,Glovo,7,Non Interessante/Interessante,Stimolazione,5,1,right
+U23,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U23,Glovo,9,Veloce/Lento,Efficienza,2,2,left
+U23,Glovo,10,Originale/Convenzionale,Novità,2,2,left
+U23,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U23,Glovo,12,Buono/Scarso,Attrattività,2,2,left
+U23,Glovo,13,Complicato/Facile,Comprensibilità,6,2,right
+U23,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U23,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U23,Glovo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U23,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,2,2,left
+U23,Glovo,18,Attivante/Soporifero,Stimolazione,2,2,left
+U23,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,2,2,left
+U23,Glovo,20,Inefficiente/Efficiente,Efficienza,6,2,right
+U23,Glovo,21,Chiaro/Confuso,Comprensibilità,2,2,left
+U23,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U23,Glovo,23,Ordinato/Sovraccarico,Efficienza,2,2,left
+U23,Glovo,24,Invitante/Non Invitante,Attrattività,2,2,left
+U23,Glovo,25,Congeniale/Ostile,Attrattività,2,2,left
+U23,Glovo,26,Conservativo/Innovativo,Novità,6,2,right
+U24,Deliveroo,1,Fastidioso/Piacevole,Attrattività,4,0,right
+U24,Deliveroo,2,Incomprensibile/Comprensibile,Comprensibilità,4,0,right
+U24,Deliveroo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U24,Deliveroo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,4,0,left
+U24,Deliveroo,5,di Grande Valore/di Poco Valore,Stimolazione,3,1,left
+U24,Deliveroo,6,Noioso/Appassionante,Stimolazione,3,-1,right
+U24,Deliveroo,7,Non Interessante/Interessante,Stimolazione,3,-1,right
+U24,Deliveroo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U24,Deliveroo,9,Veloce/Lento,Efficienza,5,-1,left
+U24,Deliveroo,10,Originale/Convenzionale,Novità,5,-1,left
+U24,Deliveroo,11,Ostruttivo/di Supporto,Affidabilità/controllo,4,0,right
+U24,Deliveroo,12,Buono/Scarso,Attrattività,4,0,left
+U24,Deliveroo,13,Complicato/Facile,Comprensibilità,4,0,right
+U24,Deliveroo,14,Repellente/Attraente,Attrattività,4,0,right
+U24,Deliveroo,15,Usuale/Moderno,Novità,4,0,right
+U24,Deliveroo,16,Sgradevole/Gradevole,Attrattività,4,0,right
+U24,Deliveroo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U24,Deliveroo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U24,Deliveroo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,4,0,left
+U24,Deliveroo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U24,Deliveroo,21,Chiaro/Confuso,Comprensibilità,4,0,left
+U24,Deliveroo,22,Non Pragmatico/Pragmatico,Efficienza,5,1,right
+U24,Deliveroo,23,Ordinato/Sovraccarico,Efficienza,5,-1,left
+U24,Deliveroo,24,Invitante/Non Invitante,Attrattività,3,1,left
+U24,Deliveroo,25,Congeniale/Ostile,Attrattività,5,-1,left
+U24,Deliveroo,26,Conservativo/Innovativo,Novità,4,0,right
+U24,Glovo,1,Fastidioso/Piacevole,Attrattività,5,1,right
+U24,Glovo,2,Incomprensibile/Comprensibile,Comprensibilità,5,1,right
+U24,Glovo,3,Creativo/Privo di Fantasia,Novità,3,1,left
+U24,Glovo,4,Facile da Apprendere/Difficile da Apprendere,Comprensibilità,4,0,left
+U24,Glovo,5,di Grande Valore/di Poco Valore,Stimolazione,4,0,left
+U24,Glovo,6,Noioso/Appassionante,Stimolazione,4,0,right
+U24,Glovo,7,Non Interessante/Interessante,Stimolazione,4,0,right
+U24,Glovo,8,Imprevedibile/Prevedibile,Affidabilità/controllo,5,1,right
+U24,Glovo,9,Veloce/Lento,Efficienza,3,1,left
+U24,Glovo,10,Originale/Convenzionale,Novità,3,1,left
+U24,Glovo,11,Ostruttivo/di Supporto,Affidabilità/controllo,5,1,right
+U24,Glovo,12,Buono/Scarso,Attrattività,3,1,left
+U24,Glovo,13,Complicato/Facile,Comprensibilità,4,0,right
+U24,Glovo,14,Repellente/Attraente,Attrattività,5,1,right
+U24,Glovo,15,Usuale/Moderno,Novità,5,1,right
+U24,Glovo,16,Sgradevole/Gradevole,Attrattività,5,1,right
+U24,Glovo,17,Sicuro/Insicuro,Affidabilità/controllo,4,0,left
+U24,Glovo,18,Attivante/Soporifero,Stimolazione,4,0,left
+U24,Glovo,19,Conforme alle Aspettative/Non Conforme alle Aspettative,Affidabilità/controllo,3,1,left
+U24,Glovo,20,Inefficiente/Efficiente,Efficienza,5,1,right
+U24,Glovo,21,Chiaro/Confuso,Comprensibilità,3,1,left
+U24,Glovo,22,Non Pragmatico/Pragmatico,Efficienza,4,0,right
+U24,Glovo,23,Ordinato/Sovraccarico,Efficienza,5,-1,left
+U24,Glovo,24,Invitante/Non Invitante,Attrattività,4,0,left
+U24,Glovo,25,Congeniale/Ostile,Attrattività,3,1,left
+U24,Glovo,26,Conservativo/Innovativo,Novità,5,1,right

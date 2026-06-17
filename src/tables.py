@@ -12,7 +12,7 @@ def export_table(df: pd.DataFrame, path: str | Path, decimals: int = 2) -> None:
     target = resolve_path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     suffix = target.suffix.lower()
-    rounded = df.round(decimals)
+    rounded = df.round(decimals).fillna("")
     if suffix == ".csv":
         rounded.to_csv(target, index=False, encoding="utf-8-sig")
     elif suffix == ".xlsx":

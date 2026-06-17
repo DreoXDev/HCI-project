@@ -1,0 +1,40 @@
+{
+  "slides": [
+    {
+      "slide_number": 1,
+      "section": "Introduzione",
+      "variant": "neutral",
+      "text": [
+        "outputs/texts/snippets/intro.md"
+      ]
+    },
+    {
+      "slide_number": 2,
+      "section": "Valutazione euristica",
+      "variant": "neutral",
+      "charts": [
+        "outputs/figures/clean/heuristics/heuristics_distribution.png",
+        "outputs/figures/presentation/heuristics/heuristics_distribution.png"
+      ]
+    },
+    {
+      "slide_number": 3,
+      "section": "User test",
+      "variant": "neutral",
+      "charts": [
+        "outputs/figures/clean/user_tests/effectiveness_deliveroo_vs_glovo.png",
+        "outputs/figures/presentation/user_tests/effectiveness_deliveroo_vs_glovo.png"
+      ]
+    },
+    {
+      "slide_number": 4,
+      "section": "Questionario UEQ e NPS",
+      "variant": "neutral",
+      "charts": [
+        "outputs/figures/clean/questionnaire/ueq_scales.png",
+        "outputs/figures/presentation/questionnaire/ueq_scales.png"
+      ]
+    }
+  ],
+  "warnings": []
+}
