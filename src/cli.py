@@ -40,6 +40,7 @@ from .plots import (
 from .questionnaire import item_summary, nps_summary, subgroup_summaries, ueq_summary
 from .quality_check import run_quality_check
 from .real_inputs import prepare_real_inputs
+from .real_user_testing import generate_real_user_testing_outputs
 from .slide_pack import build_slide_pack
 from .tables import export_table
 from .text_generation.final_summary_text import generate_text_outputs
@@ -53,6 +54,7 @@ from .slide_export.pptx_generator import (
 )
 from .slide_export.pdf_export import PdfExportError, export_pptx_to_pdf
 from .user_tests import analyze_user_testing_observations, compute_effectiveness, compute_efficiency, compute_user_test_statistics
+from .user_task_trials import audit_and_normalize_user_task_trials
 from .users_time import analyze_users_time, users_time_enabled, users_time_file, validate_users_time_file
 from .validation import (
     format_validation,
@@ -155,6 +157,11 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     ensure_output_dirs(config)
     print("\n[1/7] Import Formbricks CSV...")
     import_formbricks_available(config, include_unfinished)
+    generate_real_user_testing_outputs(config)
+    print("\n[1b/7] Audit trial user test...")
+    trial_audit = audit_and_normalize_user_task_trials(config, fail_on_missing=False)
+    for message in trial_audit.messages:
+        print(message)
     print("\n[2/7] Validazione dati...")
     data = load_all(config)
     print(validate(config, data))
@@ -230,6 +237,10 @@ def generate_report(config: dict) -> None:
     """Generate normalized report assets without assembling the PPTX deck."""
     clean_generated_outputs(config)
     ensure_output_dirs(config)
+    generate_real_user_testing_outputs(config)
+    trial_audit = audit_and_normalize_user_task_trials(config, fail_on_missing=False)
+    for message in trial_audit.messages:
+        print(message)
     data = load_all(config)
     print(validate(config, data))
     analyze(config, data)
@@ -615,6 +626,11 @@ def main() -> None:
         return
     if args.command == "generate-slides":
         slide_config_path = "slides/config/slide_deck.yml" if args.config == "config.yaml" else args.config
+        generate_real_user_testing_outputs(config)
+        try:
+            audit_and_normalize_user_task_trials(config, fail_on_missing=True)
+        except RuntimeError as exc:
+            raise SystemExit(str(exc)) from exc
         missing = validate_slide_assets(slide_config_path, template_path=args.template)
         if missing and args.auto:
             print("Asset mancanti: genero prima il report.")
@@ -656,6 +672,11 @@ def main() -> None:
     if args.command == "full-pipeline":
         full_pipeline(config, include_unfinished=args.include_unfinished)
         if args.generate_slides or args.export_pdf:
+            generate_real_user_testing_outputs(config)
+            try:
+                audit_and_normalize_user_task_trials(config, fail_on_missing=True)
+            except RuntimeError as exc:
+                raise SystemExit(str(exc)) from exc
             try:
                 results = generate_full_pipeline_slide_decks(overwrite=args.overwrite, timestamp=args.timestamp)
             except SlideGenerationError as exc:

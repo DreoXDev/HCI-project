@@ -141,8 +141,12 @@ def _user_tests_text(systems: list[str]) -> str:
     if eff.empty or speed.empty:
         return "# Risultati user test\n\nI dati di user test non sono disponibili."
     completion = eff.groupby("system")["completion_rate"].mean()
+    if completion.dropna().empty:
+        return "# Risultati user test\n\nI dati sui tempi dei test utente non sono disponibili in questa esecuzione; la sezione resta documentata dalle tabelle final_report generate quando il CSV sorgente e presente."
     best = completion.idxmax()
     mean_time = speed.groupby("system")["mean_seconds"].mean()
+    if mean_time.dropna().empty:
+        return "# Risultati user test\n\nI dati sui tempi dei test utente non sono sufficienti per calcolare un confronto di efficienza."
     fastest = mean_time.idxmin()
     return (
         "# Risultati user test\n\n"
@@ -156,6 +160,8 @@ def _user_test_effectiveness_text(systems: list[str]) -> str:
     if eff.empty:
         return "# Efficacia user test\n\nDati non disponibili."
     completion = eff.groupby("system")["completion_rate"].mean().sort_values(ascending=False)
+    if completion.dropna().empty:
+        return "# Efficacia user test\n\nDati non sufficienti per calcolare il tasso di completamento."
     best = completion.index[0]
     gap = completion.iloc[0] - completion.iloc[-1] if len(completion) > 1 else 0
     return f"# Efficacia user test\n\n{best} mostra il tasso medio di completamento più alto. Il divario medio osservato e pari a {gap:.2%}."
@@ -166,6 +172,8 @@ def _user_test_efficiency_text(systems: list[str]) -> str:
     if speed.empty:
         return "# Efficienza user test\n\nDati non disponibili."
     means = speed.groupby("system")["mean_seconds"].mean().sort_values()
+    if means.dropna().empty:
+        return "# Efficienza user test\n\nDati non sufficienti per confrontare i tempi medi."
     fastest = means.index[0]
     return f"# Efficienza user test\n\n{fastest} risulta mediamente più rapido sui task osservati. Consultare gli asset task-by-task per verificare dove la differenza e più marcata."
 

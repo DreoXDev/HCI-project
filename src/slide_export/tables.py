@@ -15,7 +15,10 @@ def read_display_table(csv_path: str | Path) -> list[list[str]]:
     with target.open(newline="", encoding="utf-8-sig") as handle:
         sample = handle.read(2048)
         handle.seek(0)
-        dialect = csv.Sniffer().sniff(sample, delimiters=",;") if sample.strip() else csv.excel
+        try:
+            dialect = csv.Sniffer().sniff(sample, delimiters=",;") if sample.strip() else csv.excel
+        except csv.Error:
+            dialect = csv.excel
         rows = [row for row in csv.reader(handle, dialect) if any(cell.strip() for cell in row)]
     if not rows:
         return []
@@ -47,4 +50,3 @@ def table_specs_from_paginated_table(spec: dict[str, Any]) -> list[dict[str, Any
         clone["fields"]["TABLE_TITLE"] = f"{table.get('title_prefix') or clone['fields'].get('TABLE_TITLE', 'Tabella')} ({index + 1}/{len(pages)})"
         specs.append(clone)
     return specs
-

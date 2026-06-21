@@ -1,0 +1,16 @@
+questionnaire:
+  questions_per_slide: 2
+  include_descriptive_stats: true
+  include_item_insights: true
+
+ueq:
+  validate_scale: true
+  include_distribution: true
+  include_benchmark: true
+  include_scale_summary: true
+
+user_tests:
+  include_unified_times_table: true
+  include_efficiency_stats: true
+  confidence_interval: 0.95
+  bootstrap_seed: 42

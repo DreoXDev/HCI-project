@@ -24,11 +24,19 @@ def read_csv_optional(path: str | Path, **kwargs) -> pd.DataFrame:
 
 
 def load_users_time(path: str | Path) -> pd.DataFrame:
+    target = resolve_path(path)
+    if not target.exists() or not target.is_file():
+        return pd.DataFrame(columns=_legacy_users_time_columns())
     df = read_csv_auto(path)
     long_columns = {"user_id", "app", "task_id", "completion_time_sec", "success"}
     if long_columns.issubset(df.columns):
         return users_time_long_to_legacy_wide(df)
     return df
+
+
+def _legacy_users_time_columns() -> list[str]:
+    systems = ["Deliveroo", "Glovo"]
+    return ["User", *[f"Task {task} {system}" for system in systems for task in range(1, 4)]]
 
 
 def users_time_long_to_legacy_wide(df: pd.DataFrame) -> pd.DataFrame:

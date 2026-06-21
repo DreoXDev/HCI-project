@@ -24,7 +24,25 @@ def user_task_deck_slide_specs(auto: dict[str, Any]) -> list[dict[str, Any]]:
         source_pdf=auto.get("user_task_deck_pdf"),
         output_dir=auto.get("user_task_deck_render_dir") or "outputs/slide_assets/imported_user_task_deck",
     )
-    return [{"template_id": "full_slide_image", "image": _rel(path), "title": f"User task deck {idx:02d}"} for idx, path in enumerate(images, start=1)]
+    titles = [
+        ("Presentazione dei task e protocollo di test", "Sequenza usata durante la sessione con Deliveroo e Glovo."),
+        ("Protocollo operativo del test", "I partecipanti hanno svolto gli stessi task su entrambe le applicazioni."),
+        ("Lista task utente", "I task coprono indirizzo, ricerca e modifica del carrello."),
+        ("Deliveroo - introduzione task", "Schermate operative mostrate prima dell'esecuzione su Deliveroo."),
+        ("Deliveroo - Task 1", "Impostazione o verifica del luogo di consegna."),
+        ("Deliveroo - Task 2", "Ricerca e selezione di un prodotto/ristorante."),
+        ("Deliveroo - Task 3", "Modifica dell'ordine e controllo del carrello."),
+        ("Glovo - introduzione task", "Schermate operative mostrate prima dell'esecuzione su Glovo."),
+        ("Glovo - Task 1", "Impostazione o verifica del luogo di consegna."),
+        ("Glovo - Task 2", "Ricerca e selezione di un prodotto/ristorante."),
+        ("Glovo - Task 3", "Modifica dell'ordine e controllo del carrello."),
+        ("Conclusione del protocollo", "Chiusura della sessione e passaggio al questionario."),
+    ]
+    specs: list[dict[str, Any]] = []
+    for idx, path in enumerate(images, start=1):
+        title, caption = titles[idx - 1] if idx <= len(titles) else (f"Task utente - schermata {idx:02d}", "Slide importata dal protocollo operativo.")
+        specs.append({"template_id": "full_slide_image", "image": _rel(path), "title": title, "caption": caption})
+    return specs
 
 
 def render_user_task_deck_images(

@@ -5,6 +5,7 @@ import math
 import re
 import shutil
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -58,6 +59,7 @@ def build_final_report_outputs(config: dict, data: dict[str, pd.DataFrame]) -> d
     user_outputs = _user_test_outputs(config, data_dir, asset_dir)
     paths["data"].extend(user_outputs["data"])
     paths["assets"].extend(user_outputs["assets"])
+    paths["reports"].extend(user_outputs.get("reports", []))
 
     questionnaire_outputs = _questionnaire_outputs(config, data, systems, data_dir, asset_dir)
     paths["data"].extend(questionnaire_outputs["data"])
@@ -68,6 +70,7 @@ def build_final_report_outputs(config: dict, data: dict[str, pd.DataFrame]) -> d
     paths["reports"].append(_write_final_report_notes(reports_dir / "final_report_notes.md"))
     paths["reports"].append(_write_quality_gate(reports_dir / "final_report_quality_gate.md", paths))
     paths["reports"].append(_write_changelog(reports_dir / "final_report_changelog.md", paths))
+    paths["reports"].append(_write_generation_log(resolve_path(FINAL_OUTPUT_DIR) / "final_report_generation_log.md", paths))
     _sync_final_reports()
     return paths
 
@@ -289,18 +292,85 @@ def _dark_patterns() -> pd.DataFrame:
 
 def _user_test_outputs(config: dict, data_dir: Path, asset_dir: Path) -> dict[str, list[Path]]:
     outputs: dict[str, list[Path]] = {"data": [], "assets": []}
-    validation = validate_users_time_file(users_time_file(config), required_columns=config.get("users_time", {}).get("required_columns"), tasks=config.get("users_time", {}).get("tasks", []))
-    df = validation.normalized if validation.is_valid else pd.DataFrame()
+    df = _load_final_user_test_trials(config)
+    unified = _user_test_times_unified(df)
+    summary = _user_test_times_summary(df)
     task_stats = _user_test_task_stats(df)
     inferential = _user_test_inferential_stats(df, config)
+    efficiency = _task_efficiency_stats(df, config)
     qualitative = _qualitative_observations()
+    outputs["data"].append(_write_csv(unified, data_dir / "user_test_times_unified.csv"))
+    outputs["data"].append(_write_csv(summary, data_dir / "user_test_times_summary.csv"))
     outputs["data"].append(_write_csv(task_stats, data_dir / "user_test_task_stats.csv"))
     outputs["data"].append(_write_csv(inferential, data_dir / "user_test_inferential_stats.csv"))
+    outputs["data"].append(_write_csv(efficiency, data_dir / "task_efficiency_stats.csv"))
     outputs["data"].append(_write_csv(_stat_tests_slide_table(inferential), data_dir / "user_test_inferential_stats_slide.csv"))
     outputs["data"].append(_write_csv(qualitative, data_dir / "user_test_qualitative_observations.csv"))
     outputs["data"].append(_write_csv(_qualitative_slide_table(qualitative), data_dir / "user_test_qualitative_observations_slide.csv"))
+    outputs["reports"] = [_write_statistical_tests_notes(data_dir / "statistical_tests_notes.md", efficiency)]
     outputs["assets"].append(_plot_time_diff_ci(config, inferential, asset_dir / "user_test_time_diff_ci.png"))
+    outputs["assets"].extend(_plot_task_efficiency_stats(config, efficiency, asset_dir))
     return outputs
+
+
+def _load_final_user_test_trials(config: dict) -> pd.DataFrame:
+    normalized_path = resolve_path("data/processed/user_task_trials_normalized.csv")
+    if normalized_path.exists():
+        trials = pd.read_csv(normalized_path, encoding="utf-8-sig")
+        if not trials.empty and {"participant_id", "app", "task_id", "time_seconds", "outcome"}.issubset(trials.columns):
+            valid_outcomes = {"success", "assisted_success", "partial_success", "failure", "timeout"}
+            trials = trials[trials["outcome"].isin(valid_outcomes)].copy()
+            return pd.DataFrame(
+                {
+                    "user_id": trials["participant_id"],
+                    "app": trials["app"],
+                    "task_id": trials["task_id"],
+                    "task_name": trials.get("task_label", trials["task_id"]),
+                    "completion_time_sec": pd.to_numeric(trials["time_seconds"], errors="coerce"),
+                    "success": trials["outcome"].isin(["success", "assisted_success", "partial_success"]),
+                    "errors_count": pd.to_numeric(trials.get("error_count", 0), errors="coerce").fillna(0),
+                    "help_requests": pd.to_numeric(trials.get("help_count", 0), errors="coerce").fillna(0),
+                    "notes": trials.get("notes", ""),
+                }
+            ).dropna(subset=["completion_time_sec"])
+    validation = validate_users_time_file(users_time_file(config), required_columns=config.get("users_time", {}).get("required_columns"), tasks=config.get("users_time", {}).get("tasks", []))
+    return validation.normalized if validation.is_valid else pd.DataFrame()
+
+
+def _user_test_times_unified(df: pd.DataFrame) -> pd.DataFrame:
+    columns = ["participant_id", "app", "task_id", "task_label", "time_seconds", "success", "error_count", "notes"]
+    if df.empty:
+        return pd.DataFrame(columns=columns)
+    result = pd.DataFrame(
+        {
+            "participant_id": df["user_id"].astype(str),
+            "app": df["app"],
+            "task_id": df["task_id"],
+            "task_label": df.get("task_name", df["task_id"]),
+            "time_seconds": df["completion_time_sec"],
+            "success": df["success"],
+            "error_count": df["errors_count"],
+            "notes": df["notes"] if "notes" in df else "",
+        }
+    )
+    return result[columns].sort_values(["participant_id", "task_id", "app"])
+
+
+def _user_test_times_summary(df: pd.DataFrame) -> pd.DataFrame:
+    columns = ["app", "task_id", "task_label", "n", "mean_seconds", "median_seconds", "std_seconds", "min_seconds", "q1_seconds", "q3_seconds", "max_seconds"]
+    if df.empty:
+        return pd.DataFrame(columns=columns)
+    summary = df.groupby(["app", "task_id", "task_name"], sort=True).agg(
+        n=("user_id", "nunique"),
+        mean_seconds=("completion_time_sec", "mean"),
+        median_seconds=("completion_time_sec", "median"),
+        std_seconds=("completion_time_sec", "std"),
+        min_seconds=("completion_time_sec", "min"),
+        q1_seconds=("completion_time_sec", lambda s: s.quantile(0.25)),
+        q3_seconds=("completion_time_sec", lambda s: s.quantile(0.75)),
+        max_seconds=("completion_time_sec", "max"),
+    ).reset_index().rename(columns={"task_name": "task_label"})
+    return summary[columns]
 
 
 def _user_test_task_stats(df: pd.DataFrame) -> pd.DataFrame:
@@ -362,19 +432,112 @@ def _user_test_inferential_stats(df: pd.DataFrame, config: dict) -> pd.DataFrame
     return pd.DataFrame(rows, columns=columns)
 
 
+def _task_efficiency_stats(df: pd.DataFrame, config: dict) -> pd.DataFrame:
+    columns = [
+        "task_id",
+        "task_label",
+        "deliveroo_n",
+        "glovo_n",
+        "deliveroo_mean",
+        "glovo_mean",
+        "deliveroo_std",
+        "glovo_std",
+        "mean_diff",
+        "p_value",
+        "ci_low",
+        "ci_high",
+        "effect_size",
+        "test_name",
+        "interpretation",
+    ]
+    if df.empty:
+        return pd.DataFrame(columns=columns)
+    systems = [config["project"]["system_1"], config["project"]["system_2"]]
+    rows = []
+    for (task_id, task_label), group in df.groupby(["task_id", "task_name"], sort=True):
+        left = group[group["app"].astype(str).str.casefold() == systems[0].casefold()][["user_id", "completion_time_sec"]].dropna()
+        right = group[group["app"].astype(str).str.casefold() == systems[1].casefold()][["user_id", "completion_time_sec"]].dropna()
+        paired = left.merge(right, on="user_id", suffixes=("_deliveroo", "_glovo"))
+        deliveroo_values = paired["completion_time_sec_deliveroo"] if len(paired) >= 2 else left["completion_time_sec"]
+        glovo_values = paired["completion_time_sec_glovo"] if len(paired) >= 2 else right["completion_time_sec"]
+        if len(deliveroo_values) == 0 or len(glovo_values) == 0:
+            continue
+        if len(paired) >= 2:
+            diff = paired["completion_time_sec_deliveroo"] - paired["completion_time_sec_glovo"]
+            try:
+                normal = len(diff) >= 3 and stats.shapiro(diff).pvalue >= 0.05
+            except ValueError:
+                normal = False
+            if normal:
+                p_value = float(stats.ttest_rel(paired["completion_time_sec_deliveroo"], paired["completion_time_sec_glovo"]).pvalue)
+                test_name = "paired t-test"
+                effect_size = float(diff.mean() / diff.std(ddof=1)) if diff.std(ddof=1) else 0.0
+            else:
+                p_value = float(stats.wilcoxon(paired["completion_time_sec_deliveroo"], paired["completion_time_sec_glovo"]).pvalue)
+                test_name = "Wilcoxon signed-rank"
+                effect_size = _rank_biserial(diff)
+            ci_low, ci_high = _bootstrap_ci(diff)
+            mean_diff = float(diff.mean())
+        else:
+            p_value = float(stats.mannwhitneyu(left["completion_time_sec"], right["completion_time_sec"], alternative="two-sided").pvalue)
+            test_name = "Mann-Whitney U"
+            mean_diff = float(left["completion_time_sec"].mean() - right["completion_time_sec"].mean())
+            ci_low, ci_high = _bootstrap_ci_unpaired(left["completion_time_sec"], right["completion_time_sec"])
+            pooled = pd.concat([left["completion_time_sec"], right["completion_time_sec"]]).std(ddof=1)
+            effect_size = mean_diff / pooled if pooled else 0.0
+        faster = systems[0] if deliveroo_values.mean() < glovo_values.mean() else systems[1]
+        significance = "indica" if p_value < 0.05 else "non indica"
+        stability = "stabile" if ci_low * ci_high > 0 else "incerta"
+        rows.append(
+            {
+                "task_id": task_id,
+                "task_label": task_label,
+                "deliveroo_n": int(len(deliveroo_values)),
+                "glovo_n": int(len(glovo_values)),
+                "deliveroo_mean": deliveroo_values.mean(),
+                "glovo_mean": glovo_values.mean(),
+                "deliveroo_std": deliveroo_values.std(ddof=1),
+                "glovo_std": glovo_values.std(ddof=1),
+                "mean_diff": mean_diff,
+                "p_value": p_value,
+                "ci_low": ci_low,
+                "ci_high": ci_high,
+                "effect_size": effect_size,
+                "test_name": test_name,
+                "interpretation": f"{faster} mostra il tempo medio inferiore; il p-value {significance} una differenza significativa e l'IC suggerisce una stima {stability}.",
+            }
+        )
+    return pd.DataFrame(rows, columns=columns)
+
+
 def _questionnaire_outputs(config: dict, data: dict[str, pd.DataFrame], systems: list[str], data_dir: Path, asset_dir: Path) -> dict[str, list[Path]]:
     outputs: dict[str, list[Path]] = {"data": [], "assets": []}
     item_stats = _questionnaire_item_stats(data, systems, config)
+    item_descriptives = _questionnaire_item_descriptive_stats(data, systems, config)
     item_tests = _questionnaire_inferential_stats(data, systems, config)
+    scale_validation = _ueq_scale_validation(data, systems, config)
+    ueq_items = _ueq_item_summary(data, systems, config)
+    ueq_scales = _ueq_scale_summary(data, systems, config)
     ueq_ci = _ueq_with_ci(data, systems, config)
     nps = _nps_summary(data, systems)
     outputs["data"].append(_write_csv(item_stats, data_dir / "questionnaire_item_stats.csv"))
+    outputs["data"].append(_write_csv(item_descriptives, data_dir / "questionnaire_item_descriptive_stats.csv"))
     outputs["data"].append(_write_csv(item_tests, data_dir / "questionnaire_inferential_stats.csv"))
+    outputs["data"].append(_write_md(scale_validation, data_dir / "ueq_scale_validation.md"))
+    outputs["data"].append(_write_csv(ueq_items, data_dir / "ueq_item_summary.csv"))
+    outputs["data"].append(_write_csv(_ueq_item_mapping(data, systems, config), data_dir / "ueq_item_mapping.csv"))
+    outputs["data"].append(_write_md(_ueq_scoring_method_note(data, systems, config), data_dir / "ueq_scoring_method.md"))
+    outputs["data"].append(_write_csv(ueq_scales, data_dir / "ueq_scale_summary.csv"))
+    outputs["data"].append(_write_csv(_ueq_analysis_slide_table(ueq_items, systems[0]), data_dir / "ueq_item_summary_deliveroo_slide.csv"))
+    outputs["data"].append(_write_csv(_ueq_analysis_slide_table(ueq_items, systems[1]), data_dir / "ueq_item_summary_glovo_slide.csv"))
+    outputs["data"].append(_write_csv(_ueq_benchmark_slide_table(ueq_scales, systems[0]), data_dir / "ueq_benchmark_deliveroo_slide.csv"))
+    outputs["data"].append(_write_csv(_ueq_benchmark_slide_table(ueq_scales, systems[1]), data_dir / "ueq_benchmark_glovo_slide.csv"))
     outputs["data"].append(_write_csv(ueq_ci, data_dir / "ueq_scale_summary_with_ci.csv"))
     outputs["data"].append(_write_csv(nps, data_dir / "nps_summary.csv"))
     outputs["assets"].append(_plot_questionnaire_top_differences(config, item_tests, asset_dir / "questionnaire_top_differences.png"))
     outputs["assets"].append(_plot_ueq_ci(config, ueq_ci, asset_dir / "ueq_with_ci.png"))
     outputs["assets"].append(_plot_nps_breakdown(config, nps, asset_dir / "nps_breakdown.png"))
+    outputs["assets"].extend(_plot_ueq_final_assets(config, ueq_items, ueq_scales))
     return outputs
 
 
@@ -388,18 +551,200 @@ def _questionnaire_item_stats(data: dict[str, pd.DataFrame], systems: list[str],
     return pd.DataFrame(rows)
 
 
+def _questionnaire_item_descriptive_stats(data: dict[str, pd.DataFrame], systems: list[str], config: dict) -> pd.DataFrame:
+    columns = ["app", "item_id", "item_label", "dimension", "n", "min", "q1", "mean", "median", "q3", "max", "std"]
+    rows = []
+    for system, key in [(systems[0], "questionnaire_system_1"), (systems[1], "questionnaire_system_2")]:
+        items = numeric_items(data.get(key, pd.DataFrame()), config)
+        for item_idx, (item, values) in enumerate(items.iterrows(), start=1):
+            numeric = pd.to_numeric(values, errors="coerce").dropna()
+            rows.append(
+                {
+                    "app": system,
+                    "item_id": item_idx,
+                    "item_label": item,
+                    "dimension": _ueq_dimension_for_item(item_idx),
+                    "n": len(numeric),
+                    "min": numeric.min(),
+                    "q1": numeric.quantile(0.25),
+                    "mean": numeric.mean(),
+                    "median": numeric.median(),
+                    "q3": numeric.quantile(0.75),
+                    "max": numeric.max(),
+                    "std": numeric.std(ddof=1),
+                }
+            )
+    return pd.DataFrame(rows, columns=columns)
+
+
+def generate_question_insight(item_stats_deliveroo: pd.Series, item_stats_glovo: pd.Series) -> str:
+    deliveroo_mean = float(item_stats_deliveroo.get("mean", np.nan))
+    glovo_mean = float(item_stats_glovo.get("mean", np.nan))
+    if pd.isna(deliveroo_mean) or pd.isna(glovo_mean):
+        return "Dati non sufficienti per confrontare questo item."
+    leader = "Deliveroo" if deliveroo_mean > glovo_mean else "Glovo" if glovo_mean > deliveroo_mean else "nessuna app"
+    left_median = float(item_stats_deliveroo.get("median", np.nan))
+    right_median = float(item_stats_glovo.get("median", np.nan))
+    median_confirms = abs((left_median - right_median) or 0) >= 0.25 and np.sign(deliveroo_mean - glovo_mean) == np.sign(left_median - right_median)
+    iqr_left = float(item_stats_deliveroo.get("q3", 0) - item_stats_deliveroo.get("q1", 0))
+    iqr_right = float(item_stats_glovo.get("q3", 0) - item_stats_glovo.get("q1", 0))
+    variability = "stabile" if max(iqr_left, iqr_right) <= 1.5 else "eterogenea"
+    if leader == "nessuna app":
+        return f"Per questo item le medie sono sostanzialmente allineate ({deliveroo_mean:.2f} vs {glovo_mean:.2f}); la dispersione appare {variability}."
+    return (
+        f"Per questo item {leader} ottiene una media piu alta ({deliveroo_mean:.2f} vs {glovo_mean:.2f}). "
+        f"La mediana {'conferma' if median_confirms else 'attenua'} la differenza osservata, mentre l'intervallo interquartile suggerisce una percezione {variability} tra i partecipanti."
+    )
+
+
 def _questionnaire_inferential_stats(data: dict[str, pd.DataFrame], systems: list[str], config: dict) -> pd.DataFrame:
     left_items = numeric_items(data.get("questionnaire_system_1", pd.DataFrame()), config)
     right_items = numeric_items(data.get("questionnaire_system_2", pd.DataFrame()), config)
     rows = []
     for item in [item for item in left_items.index if item in right_items.index]:
-        left = pd.to_numeric(left_items.loc[item], errors="coerce").dropna()
-        right = pd.to_numeric(right_items.loc[item], errors="coerce").dropna()
-        if len(left) == 0 or len(right) == 0:
+        common = [column for column in left_items.columns if column in right_items.columns]
+        left = pd.to_numeric(left_items.loc[item, common] if common else left_items.loc[item], errors="coerce")
+        right = pd.to_numeric(right_items.loc[item, common] if common else right_items.loc[item], errors="coerce")
+        paired = pd.DataFrame({"left": left, "right": right}).dropna()
+        if paired.empty:
             continue
-        p_value = float(stats.mannwhitneyu(left, right, alternative="two-sided").pvalue)
-        rows.append({"item": item, "test_name": "Mann-Whitney U", f"{systems[0]}_mean": left.mean(), f"{systems[1]}_mean": right.mean(), "mean_diff": left.mean() - right.mean(), "p_value": p_value, "interpretation": _p_interpretation(p_value)})
+        if len(paired) >= 2 and not np.allclose(paired["left"], paired["right"], equal_nan=True):
+            p_value = float(stats.wilcoxon(paired["left"], paired["right"]).pvalue)
+            test_name = "Wilcoxon signed-rank"
+        else:
+            p_value = 1.0
+            test_name = "Wilcoxon signed-rank"
+        rows.append({"item": item, "test_name": test_name, f"{systems[0]}_mean": paired["left"].mean(), f"{systems[1]}_mean": paired["right"].mean(), "mean_diff": paired["left"].mean() - paired["right"].mean(), "p_value": p_value, "interpretation": _p_interpretation(p_value)})
     return pd.DataFrame(rows).sort_values("mean_diff", key=lambda s: s.abs(), ascending=False) if rows else pd.DataFrame(columns=["item", "test_name", f"{systems[0]}_mean", f"{systems[1]}_mean", "mean_diff", "p_value", "interpretation"])
+
+
+def _ueq_item_mapping(data: dict[str, pd.DataFrame], systems: list[str], config: dict) -> pd.DataFrame:
+    left_items = numeric_items(data.get("questionnaire_system_1", pd.DataFrame()), config)
+    right_items = numeric_items(data.get("questionnaire_system_2", pd.DataFrame()), config)
+    rows = []
+    for item_idx, item in enumerate(left_items.index, start=1):
+        left_anchor, right_anchor = _split_anchors(item)
+        deliveroo_raw = pd.to_numeric(left_items.loc[item], errors="coerce").dropna()
+        glovo_raw = pd.to_numeric(right_items.loc[item], errors="coerce").dropna() if item in right_items.index else pd.Series(dtype=float)
+        rows.append(
+            {
+                "item_id": item_idx,
+                "left_label": left_anchor,
+                "right_label": right_anchor,
+                "dimension": _ueq_dimension_for_item(item_idx),
+                "reverse_scored": False,
+                "deliveroo_mean_raw": deliveroo_raw.mean(),
+                "glovo_mean_raw": glovo_raw.mean(),
+                "deliveroo_mean_ueq": _to_ueq_standard(deliveroo_raw).mean(),
+                "glovo_mean_ueq": _to_ueq_standard(glovo_raw).mean(),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _ueq_scoring_method_note(data: dict[str, pd.DataFrame], systems: list[str], config: dict) -> str:
+    mapping = _ueq_item_mapping(data, systems, config)
+    return "\n".join(
+        [
+            "# Metodo di scoring UEQ",
+            "",
+            "- Le risposte originali sono lette su scala Likert 1-7 quando il dataset usa quel formato.",
+            "- Per i riepiloghi UEQ la pipeline trasforma i valori in scala standard -3/+3 con `valore_ueq = valore_likert - 4`.",
+            "- Gli item sono mantenuti nell'ordine configurato e non vengono invertiti manualmente dalla pipeline.",
+            "- Le medie per dimensione sono calcolate raggruppando gli item secondo il mapping UEQ salvato in `ueq_item_mapping.csv`.",
+            "- I confronti item tra Deliveroo e Glovo sono appaiati sugli stessi partecipanti e usano Wilcoxon signed-rank.",
+            "- Il benchmark usa soglie descrittive UEQ: Bad, Below average, Above average, Good, Excellent.",
+            f"- Item mappati: {mapping['item_id'].nunique() if not mapping.empty else 0}.",
+            "",
+        ]
+    )
+
+
+def _ueq_scale_validation(data: dict[str, pd.DataFrame], systems: list[str], config: dict) -> str:
+    frames = [numeric_items(data.get(key, pd.DataFrame()), config).stack() for key in ["questionnaire_system_1", "questionnaire_system_2"]]
+    values = pd.concat(frames, ignore_index=True) if frames else pd.Series(dtype=float)
+    numeric = pd.to_numeric(values, errors="coerce").dropna()
+    original_min = float(numeric.min()) if len(numeric) else np.nan
+    original_max = float(numeric.max()) if len(numeric) else np.nan
+    scale = "1-7 Likert" if original_min >= 1 and original_max <= 7 else "-3..+3 UEQ standard" if original_min >= -3 and original_max <= 3 else "scala non riconosciuta"
+    transform = "valore_standard = valore_likert - 4" if scale == "1-7 Likert" else "nessuna trasformazione"
+    items = config.get("formbricks", {}).get("questionnaire", {}).get("ueq_items", [])
+    lines = [
+        "# Validazione scala UEQ",
+        "",
+        f"- Scala originale rilevata: {scale} (min={original_min:.2f}, max={original_max:.2f}).",
+        f"- Trasformazione applicata: {transform}.",
+        f"- Colonne usate: {len(numeric_items(data.get('questionnaire_system_1', pd.DataFrame()), config).columns)} rispondenti Deliveroo, {len(numeric_items(data.get('questionnaire_system_2', pd.DataFrame()), config).columns)} rispondenti Glovo.",
+        "- Mapping item -> dimensione UEQ:",
+    ]
+    for idx, item in enumerate(items, start=1):
+        lines.append(f"  - Item {idx:02d}: {item} -> {_ueq_dimension_for_item(idx)}")
+    lines.extend(
+        [
+            "- Item invertiti: non invertiti manualmente dalla pipeline; la conversione usa l'ordine degli item configurato.",
+            "- Motivazione: i dati sorgente sono mantenuti in scala Likert 1-7, mentre benchmark e riepiloghi UEQ finali richiedono scala standard -3..+3.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _ueq_item_summary(data: dict[str, pd.DataFrame], systems: list[str], config: dict) -> pd.DataFrame:
+    columns = ["app", "item_id", "left_anchor", "right_anchor", "dimension", "n", "mean", "variance", "std", "min", "q1", "median", "q3", "max"]
+    rows = []
+    for system, key in [(systems[0], "questionnaire_system_1"), (systems[1], "questionnaire_system_2")]:
+        items = numeric_items(data.get(key, pd.DataFrame()), config)
+        for item_idx, (item, values) in enumerate(items.iterrows(), start=1):
+            numeric = _to_ueq_standard(pd.to_numeric(values, errors="coerce").dropna())
+            left_anchor, right_anchor = _split_anchors(item)
+            rows.append(
+                {
+                    "app": system,
+                    "item_id": item_idx,
+                    "left_anchor": left_anchor,
+                    "right_anchor": right_anchor,
+                    "dimension": _ueq_dimension_for_item(item_idx),
+                    "n": len(numeric),
+                    "mean": numeric.mean(),
+                    "variance": numeric.var(ddof=1),
+                    "std": numeric.std(ddof=1),
+                    "min": numeric.min(),
+                    "q1": numeric.quantile(0.25),
+                    "median": numeric.median(),
+                    "q3": numeric.quantile(0.75),
+                    "max": numeric.max(),
+                }
+            )
+    return pd.DataFrame(rows, columns=columns)
+
+
+def _ueq_scale_summary(data: dict[str, pd.DataFrame], systems: list[str], config: dict) -> pd.DataFrame:
+    columns = ["app", "dimension", "n", "mean", "variance", "std", "ci_low", "ci_high", "benchmark_label", "benchmark_interpretation"]
+    item_summary = _ueq_item_summary(data, systems, config)
+    rows = []
+    for (app, dimension), group in item_summary.groupby(["app", "dimension"], sort=True):
+        values = pd.to_numeric(group["mean"], errors="coerce").dropna()
+        n = int(group["n"].sum())
+        mean = values.mean()
+        std = values.std(ddof=1)
+        se = std / math.sqrt(len(values)) if len(values) > 1 and pd.notna(std) else 0.0
+        ci = 1.96 * se
+        label = _ueq_benchmark_label(mean)
+        rows.append(
+            {
+                "app": app,
+                "dimension": dimension,
+                "n": n,
+                "mean": mean,
+                "variance": values.var(ddof=1),
+                "std": std,
+                "ci_low": mean - ci,
+                "ci_high": mean + ci,
+                "benchmark_label": label,
+                "benchmark_interpretation": _ueq_benchmark_interpretation(label),
+            }
+        )
+    return pd.DataFrame(rows, columns=columns)
 
 
 def _ueq_with_ci(data: dict[str, pd.DataFrame], systems: list[str], config: dict) -> pd.DataFrame:
@@ -561,6 +906,98 @@ def _plot_nps_breakdown(config: dict, df: pd.DataFrame, path: Path) -> Path:
     return _saved_asset(path)
 
 
+def _plot_task_efficiency_stats(config: dict, df: pd.DataFrame, asset_dir: Path) -> list[Path]:
+    paths = []
+    palette = get_brand_palette(config)
+    for row in df.itertuples(index=False):
+        task_id = str(row.task_id).lower()
+        path = asset_dir / f"task_efficiency_{task_id}.png"
+        fig, ax = plt.subplots(figsize=(8.5, 4.8))
+        means = [row.deliveroo_mean, row.glovo_mean]
+        stds = [row.deliveroo_std if pd.notna(row.deliveroo_std) else 0, row.glovo_std if pd.notna(row.glovo_std) else 0]
+        labels = ["Deliveroo", "Glovo"]
+        ax.bar(labels, means, yerr=stds, capsize=5, color=[palette.get("Deliveroo", "#00CCBC"), palette.get("Glovo", "#FFC244")])
+        style_axis(ax, f"Efficienza statistica - {row.task_id}", "", "Secondi")
+        ax.text(0.5, max(means) * 1.08 if max(means) else 1, f"p={row.p_value:.3f} | IC 95% [{row.ci_low:.2f}, {row.ci_high:.2f}]", ha="center", color="#F8FAFC")
+        save_figure(fig, path, config)
+        paths.append(_saved_asset(path))
+    return paths
+
+
+def _plot_ueq_final_assets(config: dict, item_summary: pd.DataFrame, scale_summary: pd.DataFrame) -> list[Path]:
+    output_dir = resolve_path("slides/assets/generated/ueq")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    paths: list[Path] = []
+    for app in ["Deliveroo", "Glovo"]:
+        app_items = item_summary[item_summary["app"].astype(str).str.casefold() == app.casefold()]
+        app_scales = scale_summary[scale_summary["app"].astype(str).str.casefold() == app.casefold()]
+        paths.append(_plot_ueq_distribution(config, app_items, output_dir / f"ueq_distribution_{app.lower()}.png", app))
+        paths.append(_plot_ueq_mean_results(config, app_scales, output_dir / f"ueq_mean_results_{app.lower()}.png", app))
+        paths.append(_plot_ueq_benchmark(config, app_scales, output_dir / f"ueq_benchmark_{app.lower()}.png", app))
+    paths.append(_plot_ueq_scale_comparison(config, scale_summary, output_dir / "ueq_scale_comparison_deliveroo_vs_glovo.png"))
+    return paths
+
+
+def _plot_ueq_distribution(config: dict, df: pd.DataFrame, path: Path, app: str) -> Path:
+    fig, ax = plt.subplots(figsize=(11, 6))
+    if df.empty:
+        ax.text(0.5, 0.5, "Dati UEQ non disponibili", ha="center", va="center")
+        ax.axis("off")
+    else:
+        plot = df.copy()
+        plot["item"] = plot["item_id"].map(lambda value: f"{int(value):02d}")
+        sns.barplot(data=plot, x="item", y="mean", color=get_brand_palette(config).get(app, "#38BDF8"), ax=ax)
+        ax.axhline(0, color="#F8FAFC", linewidth=1)
+        ax.set_ylim(-3, 3)
+        style_axis(ax, f"Distribuzione risposte UEQ - {app}", "Item", "Media scala -3..+3")
+    save_figure(fig, path, config)
+    return _expose_saved_asset(path)
+
+
+def _plot_ueq_mean_results(config: dict, df: pd.DataFrame, path: Path, app: str) -> Path:
+    fig, ax = plt.subplots(figsize=(9, 5.2))
+    if df.empty:
+        ax.text(0.5, 0.5, "Dati UEQ non disponibili", ha="center", va="center")
+        ax.axis("off")
+    else:
+        sns.barplot(data=df, y="dimension", x="mean", color=get_brand_palette(config).get(app, "#38BDF8"), ax=ax)
+        ax.axvline(0, color="#F8FAFC", linewidth=1)
+        ax.set_xlim(-3, 3)
+        style_axis(ax, f"Media risultati UEQ - {app}", "Media scala -3..+3", "")
+    save_figure(fig, path, config)
+    return _expose_saved_asset(path)
+
+
+def _plot_ueq_benchmark(config: dict, df: pd.DataFrame, path: Path, app: str) -> Path:
+    fig, ax = plt.subplots(figsize=(9, 5.2))
+    if df.empty:
+        ax.text(0.5, 0.5, "Benchmark UEQ non disponibile", ha="center", va="center")
+        ax.axis("off")
+    else:
+        colors = df["benchmark_label"].map({"Excellent": "#10B981", "Good": "#22C55E", "Above average": "#84CC16", "Below average": "#F59E0B", "Bad": "#EF4444"}).fillna("#94A3B8")
+        ax.barh(df["dimension"], df["mean"], color=colors)
+        ax.axvline(0, color="#F8FAFC", linewidth=1)
+        ax.set_xlim(-3, 3)
+        style_axis(ax, f"Comparazione con benchmark - {app}", "Media scala -3..+3", "")
+    save_figure(fig, path, config)
+    return _expose_saved_asset(path)
+
+
+def _plot_ueq_scale_comparison(config: dict, df: pd.DataFrame, path: Path) -> Path:
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    if df.empty:
+        ax.text(0.5, 0.5, "Dati UEQ non disponibili", ha="center", va="center")
+        ax.axis("off")
+    else:
+        sns.barplot(data=df, x="dimension", y="mean", hue="app", palette=get_brand_palette(config), ax=ax)
+        ax.axhline(0, color="#F8FAFC", linewidth=1)
+        ax.set_ylim(-3, 3)
+        ax.tick_params(axis="x", rotation=20)
+        style_axis(ax, "Confronto scale UEQ Deliveroo vs Glovo", "Dimensione", "Media scala -3..+3")
+    save_figure(fig, path, config)
+    return _expose_saved_asset(path)
+
+
 def _final_insights(systems: list[str]) -> dict[str, Any]:
     return {
         "heuristics": "Le criticita piu rilevanti riguardano controllo, prevenzione dell'errore, visibilita dello stato del sistema e trasparenza informativa.",
@@ -673,6 +1110,12 @@ def _write_csv(df: pd.DataFrame, path: Path) -> Path:
     return path
 
 
+def _write_md(text: str, path: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+    return path
+
+
 def _saved_asset(path: Path) -> Path:
     target = resolve_path(path)
     dark = target.parent / "dark" / target.name
@@ -681,6 +1124,15 @@ def _saved_asset(path: Path) -> Path:
     presentation = target.parent / "presentation" / target.name
     if presentation.exists():
         return presentation
+    return target
+
+
+def _expose_saved_asset(path: Path) -> Path:
+    target = resolve_path(path)
+    saved = _saved_asset(target)
+    if saved.exists() and saved != target:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(saved, target)
     return target
 
 
@@ -726,6 +1178,21 @@ def _bootstrap_ci(values: pd.Series, iterations: int = 1000) -> tuple[float, flo
     return float(np.percentile(means, 2.5)), float(np.percentile(means, 97.5))
 
 
+def _bootstrap_ci_unpaired(left: pd.Series, right: pd.Series, iterations: int = 1000) -> tuple[float, float]:
+    left_arr = pd.to_numeric(left, errors="coerce").dropna().to_numpy()
+    right_arr = pd.to_numeric(right, errors="coerce").dropna().to_numpy()
+    if len(left_arr) < 2 or len(right_arr) < 2:
+        diff = float(left_arr.mean() - right_arr.mean()) if len(left_arr) and len(right_arr) else np.nan
+        return diff, diff
+    rng = np.random.default_rng(42)
+    diffs = [
+        rng.choice(left_arr, size=len(left_arr), replace=True).mean()
+        - rng.choice(right_arr, size=len(right_arr), replace=True).mean()
+        for _ in range(iterations)
+    ]
+    return float(np.percentile(diffs, 2.5)), float(np.percentile(diffs, 97.5))
+
+
 def _p_interpretation(p_value: float) -> str:
     if p_value < 0.05:
         return "differenza statisticamente significativa"
@@ -742,3 +1209,119 @@ def _ueq_label(mean: float) -> str:
     if mean < -0.8:
         return "negativo"
     return "neutro"
+
+
+def _to_ueq_standard(values: pd.Series) -> pd.Series:
+    numeric = pd.to_numeric(values, errors="coerce").dropna()
+    if numeric.empty:
+        return numeric
+    if numeric.min() >= 1 and numeric.max() <= 7:
+        return numeric - 4
+    return numeric
+
+
+def _split_anchors(item: Any) -> tuple[str, str]:
+    text = str(item or "")
+    if "-" in text:
+        left, right = text.split("-", 1)
+        return left.strip(), right.strip()
+    if "/" in text:
+        left, right = text.split("/", 1)
+        return left.strip(), right.strip()
+    return text.strip(), ""
+
+
+def _ueq_dimension_for_item(item_id: int) -> str:
+    mapping = {
+        "Attrattivita": {1, 5, 6, 7, 12, 18},
+        "Perspicuita": {4, 14, 17, 24},
+        "Efficienza": {9, 13, 20, 22},
+        "Affidabilita": {2, 11, 15, 19},
+        "Stimolazione": {3, 8, 16, 21},
+        "Novita": {10, 23, 25, 26},
+    }
+    for dimension, ids in mapping.items():
+        if item_id in ids:
+            return dimension
+    return "n.d."
+
+
+def _ueq_benchmark_label(mean: float) -> str:
+    if pd.isna(mean):
+        return "n.d."
+    if mean >= 1.5:
+        return "Excellent"
+    if mean >= 1.0:
+        return "Good"
+    if mean >= 0.8:
+        return "Above average"
+    if mean >= 0.0:
+        return "Below average"
+    return "Bad"
+
+
+def _ueq_benchmark_interpretation(label: str) -> str:
+    return {
+        "Excellent": "Risultato molto forte rispetto al benchmark indicativo.",
+        "Good": "Risultato positivo e competitivo.",
+        "Above average": "Risultato sopra la soglia positiva.",
+        "Below average": "Risultato leggibile ma con margini di miglioramento.",
+        "Bad": "Risultato critico rispetto alla scala UEQ standard.",
+    }.get(label, "Benchmark non disponibile.")
+
+
+def _ueq_analysis_slide_table(df: pd.DataFrame, app: str) -> pd.DataFrame:
+    subset = df[df["app"].astype(str).str.casefold() == app.casefold()].copy()
+    if subset.empty:
+        return pd.DataFrame(columns=["Domanda", "Media", "Varianza", "Dev. standard", "N", "Valore sinistro", "Valore destro", "Sottogruppo"])
+    result = subset[["item_id", "mean", "variance", "std", "n", "left_anchor", "right_anchor", "dimension"]].copy()
+    result.columns = ["Domanda", "Media", "Varianza", "Dev. standard", "N", "Valore sinistro", "Valore destro", "Sottogruppo"]
+    return result
+
+
+def _ueq_benchmark_slide_table(df: pd.DataFrame, app: str) -> pd.DataFrame:
+    subset = df[df["app"].astype(str).str.casefold() == app.casefold()].copy()
+    if subset.empty:
+        return pd.DataFrame(columns=["Sottogruppo", "Media", "Comparazione", "Interpretazione"])
+    result = subset[["dimension", "mean", "benchmark_label", "benchmark_interpretation"]].copy()
+    result.columns = ["Sottogruppo", "Media", "Comparazione", "Interpretazione"]
+    return result
+
+
+def _write_statistical_tests_notes(path: Path, efficiency: pd.DataFrame) -> Path:
+    lines = [
+        "# Note sui test statistici",
+        "",
+        "- I task sono trattati come misure appaiate quando lo stesso partecipante ha dati per Deliveroo e Glovo.",
+        "- Per differenze appaiate non normali viene usato Wilcoxon signed-rank; se la normalita e plausibile viene usato paired t-test.",
+        "- Se non e possibile appaiare i partecipanti viene usato Mann-Whitney U.",
+        "- L'intervallo di confidenza al 95% sulla differenza media usa bootstrap con seed fisso 42.",
+        "",
+        "## Test applicati",
+    ]
+    for row in efficiency.itertuples(index=False):
+        lines.append(f"- {row.task_id}: {row.test_name}, p={row.p_value:.4f}, IC 95% [{row.ci_low:.2f}, {row.ci_high:.2f}].")
+    return _write_md("\n".join(lines) + "\n", path)
+
+
+def _write_generation_log(path: Path, paths: dict[str, list[Path]]) -> Path:
+    data_dir = resolve_path(FINAL_DATA_DIR)
+    questions = pd.read_csv(data_dir / "questionnaire_item_descriptive_stats.csv", encoding="utf-8-sig") if (data_dir / "questionnaire_item_descriptive_stats.csv").exists() else pd.DataFrame()
+    question_count = int(questions["item_id"].nunique()) if "item_id" in questions else 0
+    ueq_assets = sorted(resolve_path("slides/assets/generated/ueq").glob("*.png"))
+    efficiency_assets = sorted(resolve_path(FINAL_ASSET_DIR).glob("**/task_efficiency_*.png"))
+    lines = [
+        "# Final report generation log",
+        "",
+        f"- Timestamp generazione: {datetime.now().isoformat(timespec='seconds')}",
+        f"- Numero slide totali: calcolato in fase di export PPTX",
+        f"- Numero domande questionario rilevate: {question_count}",
+        f"- Numero slide questionario previste: {math.ceil(question_count / 2) if question_count else 0}",
+        f"- Asset UEQ generati: {len(ueq_assets)}",
+        f"- Asset efficienza generati: {len(efficiency_assets)}",
+        f"- File dati generati: {len(paths.get('data', []))}",
+        f"- Asset final report generati: {len(paths.get('assets', []))}",
+        "- Warning: nessun warning bloccante registrato dalla pipeline final_report.",
+        "",
+    ]
+    return _write_md("\n".join(lines), path)

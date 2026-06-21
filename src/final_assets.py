@@ -220,6 +220,19 @@ def generate_expertise_matrix_assets(config: dict) -> None:
     slide_table = profiles[[column for column in slide_columns if column in profiles.columns]].copy()
     export_table(slide_table, "outputs/tables/heuristics_expert_profiles.csv", 2)
     export_table(slide_table, "data/processed/heuristics/expert_profiles.csv", 2)
+    evaluators_slide = slide_table.rename(
+        columns={
+            "evaluator_id": "Valutatore",
+            "expert_group": "Gruppo",
+            "gender": "Genere",
+            "age_group": "Eta",
+            "occupation": "Occupazione",
+            "familiarity": "Familiarita",
+            "usability_experience": "Esperienza usabilita",
+            "domain_experience": "Esperienza dominio",
+        }
+    )
+    export_table(evaluators_slide, "outputs/tables/heuristics_evaluators_slide.csv", 2)
 
     plot_df = profiles.copy()
     plot_df["usability_score"] = plot_df["usability_experience"].map(_experience_score)
@@ -534,17 +547,21 @@ def generate_sample_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:
         return
     all_counts = pd.concat(sample_rows, ignore_index=True)
     export_table(all_counts, "outputs/tables/sample_composition.csv", 2)
-    field_map = {"genere": "gender_distribution", "eta": "age_distribution", "familiarita delivery": "familiarity_distribution", "familiarita con app di delivery": "familiarity_distribution", "situazione lavorativa": "occupation_distribution"}
+    field_map = {
+        "genere": ("gender_distribution", "Genere utenti (n = 24)"),
+        "eta": ("age_distribution", "Fascia d'eta utenti (n = 24)"),
+        "familiarita delivery": ("familiarity_distribution", "Familiarita food delivery (n = 24)"),
+        "familiarita con app di delivery": ("familiarity_distribution", "Familiarita food delivery (n = 24)"),
+        "situazione lavorativa": ("occupation_distribution", "Occupazione utenti (n = 24)"),
+    }
     done = set()
-    for field, filename in field_map.items():
+    for field, (filename, title) in field_map.items():
         subset = all_counts[all_counts["field"] == field]
         if subset.empty or filename in done:
             continue
         done.add(filename)
-        fig, ax = plt.subplots(figsize=(8, 4.5))
-        sns.barplot(data=subset, x="value", y="count", color=get_brand_palette(config).get("Deliveroo", "#00CCBC"), ax=ax)
-        ax.tick_params(axis="x", rotation=25)
-        style_axis(ax, field.capitalize(), "", "Rispondenti")
+        fig, ax = plt.subplots(figsize=(7.5, 5.4))
+        _draw_demographic_pie(ax, subset, title)
         save_figure(fig, f"outputs/figures/sample/{filename}.png", config)
     resolve_path("outputs/texts/snippets/sample_description.md").write_text(
         "# Composizione campione\n\nIl campione dei partecipanti è composto da 24 utenti che hanno valutato entrambi i sistemi.\n",
@@ -559,14 +576,14 @@ def generate_expert_demographics(config: dict) -> None:
     assert profiles["evaluator_id"].nunique() == 8, f"Expected 8 unique experts, found {profiles['evaluator_id'].nunique()}"
 
     field_map = {
-        "gender": "expert_gender_distribution",
-        "age_group": "expert_age_distribution",
-        "occupation": "expert_occupation_distribution",
-        "familiarity": "expert_familiarity_distribution"
+        "gender": ("expert_gender_distribution", "Genere valutatori (n = 8)", "outputs/charts/experts_gender_pie.png"),
+        "age_group": ("expert_age_distribution", "Fascia d'eta valutatori (n = 8)", "outputs/charts/experts_age_pie.png"),
+        "occupation": ("expert_occupation_distribution", "Occupazione valutatori (n = 8)", "outputs/charts/experts_occupation_pie.png"),
+        "familiarity": ("expert_familiarity_distribution", "Familiarita delivery valutatori (n = 8)", "outputs/charts/experts_delivery_familiarity_pie.png"),
     }
 
     expert_rows = []
-    for field, filename in field_map.items():
+    for field, (filename, title, chart_alias) in field_map.items():
         if field in profiles.columns:
             counts = profiles[field].replace("", pd.NA).dropna().astype(str).value_counts().reset_index()
             counts.columns = ["value", "count"]
@@ -574,15 +591,45 @@ def generate_expert_demographics(config: dict) -> None:
             assert counts["count"].sum() == 8, f"Expected count of 8 for expert field {field}, got {counts['count'].sum()}"
             expert_rows.append(counts)
 
-            fig, ax = plt.subplots(figsize=(8, 4.5))
-            sns.barplot(data=counts, x="value", y="count", color=get_brand_palette(config).get("Deliveroo", "#00CCBC"), ax=ax)
-            ax.tick_params(axis="x", rotation=25)
-            style_axis(ax, field.replace("_", " ").capitalize(), "", "Conteggio")
+            fig, ax = plt.subplots(figsize=(7.5, 5.4))
+            _draw_demographic_pie(ax, counts, title)
             save_figure(fig, f"outputs/figures/heuristics/{filename}.png", config)
+            fig, ax = plt.subplots(figsize=(7.5, 5.4))
+            _draw_demographic_pie(ax, counts, title)
+            save_figure(fig, chart_alias, config)
+            _copy_dark_variant_to_root(chart_alias)
 
     if expert_rows:
         all_expert_counts = pd.concat(expert_rows, ignore_index=True)
         export_table(all_expert_counts, "outputs/tables/expert_composition.csv", 2)
+
+
+def _draw_demographic_pie(ax: plt.Axes, counts: pd.DataFrame, title: str) -> None:
+    values = pd.to_numeric(counts["count"], errors="coerce").fillna(0)
+    labels = counts["value"].astype(str).tolist()
+    total = int(values.sum())
+    colors = sns.color_palette("Set2", n_colors=max(3, len(labels)))
+    wedges, _, autotexts = ax.pie(
+        values,
+        startangle=90,
+        colors=colors,
+        autopct=lambda pct: f"{pct:.0f}%\n({int(round(pct * total / 100))})",
+        pctdistance=0.72,
+        textprops={"color": "#F8FAFC", "fontsize": 9},
+    )
+    ax.legend(wedges, labels, loc="center left", bbox_to_anchor=(1.0, 0.5), frameon=False)
+    for text in autotexts:
+        text.set_weight("bold")
+    ax.set_title(title, color="#F8FAFC", fontsize=14, pad=14)
+    ax.axis("equal")
+
+
+def _copy_dark_variant_to_root(path: str | Path) -> None:
+    target = resolve_path(path)
+    dark = target.parent / "dark" / target.name
+    if dark.exists():
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(dark, target)
 
 
 def generate_subgroup_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:

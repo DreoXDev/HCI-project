@@ -79,7 +79,9 @@ def compute_efficiency(df: pd.DataFrame, config: dict) -> tuple[pd.DataFrame, pd
                     "max_seconds": seconds.max(),
                 }
             )
-    return pd.DataFrame(long_rows), pd.DataFrame(summary_rows)
+    long_columns = ["system", "task", "seconds"]
+    summary_columns = ["system", "task", "mean_seconds", "median_seconds", "std_seconds", "min_seconds", "max_seconds"]
+    return pd.DataFrame(long_rows, columns=long_columns), pd.DataFrame(summary_rows, columns=summary_columns)
 
 
 def compute_user_test_statistics(df: pd.DataFrame, config: dict) -> list[str]:
@@ -89,6 +91,9 @@ def compute_user_test_statistics(df: pd.DataFrame, config: dict) -> list[str]:
     for task in range(1, 4):
         s1 = parsed[f"Task {task} {systems[0]} seconds"]
         s2 = parsed[f"Task {task} {systems[1]} seconds"]
+        if len(s1.dropna()) < 2 or len(s2.dropna()) < 2:
+            snippets.append(f"Il test per Task {task} non e calcolabile con i dati disponibili.")
+            continue
         result = stats.ttest_rel(s1, s2, nan_policy="omit")
         snippets.append(gorilla_ttest(systems[0], systems[1], f"Task {task}", result.pvalue, s1.mean(), s2.mean()))
     return snippets

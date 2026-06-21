@@ -169,16 +169,16 @@ def _reference_order_specs(
     add(_table_or_blank("Tabella dei valutatori", "outputs/tables/heuristics_evaluators_slide.csv", texts, "manual_evaluator_table", available_templates))
     add(_comparison_or_blank(
         "Composizione valutatori - dati demografici",
-        "outputs/figures/dark/heuristics/expert_age_distribution.png",
-        "outputs/figures/dark/heuristics/expert_gender_distribution.png",
+        "outputs/charts/experts_age_pie.png",
+        "outputs/charts/experts_gender_pie.png",
         texts,
         "expert_demographics",
         available_templates,
     ))
     add(_comparison_or_blank(
         "Composizione valutatori - profilo ed esperienza",
-        "outputs/figures/dark/heuristics/expert_occupation_distribution.png",
-        "outputs/figures/dark/heuristics/expert_familiarity_distribution.png",
+        "outputs/charts/experts_occupation_pie.png",
+        "outputs/charts/experts_delivery_familiarity_pie.png",
         texts,
         "expert_profile_experience",
         available_templates,
@@ -193,14 +193,6 @@ def _reference_order_specs(
             add(spec)
     else:
         add(_table_or_blank("Problemi rilevati", "outputs/tables/heuristics_problems_slide.csv", texts, "manual_problem_list", available_templates))
-    add(_comparison_or_blank(
-        "Sintesi della valutazione euristica",
-        "outputs/assets/final_report/dark/heuristic_priority_bands.png",
-        "outputs/assets/final_report/dark/heuristic_frequency_comparison.png",
-        texts,
-        "heuristic_final_summary",
-        available_templates,
-    ))
     add(_graph_or_blank("Problemi rilevanti - Deliveroo", "outputs/assets/final_report/dark/top_problems_deliveroo.png", texts, "deliveroo_relevant_problems", available_templates, theme="deliveroo"))
     add(_graph_or_blank("Problemi rilevanti - Glovo", "outputs/assets/final_report/dark/top_problems_glovo.png", texts, "glovo_relevant_problems", available_templates, theme="glovo"))
     add(_table_or_blank("Criticita trasversali comuni", "data/processed/final_report/shared_problem_themes.csv", texts, "shared_criticalities", available_templates))
@@ -230,11 +222,18 @@ def _reference_order_specs(
     ))
     add(_text_spec("Valutazione quantitativa", texts, "heuristic_quantitative_conclusion", available_templates))
 
-    add(_section_slide("Dark pattern e frizioni persuasive"))
     add(_text_spec("Dark pattern e frizioni persuasive", texts, "dark_patterns_intro", available_templates))
     add(_table_or_blank("Dark pattern osservati - Deliveroo", "data/processed/final_report/dark_patterns_deliveroo_slide.csv", texts, "dark_patterns_deliveroo", available_templates, theme="deliveroo"))
     add(_table_or_blank("Dark pattern osservati - Glovo", "data/processed/final_report/dark_patterns_glovo_slide.csv", texts, "dark_patterns_glovo", available_templates, theme="glovo"))
     add(_text_spec("Impatto dei dark pattern sul flusso d'ordine", texts, "dark_patterns_impact", available_templates))
+    add(_comparison_or_blank(
+        "Sintesi della valutazione euristica",
+        "outputs/assets/final_report/dark/heuristic_priority_bands.png",
+        "outputs/assets/final_report/dark/heuristic_frequency_comparison.png",
+        texts,
+        "heuristic_final_summary",
+        available_templates,
+    ))
 
     add(_section_slide("Test utente"))
     add(_text_spec("Obiettivo", texts, "user_test_objective", available_templates))
@@ -250,8 +249,15 @@ def _reference_order_specs(
             for app, theme in ((systems[0], "deliveroo"), (systems[1], "glovo")):
                 add(_text_spec(f"{app} - Task {task_idx}", texts, f"{key}_{theme}", available_templates, theme=theme))
     add(_text_spec("Composizione del campione", texts, "user_test_sample", available_templates))
+    add(_table_or_blank("Profilo degli utenti coinvolti", "outputs/tables/user_profiles_slide.csv", texts, "user_demographics", available_templates))
+    add(_comparison_or_blank("Composizione del campione utenti", "outputs/charts/users_age_pie.png", "outputs/charts/users_gender_pie.png", texts, "user_demographics", available_templates))
+    add(_comparison_or_blank("Composizione utenti - familiarita e profilo", "outputs/charts/users_occupation_pie.png", "outputs/charts/users_delivery_familiarity_pie.png", texts, "user_familiarity_profile", available_templates))
+    add(_graph_or_blank("Matrice descrittiva del profilo utenti", "outputs/charts/user_expertise_matrix.png", texts, "user_expertise_matrix", available_templates))
+    add(_table_or_blank("Tabella unitaria tempi user test", "outputs/tables/user_testing_times_wide.csv", texts, "users_time_summary", available_templates))
     add(_text_spec("Legenda efficacia", texts, "effectiveness_legend", available_templates))
-    add(_graph_or_blank("Efficacia", "outputs/figures/dark/user_tests/effectiveness_deliveroo_vs_glovo.png", texts, "effectiveness_intro", available_templates))
+    add(_graph_or_blank("Efficacia stretta per task", "outputs/charts/user_test_effectiveness_strict.png", texts, "effectiveness_intro", available_templates))
+    add(_graph_or_blank("Efficacia estesa per task", "outputs/charts/user_test_effectiveness_extended.png", texts, "effectiveness_intro", available_templates))
+    add(_table_or_blank("Task assistite e issue", "outputs/tables/user_test_assistance_events_slide.csv", texts, "effectiveness_intro", available_templates))
     for task_idx in range(1, task_count + 1):
         task = f"t{task_idx:02d}"
         add(_graph_or_blank(f"Efficacia - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_effectiveness.png", texts, "task_result_placeholder", available_templates))
@@ -259,7 +265,8 @@ def _reference_order_specs(
     add(_graph_or_blank("Efficienza", "outputs/figures/dark/user_tests/efficiency_boxplot.png", texts, "efficiency_intro", available_templates))
     for task_idx in range(1, task_count + 1):
         task = f"t{task_idx:02d}"
-        add(_graph_or_blank(f"Efficienza - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_efficiency.png", texts, "task_result_placeholder", available_templates))
+        add(_graph_or_blank(f"Efficienza - Task {task_idx}", f"outputs/charts/user_test_efficiency_task_{task_idx}.png", texts, "task_result_placeholder", available_templates))
+        add(_graph_or_blank(f"Efficienza statistica - Task {task_idx}", f"outputs/assets/final_report/dark/task_efficiency_{task}.png", texts, "user_test_statistical_significance", available_templates))
     add(_comparison_or_blank(
         "Successo e distribuzione tempi",
         "outputs/figures/dark/users_time_success_rate.png",
@@ -277,21 +284,14 @@ def _reference_order_specs(
         available_templates,
     ))
     add(_graph_or_blank("Confronto statistico dei task", "outputs/assets/final_report/dark/user_test_time_diff_ci.png", texts, "user_test_statistical_significance", available_templates))
-    add(_table_or_blank("Confronto statistico dei task - tabella", "data/processed/final_report/user_test_inferential_stats_slide.csv", texts, "user_test_statistical_significance", available_templates))
+    add(_table_or_blank("Confronto statistico dei task - tabella", "outputs/tables/user_test_efficiency_comparison_slide.csv", texts, "user_test_statistical_significance", available_templates))
     add(_text_spec("Efficacia ed efficienza: lettura congiunta", texts, "effectiveness_efficiency_joint", available_templates))
-    add(_table_or_blank("Osservazioni qualitative durante i test", "data/processed/final_report/user_test_qualitative_observations_slide.csv", texts, "qualitative_observations", available_templates))
+    add(_table_or_blank("Osservazioni qualitative durante i test", "outputs/tables/user_test_qualitative_notes.csv", texts, "qualitative_observations", available_templates))
 
     add(_section_slide("Questionario"))
-    add(_text_spec("Questionario", texts, "questionnaire_intro", available_templates))
-    add(_comparison_or_blank(
-        "Composizione utenti - dati demografici",
-        "outputs/figures/dark/sample/age_distribution.png",
-        "outputs/figures/dark/sample/gender_distribution.png",
-        texts,
-        "user_demographics",
-        available_templates,
-    ))
-    add(_comparison_or_blank(
+    add(_text_spec("Introduzione al questionario", texts, "questionnaire_intro", available_templates))
+    add(_text_spec("Scala UEQ e metodo di scoring", texts, "ueq_scale", available_templates))
+    False and add(_comparison_or_blank(
         "Composizione utenti - familiarità e profilo",
         "outputs/figures/dark/sample/occupation_distribution.png",
         "outputs/figures/dark/sample/familiarity_distribution.png",
@@ -299,15 +299,8 @@ def _reference_order_specs(
         "user_familiarity_profile",
         available_templates,
     ))
-    for item_idx in [1, 3, 5, 7, 9, 11, 13, 15, 17, 21, 23, 25]:
-        add(_questionnaire_item_spec(
-            f"Domanda {item_idx}",
-            f"outputs/figures/dark/questionnaire/items/item_{item_idx:02d}_boxplot.png",
-            texts,
-            "questionnaire_item_placeholder",
-            available_templates,
-            item_idx=item_idx,
-        ))
+    for pair in _questionnaire_item_pairs():
+        add(_questionnaire_pair_spec(pair, texts, available_templates))
     add(_text_spec("Confronto tra sistemi", texts, "questionnaire_comparison_intro", available_templates))
     for item_idx in [1, 4, 9, 13, 23]:
         add(_questionnaire_item_spec(
@@ -320,12 +313,19 @@ def _reference_order_specs(
             statistical=True,
         ))
     add(_graph_or_blank("Confronto statistico item chiave", "outputs/assets/final_report/dark/questionnaire_top_differences.png", texts, "questionnaire_statistical_comparison", available_templates))
+    add(_table_or_blank("Sintesi descrittiva per item", "data/processed/final_report/questionnaire_item_descriptive_stats.csv", texts, "questionnaire_statistical_comparison", available_templates))
     add(_text_spec("Sintesi dei risultati del questionario", texts, "questionnaire_synthesis", available_templates))
-    add(_text_spec("La scala UEQ", texts, "ueq_scale", available_templates))
-    add(_graph_or_blank("Scala UEQ - analisi dei sottogruppi", "outputs/figures/dark/questionnaire/subgroups/ueq_by_familiarity.png", texts, "subgroup_placeholder", available_templates))
-    add(_table_or_blank("Analisi dei dati UEQ", "outputs/tables/ueq_summary.csv", texts, "ueq_table_placeholder", available_templates))
-    add(_graph_or_blank("Media risultati UEQ", "outputs/figures/dark/questionnaire/ueq_scales.png", texts, "ueq_summary", available_templates))
-    add(_graph_or_blank("Interpretazione delle scale UEQ", "outputs/assets/final_report/dark/ueq_with_ci.png", texts, "ueq_interpretation", available_templates))
+    add(_graph_or_blank("Distribuzione risposte UEQ - Deliveroo", "slides/assets/generated/ueq/ueq_distribution_deliveroo.png", texts, "ueq_summary", available_templates, theme="deliveroo"))
+    add(_graph_or_blank("Distribuzione risposte UEQ - Glovo", "slides/assets/generated/ueq/ueq_distribution_glovo.png", texts, "ueq_summary", available_templates, theme="glovo"))
+    add(_table_or_blank("Analisi dei dati UEQ - Deliveroo", "data/processed/final_report/ueq_item_summary_deliveroo_slide.csv", texts, "ueq_table_placeholder", available_templates, theme="deliveroo"))
+    add(_table_or_blank("Analisi dei dati UEQ - Glovo", "data/processed/final_report/ueq_item_summary_glovo_slide.csv", texts, "ueq_table_placeholder", available_templates, theme="glovo"))
+    add(_graph_or_blank("Media risultati UEQ - Deliveroo", "slides/assets/generated/ueq/ueq_mean_results_deliveroo.png", texts, "ueq_summary", available_templates, theme="deliveroo"))
+    add(_graph_or_blank("Media risultati UEQ - Glovo", "slides/assets/generated/ueq/ueq_mean_results_glovo.png", texts, "ueq_summary", available_templates, theme="glovo"))
+    add(_graph_or_blank("Comparazione con benchmark - Deliveroo", "slides/assets/generated/ueq/ueq_benchmark_deliveroo.png", texts, "ueq_interpretation", available_templates, theme="deliveroo"))
+    add(_table_or_blank("Benchmark UEQ - Deliveroo", "data/processed/final_report/ueq_benchmark_deliveroo_slide.csv", texts, "ueq_interpretation", available_templates, theme="deliveroo"))
+    add(_graph_or_blank("Comparazione con benchmark - Glovo", "slides/assets/generated/ueq/ueq_benchmark_glovo.png", texts, "ueq_interpretation", available_templates, theme="glovo"))
+    add(_table_or_blank("Benchmark UEQ - Glovo", "data/processed/final_report/ueq_benchmark_glovo_slide.csv", texts, "ueq_interpretation", available_templates, theme="glovo"))
+    add(_graph_or_blank("Confronto scale UEQ Deliveroo vs Glovo", "slides/assets/generated/ueq/ueq_scale_comparison_deliveroo_vs_glovo.png", texts, "ueq_interpretation", available_templates))
     add(_text_spec("UEQ: conferme e contraddizioni rispetto ai test", texts, "ueq_confirmations_contradictions", available_templates))
     add(_graph_or_blank("Net Promoter Score: raccomandabilita percepita", "outputs/assets/final_report/dark/nps_breakdown.png", texts, "nps_interpreted", available_templates))
 
@@ -337,7 +337,7 @@ def _reference_order_specs(
     appendix_specs = _appendix_specs(auto, systems, texts, available_templates, task_count)
     if final_delivery:
         add(_section_slide("Appendice"))
-        for spec in _guided_appendix_specs(texts, available_templates):
+        for spec in _final_delivery_appendix_specs(texts, available_templates):
             add(spec)
     elif appendix_specs:
         add(_section_slide("Appendici"))
@@ -731,6 +731,39 @@ def _questionnaire_item_spec(
     return _blank_spec(title, {**texts, fallback_key: insight}, fallback_key, available_templates)
 
 
+def _questionnaire_item_pairs() -> list[list[int]]:
+    rows = _read_dict_rows(resolve_path("outputs/tables/questionnaire_items_summary.csv"))
+    ids = sorted({_safe_int(row.get("item_number")) for row in rows if _safe_int(row.get("item_number"))})
+    if not ids:
+        item_dir = resolve_path("outputs/figures/dark/questionnaire/items")
+        ids = sorted(_safe_int(match.group(1)) for path in item_dir.glob("item_*_boxplot.png") if (match := re.search(r"item_(\d+)_boxplot", path.name)))
+    return _chunks([item for item in ids if item], 2)
+
+
+def _questionnaire_pair_spec(pair: list[int], texts: dict[str, str], available_templates: set[str]) -> dict[str, Any] | None:
+    if not pair:
+        return None
+    title = f"Distribuzione risposte - Domande {pair[0]}-{pair[-1]}" if len(pair) > 1 else f"Distribuzione risposte - Domanda {pair[0]}"
+    insight = " ".join(_questionnaire_item_insight(item_idx) for item_idx in pair).strip() or texts.get("questionnaire_item_placeholder", "")
+    images = [resolve_path(f"outputs/figures/dark/questionnaire/items/item_{item_idx:02d}_boxplot.png") for item_idx in pair]
+    existing = [image for image in images if image.exists()]
+    if len(existing) >= 2 and _has_template(available_templates, "comparison"):
+        return {
+            "template": "comparison",
+            "theme": "neutral",
+            "fields": {"COMPARISON_TITLE": title, "SUMMARY_TEXT": insight},
+            "images": {"LEFT_GRAPH": _rel(existing[0]), "RIGHT_GRAPH": _rel(existing[1])},
+        }
+    if len(existing) == 1:
+        return {
+            "template": "graph_full",
+            "theme": "neutral",
+            "fields": {"GRAPH_TITLE": title, "INSIGHT_TEXT": insight},
+            "images": {"GRAPH_MAIN": _rel(existing[0])},
+        }
+    return _blank_spec(title, {**texts, "questionnaire_item_placeholder": insight}, "questionnaire_item_placeholder", available_templates)
+
+
 def _questionnaire_item_insight(item_idx: int, *, statistical: bool = False) -> str:
     rows = _read_dict_rows(resolve_path("outputs/tables/questionnaire_items_summary.csv"))
     row = next((item for item in rows if _safe_int(item.get("item_number")) == item_idx), None)
@@ -860,6 +893,7 @@ def _fallback_reference_texts() -> dict[str, str]:
         "user_test_statistical_significance": "I tempi dei task sono stati confrontati tra Deliveroo e Glovo considerando gli stessi utenti sulle due applicazioni. Il risultato distingue differenze descrittive da differenze statisticamente piu robuste.",
         "effectiveness_efficiency_joint": "La sola efficienza temporale non basta per valutare l'usabilita del flusso. Nei task di food delivery e necessario leggere insieme tempo, successo, errori e osservazioni qualitative.\n\nUn'interazione veloce puo risultare problematica se porta l'utente a perdere il controllo del carrello, a non comprendere lo stato dell'ordine o a confermare un pagamento senza verifica esplicita.",
         "qualitative_observations": "Le note qualitative collegano i dati numerici alle frizioni osservate: indirizzo, carrello, checkout, contenuti commerciali e tracking diventano punti in cui l'utente puo perdere orientamento o fiducia.",
+        "user_expertise_matrix": "La matrice mostra la distribuzione dei partecipanti rispetto alla familiarita con servizi di food delivery e all'esperienza digitale dichiarata. Poiche il questionario non contiene una variabile digitale separata, la matrice va letta come rappresentazione descrittiva utile a contestualizzare tempi, errori e task assistiti.",
         "questionnaire_statistical_comparison": "Il confronto tra item del questionario evidenzia dove la percezione soggettiva separa maggiormente le due applicazioni e aiuta a collegare opinioni, prestazioni e problemi euristici.",
         "questionnaire_synthesis": "Il questionario mostra la percezione soggettiva degli utenti dopo l'interazione. I risultati vanno letti come complemento dei test: tempi ed errori descrivono la prestazione osservabile, mentre le risposte soggettive indicano fiducia, chiarezza, soddisfazione e disponibilita a riutilizzare o consigliare il servizio.",
         "ueq_interpretation": "Le scale UEQ distinguono qualita pragmatica dell'interazione, legata a chiarezza, efficienza e controllo, e qualita edonica, legata a stimolazione, attrattiva e originalita. Il punto centrale e capire quali dimensioni confermano le criticita osservate nei test.",
@@ -925,6 +959,28 @@ def _guided_appendix_specs(texts: dict[str, str], available_templates: set[str])
     for title, body in entries:
         specs.append(_text_spec(title, {**texts, "__appendix_guided_body": f"INSERIRE SCREENSHOT QUI\n\n{body}\n\nNota: questa slide serve come prova documentale a supporto della discussione orale."}, "__appendix_guided_body", available_templates))
     return [spec for spec in specs if spec is not None]
+
+
+def _final_delivery_appendix_specs(texts: dict[str, str], available_templates: set[str]) -> list[dict[str, Any]]:
+    entries = [
+        ("Appendice A6 - Tabelle complete tempi utente", "data/processed/final_report/user_test_times_unified.csv"),
+        ("Appendice A7 - Note qualitative dei test", "data/processed/final_report/user_test_qualitative_observations.csv"),
+        ("Appendice A8 - Export valutazione problemi", "data/processed/heuristics/problem_severity_summary.csv"),
+        ("Appendice A9 - Descrittive questionario utenti", "data/processed/final_report/questionnaire_item_descriptive_stats.csv"),
+        ("Appendice A10 - Calcoli statistici task", "data/processed/final_report/task_efficiency_stats.csv"),
+        ("Appendice A11 - Problemi Deliveroo completi", "outputs/tables/final_problems_deliveroo.csv"),
+        ("Appendice A11 - Problemi Glovo completi", "outputs/tables/final_problems_glovo.csv"),
+        ("Appendice A12 - Log generazione finale", "outputs/final/final_report_generation_log.md"),
+    ]
+    specs: list[dict[str, Any]] = []
+    for title, source in entries:
+        path = resolve_path(source)
+        if not path.exists() or path.suffix.lower() != ".csv":
+            continue
+        spec = _table_or_blank(title, source, texts, "appendix_placeholder", available_templates)
+        if spec is not None:
+            specs.append(spec)
+    return specs
 
 
 def _appendix_entries(systems: tuple[str, str], task_count: int) -> list[tuple[str, str, str]]:
@@ -1247,7 +1303,10 @@ def _read_csv_rows(path: Path) -> list[list[str]]:
     with path.open(newline="", encoding="utf-8-sig") as handle:
         sample = handle.read(2048)
         handle.seek(0)
-        dialect = csv.Sniffer().sniff(sample, delimiters=",;") if sample.strip() else csv.excel
+        try:
+            dialect = csv.Sniffer().sniff(sample, delimiters=",;") if sample.strip() else csv.excel
+        except csv.Error:
+            dialect = csv.excel
         return [row for row in csv.reader(handle, dialect) if any(cell.strip() for cell in row)]
 
 

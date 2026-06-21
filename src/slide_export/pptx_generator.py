@@ -79,7 +79,12 @@ def generate_slides(
     missing_optional: list[Path] = []
     for spec in requested:
         if spec.get("template_id") == "full_slide_image":
-            _add_full_slide_image(presentation, resolve_path(spec["image"]))
+            _add_full_slide_image(
+                presentation,
+                resolve_path(spec["image"]),
+                title=str(spec.get("title") or ""),
+                caption=str(spec.get("caption") or ""),
+            )
             continue
         template_id = _resolved_spec_template_id(spec)
         source_slide = template_map[template_id]
@@ -188,12 +193,42 @@ def replace_placeholder_with_image(slide: Any, placeholder_name: str, image_path
     )
 
 
-def _add_full_slide_image(presentation: Any, image_path: Path) -> None:
+def _add_full_slide_image(presentation: Any, image_path: Path, *, title: str = "", caption: str = "") -> None:
     if not image_path.exists():
         raise SlideGenerationError(f"Missing full-slide image:\n{image_path}")
     blank_layout = presentation.slide_layouts[6]
     slide = presentation.slides.add_slide(blank_layout)
     slide.shapes.add_picture(str(image_path), 0, 0, width=presentation.slide_width, height=presentation.slide_height)
+    if title or caption:
+        left = int(presentation.slide_width * 0.035)
+        top = int(presentation.slide_height * 0.035)
+        width = int(presentation.slide_width * 0.56)
+        height = int(presentation.slide_height * 0.12)
+        box = slide.shapes.add_textbox(left, top, width, height)
+        fill = box.fill
+        fill.solid()
+        fill.fore_color.rgb = _rgb("111827")
+        fill.transparency = 18
+        frame = box.text_frame
+        frame.clear()
+        frame.margin_left = 120000
+        frame.margin_right = 120000
+        frame.margin_top = 65000
+        frame.margin_bottom = 45000
+        paragraph = frame.paragraphs[0]
+        run = paragraph.add_run()
+        run.text = title
+        run.font.name = DECK_FONT_FAMILY
+        run.font.size = _pt(20)
+        run.font.bold = True
+        run.font.color.rgb = _rgb("F8FAFC")
+        if caption:
+            sub = frame.add_paragraph()
+            sub_run = sub.add_run()
+            sub_run.text = caption
+            sub_run.font.name = DECK_FONT_FAMILY
+            sub_run.font.size = _pt(10)
+            sub_run.font.color.rgb = _rgb("CBD5E1")
 
 
 def _find_visual_image_placeholder(slide: Any, placeholder_name: str) -> Any | None:
