@@ -47,6 +47,9 @@ def table_specs_from_paginated_table(spec: dict[str, Any]) -> list[dict[str, Any
     for index, _page in enumerate(pages):
         clone = {**spec, "fields": dict(spec.get("fields") or {}), "table": dict(table)}
         clone["table"]["start_row"] = index * int(table.get("max_rows") or 6)
-        clone["fields"]["TABLE_TITLE"] = f"{table.get('title_prefix') or clone['fields'].get('TABLE_TITLE', 'Tabella')} ({index + 1}/{len(pages)})"
+        base_title = table.get("title_prefix") or clone["fields"].get("TABLE_TITLE", "Tabella")
+        separator = " — " if Path(str(table.get("source", ""))).name in {"user_testing_times_wide.csv", "user_profiles_slide.csv"} else " "
+        suffix = f"{index + 1}/{len(pages)}" if separator.strip() == "—" else f"({index + 1}/{len(pages)})"
+        clone["fields"]["TABLE_TITLE"] = f"{base_title}{separator}{suffix}"
         specs.append(clone)
     return specs

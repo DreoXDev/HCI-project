@@ -151,6 +151,12 @@ La matrice problemi-valutatori mostra quali criticità sono state individuate da
 ## heuristic_distribution
 La distribuzione delle euristiche violate permette di capire quali dimensioni dell'interazione risultano più problematiche nei due sistemi.
 
+## heuristic_distribution_deliveroo
+Per Deliveroo, la distribuzione delle euristiche violate evidenzia quali principi di usabilità risultano più frequentemente coinvolti nei problemi osservati. La torta per categorie permette di leggere la concentrazione delle criticità rispetto a dimensioni cognitive, percettive e di gestione degli errori.
+
+## heuristic_distribution_glovo
+Per Glovo, la distribuzione delle euristiche violate mostra il profilo delle criticità emerse nella valutazione esperta. Il grafico a torta evidenzia il peso relativo delle categorie di problemi, rendendo più immediata la lettura delle aree di interazione maggiormente coinvolte.
+
 ## heuristic_quantitative_conclusion
 La valutazione quantitativa delle criticità deve essere letta come supporto alla discussione qualitativa.
 
@@ -285,18 +291,19 @@ La composizione del campione dei test utente aiuta a leggere **tempi**, **errori
 Stato raccolta: **dati finali**, 24 utenti disponibili su 24 previsti.
 
 ## effectiveness_intro
-L'**efficacia** misura quanto spesso gli utenti riescono a completare correttamente i task assegnati.
+Sono state distinte due metriche: l'**efficacia** misura il completamento complessivo del task, mentre l'**efficacia assoluta** considera solo i task completati autonomamente e senza criticità annotate.
 
 ## effectiveness_legend
-La lettura delle slide di efficacia distingue tre esiti:
-- successo: il task viene completato senza blocchi rilevanti
-- successo assistito o parziale: il task viene completato con aiuto, esitazioni o lentezza
-- insuccesso: il task non viene completato o produce errori bloccanti
+I casi completati con aiuto o workaround sono inclusi nell'efficacia generale, ma esclusi dall'efficacia assoluta.
 
-Successo, errori e richieste di aiuto determinano la classificazione usata nei grafici.
+Efficacia: task completata, anche con aiuto o criticità.
+Efficacia assoluta: task completata senza aiuto e senza criticità annotate.
+Completamento con criticità: task completata ma con aiuto, workaround o problema rilevante.
 
 ## efficiency_intro
 L'**efficienza** considera il tempo necessario per completare i task, confrontando le prestazioni tra app e tra attività.
+
+Le analisi di efficienza principale considerano solo i tempi dei task completati autonomamente. I tempi dei task completati con aiuto sono riportati nei dati grezzi, ma non usati per stimare l'efficienza autonoma.
 
 ## task_result_placeholder
 Il task va letto combinando successo, errori e tempo: una differenza di durata diventa rilevante soprattutto quando coincide con esitazioni, richieste di aiuto o perdita di controllo nel flusso.
@@ -308,7 +315,7 @@ La slide mostra gli errori medi osservati per il task. Usarla insieme alla slide
 La lettura congiunta di **tempi**, successo ed errori permette di distinguere task rapidi ma problematici da task più lunghi ma completati correttamente.
 
 ## user_test_statistical_significance
-I tempi dei task sono stati confrontati usando gli stessi **24 partecipanti** su Deliveroo e Glovo, quindi il confronto e **appaiato**.
+I tempi dei task sono stati confrontati usando gli stessi **24 partecipanti** su Deliveroo e Glovo, quindi il confronto e **appaiato**. Per i p-value principali vengono usate solo coppie in cui l'utente ha completato autonomamente il task su entrambe le app; con meno di 5 coppie valide il confronto viene indicato come non sufficiente.
 
 Per ogni task la pipeline seleziona un test appaiato sui tempi di completamento:
 - paired t-test quando la distribuzione delle differenze e compatibile con l'assunzione di normalita

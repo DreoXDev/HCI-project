@@ -20,6 +20,9 @@ from .adapters.formbricks.normalization import comparable
 from .adapters.formbricks.questionnaire_adapter import load_formbricks_export
 from .config import resolve_path
 from .final_problem_tables import generate_final_problem_tables
+from .heuristics import HEURISTIC_CATEGORIES
+from .visualization.theme import BRAND_COLORS, DELIVEROO_COLOR, GLOVO_COLOR
+from .visualization.theme import apply_base_theme
 from .visualization.theme import style_axis
 
 
@@ -34,6 +37,24 @@ HEURISTICS = {
     "E8": "Aesthetic and minimalist design",
     "E9": "Help users recognize and recover from errors",
     "E10": "Help and documentation",
+}
+HEURISTICS_IT = {
+    "E1": "Visibilita dello stato del sistema",
+    "E2": "Corrispondenza tra sistema e mondo reale",
+    "E3": "Controllo e liberta dell'utente",
+    "E4": "Coerenza e standard",
+    "E5": "Prevenzione degli errori",
+    "E6": "Riconoscimento piuttosto che ricordo",
+    "E7": "Flessibilita ed efficienza d'uso",
+    "E8": "Design estetico e minimalista",
+    "E9": "Riconoscere e recuperare dagli errori",
+    "E10": "Aiuto e documentazione",
+}
+HEURISTIC_ORDER = [f"E{index}" for index in range(1, 11)]
+CATEGORY_COLORS = {
+    "Cognizione": "#7C3AED",
+    "Errori": "#EF4444",
+    "Percezione": "#14B8A6",
 }
 
 
@@ -698,10 +719,11 @@ def run_severity_pipeline(
     ratings_export = load_formbricks_export(ratings_export_path)
     ratings_long, warnings = normalize_formbricks_severity_export(ratings_export, problems=problems, strict=strict)
     output_root = resolve_path(processed_dir)
+    public_output_root = resolve_path(out_dir).parent
     ratings_path = output_root / "problem_ratings_long.csv"
     final_path = output_root / "heuristic_final_dataset.csv"
     _write_csv_return(ratings_long, ratings_path)
-    evaluators_path = _write_csv_return(build_severity_evaluators_slide_table(ratings_export), resolve_path("outputs/tables/heuristics_evaluators_slide.csv"))
+    evaluators_path = _write_csv_return(build_severity_evaluators_slide_table(ratings_export), public_output_root / "tables" / "heuristics_evaluators_slide.csv")
     final, join_warnings = build_heuristic_final_dataset(problems, ratings_long, strict=strict)
     _write_csv_return(final, final_path)
     result = write_final_heuristics_outputs(final, out_dir=out_dir, processed_dir=processed_dir)
@@ -752,6 +774,7 @@ def write_final_heuristics_outputs(
     warnings: list[str] = []
     processed_root = resolve_path(processed_dir)
     output_root = resolve_path(out_dir)
+    public_output_root = output_root.parent
     charts_dir = output_root / "charts"
     tables_dir = output_root / "tables"
     texts_dir = output_root / "texts"
@@ -763,12 +786,15 @@ def write_final_heuristics_outputs(
     matrix = build_expert_problem_matrix(clean, ratings)
     heuristic_summary = build_group_severity_summary(final, "heuristic", "heuristic_severity_summary")
     app_summary = build_group_severity_summary(final, "app", "app_severity_summary")
+    distribution_paths, distribution_warnings = write_heuristic_distribution_outputs(problem_summary, ratings, output_root=public_output_root)
+    warnings.extend(distribution_warnings)
     paths = [
         _write_csv_return(problem_summary, processed_root / "problem_severity_summary.csv"),
         _write_csv_return(matrix, processed_root / "expert_problem_matrix.csv"),
         _write_csv_return(heuristic_summary, processed_root / "heuristic_severity_summary.csv"),
         _write_csv_return(app_summary, processed_root / "app_severity_summary.csv"),
-        _write_csv_return(build_problems_slide_table(problem_summary), resolve_path("outputs/tables/heuristics_problems_slide.csv")),
+        _write_csv_return(build_problems_slide_table(problem_summary), public_output_root / "tables" / "heuristics_problems_slide.csv"),
+        *distribution_paths,
     ]
     table_outputs = {
         "final_problems_table.csv": clean,
@@ -830,7 +856,7 @@ def write_final_heuristics_outputs(
         conclusions.parent.mkdir(parents=True, exist_ok=True)
         conclusions.write_text(summary_text.read_text(encoding="utf-8"), encoding="utf-8")
         paths.append(conclusions)
-    paths.extend(generate_final_problem_tables())
+    paths.extend(generate_final_problem_tables(output_dir=public_output_root / "tables"))
     critical_table = tables_dir / "critical_problems.csv"
     if critical_table.exists():
         paths.append(output_root / "heuristics_critical_problems_table.csv")
@@ -851,6 +877,7 @@ def build_problem_severity_summary(clean: pd.DataFrame, ratings: pd.DataFrame) -
                 "screen": getattr(problem, "screen", ""),
                 "heuristic": getattr(problem, "heuristic", ""),
                 "title": getattr(problem, "title", ""),
+                "description": getattr(problem, "description", ""),
                 "mean_severity": round(float(values.mean()), 2) if not values.empty else np.nan,
                 "median_severity": round(float(values.median()), 2) if not values.empty else np.nan,
                 "std_severity": round(float(values.std(ddof=1)), 2) if len(values) > 1 else 0.0,
@@ -860,6 +887,213 @@ def build_problem_severity_summary(clean: pd.DataFrame, ratings: pd.DataFrame) -
             }
         )
     return pd.DataFrame(rows)
+
+
+def write_heuristic_distribution_outputs(
+    problem_summary: pd.DataFrame,
+    ratings: pd.DataFrame,
+    *,
+    output_root: str | Path = "outputs",
+) -> tuple[list[Path], list[str]]:
+    root = resolve_path(output_root)
+    charts_dir = root / "charts"
+    tables_dir = root / "tables"
+    reports_dir = root / "reports"
+    for directory in [charts_dir, tables_dir, reports_dir]:
+        directory.mkdir(parents=True, exist_ok=True)
+
+    paths: list[Path] = []
+    warnings: list[str] = []
+    mapping = heuristic_category_mapping()
+    heuristic_counts = build_heuristic_occurrence_counts(problem_summary)
+    category_counts = build_heuristic_category_counts(heuristic_counts, mapping)
+    paths.append(_write_csv_return(mapping, tables_dir / "heuristic_category_mapping.csv"))
+    paths.append(_write_csv_return(heuristic_counts, tables_dir / "heuristic_distribution_counts.csv"))
+    paths.append(_write_csv_return(category_counts, tables_dir / "heuristic_category_counts.csv"))
+
+    max_count = int(heuristic_counts["count"].max()) if not heuristic_counts.empty else 0
+    for app, slug, color in [("Deliveroo", "deliveroo", DELIVEROO_COLOR), ("Glovo", "glovo", GLOVO_COLOR)]:
+        app_heuristics = heuristic_counts[heuristic_counts["app"].astype(str).str.casefold() == app.casefold()].copy()
+        app_categories = category_counts[category_counts["app"].astype(str).str.casefold() == app.casefold()].copy()
+        if app_heuristics["count"].sum() == 0:
+            warnings.append(f"Nessun conteggio euristico disponibile per {app}.")
+        if int(app_heuristics["count"].sum()) != int(app_categories["count"].sum()):
+            raise ValueError(f"Conteggi categoria non coerenti per {app}: categorie != euristiche.")
+        paths.append(_plot_single_app_heuristic_distribution(app_heuristics, app, color, charts_dir / f"heuristic_distribution_{slug}.png", max_count))
+        paths.append(_plot_category_pie(app_categories, app, charts_dir / f"heuristic_categories_pie_{slug}.png"))
+
+    problem_tables = build_problem_output_tables(problem_summary)
+    paths.append(_write_csv_return(problem_tables["all"], tables_dir / "heuristic_problems_all.csv"))
+    for app, slug in [("Deliveroo", "deliveroo"), ("Glovo", "glovo")]:
+        paths.append(_write_csv_return(problem_tables[app], tables_dir / f"heuristic_problems_{slug}.csv"))
+    paths.append(write_distribution_control_report(reports_dir / "heuristic_distribution_and_severity_update.md", problem_summary, ratings, heuristic_counts, category_counts, warnings))
+    return paths, warnings
+
+
+def heuristic_category_mapping() -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            {"heuristic_id": code, "heuristic_name": HEURISTICS_IT[code], "category": HEURISTIC_CATEGORIES[code]}
+            for code in HEURISTIC_ORDER
+        ]
+    )
+
+
+def _split_heuristics(value: Any) -> list[str]:
+    codes = re.findall(r"\bE(?:10|[1-9])\b", str(value).upper())
+    return list(dict.fromkeys(codes))
+
+
+def build_heuristic_occurrence_counts(problem_summary: pd.DataFrame) -> pd.DataFrame:
+    apps = sorted(problem_summary["app"].dropna().astype(str).unique()) if "app" in problem_summary else ["Deliveroo", "Glovo"]
+    base = pd.MultiIndex.from_product([apps, HEURISTIC_ORDER], names=["app", "heuristic"]).to_frame(index=False)
+    rows: list[dict[str, str]] = []
+    for row in problem_summary.itertuples(index=False):
+        app = str(getattr(row, "app", ""))
+        for code in _split_heuristics(getattr(row, "heuristic", "")):
+            rows.append({"app": app, "heuristic": code})
+    counts = pd.DataFrame(rows).value_counts(["app", "heuristic"]).reset_index(name="count") if rows else pd.DataFrame(columns=["app", "heuristic", "count"])
+    return base.merge(counts, on=["app", "heuristic"], how="left").fillna({"count": 0}).assign(count=lambda df: df["count"].astype(int))
+
+
+def build_heuristic_category_counts(heuristic_counts: pd.DataFrame, mapping: pd.DataFrame) -> pd.DataFrame:
+    merged = heuristic_counts.merge(mapping[["heuristic_id", "category"]], left_on="heuristic", right_on="heuristic_id", how="left")
+    if merged["category"].isna().any():
+        missing = ", ".join(sorted(merged.loc[merged["category"].isna(), "heuristic"].unique()))
+        raise ValueError(f"Mapping categoria mancante per: {missing}")
+    return merged.groupby(["app", "category"], as_index=False)["count"].sum().sort_values(["app", "category"])
+
+
+def build_problem_output_tables(problem_summary: pd.DataFrame) -> dict[str, pd.DataFrame]:
+    table = problem_summary.copy()
+    table["priority_band"] = pd.to_numeric(table["mean_severity"], errors="coerce").map(priority_band)
+    table["priority_rank"] = table["priority_band"].map({"A": 0, "B": 1, "C": 2, "unrated": 9}).fillna(9).astype(int)
+    table = table.sort_values(["priority_rank", "mean_severity", "median_severity", "std_severity", "problem_id"], ascending=[True, False, False, False, True])
+    output = pd.DataFrame(
+        {
+            "app": table["app"],
+            "problem_id": table["problem_id"],
+            "problem_title": table["title"],
+            "problem_description": table["description"] if "description" in table else table["title"],
+            "heuristic": table["heuristic"],
+            "severity_mean": pd.to_numeric(table["mean_severity"], errors="coerce").round(2),
+            "severity_median": pd.to_numeric(table["median_severity"], errors="coerce").round(2),
+            "severity_std": pd.to_numeric(table["std_severity"], errors="coerce").fillna(0).round(2),
+            "severity_n": pd.to_numeric(table["ratings_count"], errors="coerce").fillna(0).astype(int),
+            "priority_band": table["priority_band"],
+        }
+    )
+    result = {"all": output}
+    for app in ["Deliveroo", "Glovo"]:
+        result[app] = output[output["app"].astype(str).str.casefold() == app.casefold()].copy()
+    return result
+
+
+def _plot_single_app_heuristic_distribution(df: pd.DataFrame, app: str, color: str, path: Path, max_count: int) -> Path:
+    target = resolve_path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    plot_df = df.set_index("heuristic").reindex(HEURISTIC_ORDER, fill_value=0).reset_index()
+    apply_base_theme(style="dark")
+    background = BRAND_COLORS["dark_background"]
+    fig, ax = plt.subplots(figsize=(9.5, 5.2))
+    fig.patch.set_facecolor(background)
+    ax.set_facecolor(background)
+    bars = ax.bar(plot_df["heuristic"], plot_df["count"], color=color, edgecolor="white", linewidth=1.0)
+    ax.set_ylim(0, max(1, max_count) * 1.18)
+    style_axis(ax, f"Distribuzione euristiche violate - {app}", "Euristica", "Occorrenze")
+    for bar in bars:
+        height = int(bar.get_height())
+        ax.annotate(str(height), (bar.get_x() + bar.get_width() / 2, height), ha="center", va="bottom", xytext=(0, 4), textcoords="offset points", fontsize=9)
+    fig.tight_layout()
+    fig.savefig(target, dpi=180, bbox_inches="tight", facecolor=background)
+    plt.close(fig)
+    return target
+
+
+def _plot_category_pie(df: pd.DataFrame, app: str, path: Path) -> Path:
+    target = resolve_path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    plot_df = df[df["count"] > 0].copy()
+    apply_base_theme(style="dark")
+    background = BRAND_COLORS["dark_background"]
+    fig, ax = plt.subplots(figsize=(7.5, 5.2))
+    fig.patch.set_facecolor(background)
+    ax.set_facecolor(background)
+    if plot_df.empty:
+        ax.text(0.5, 0.5, "Nessun dato", ha="center", va="center")
+        ax.axis("off")
+    else:
+        colors = [CATEGORY_COLORS.get(category, "#6B7280") for category in plot_df["category"]]
+        wedges, _ = ax.pie(plot_df["count"], colors=colors, startangle=90, wedgeprops={"linewidth": 1, "edgecolor": BRAND_COLORS["dark_background"]})
+        total = int(plot_df["count"].sum())
+        labels = [f"{row.category} - {int(row.count)} occorrenze ({int(round(row.count / total * 100))}%)" for row in plot_df.itertuples()]
+        ax.legend(wedges, labels, loc="center left", bbox_to_anchor=(1.0, 0.5), frameon=False)
+        ax.set_title(f"Categorie euristiche - {app}", pad=12)
+        ax.axis("equal")
+    fig.tight_layout()
+    fig.savefig(target, dpi=180, bbox_inches="tight", facecolor=background)
+    plt.close(fig)
+    return target
+
+
+def write_distribution_control_report(
+    path: Path,
+    problem_summary: pd.DataFrame,
+    ratings: pd.DataFrame,
+    heuristic_counts: pd.DataFrame,
+    category_counts: pd.DataFrame,
+    warnings: list[str],
+) -> Path:
+    target = resolve_path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    required = {"mean_severity", "median_severity", "std_severity"}
+    present = required <= set(problem_summary.columns)
+    lines = [
+        "# Controllo severita e distribuzione euristiche",
+        "",
+        "## File sorgenti usati",
+        "- `data/processed/heuristics/clean_problems.csv`",
+        "- `data/formbricks_raw/heuristics/severity_ratings_export.csv`",
+        "- `data/processed/heuristics/problem_ratings_long.csv`",
+        "",
+        "## Sintesi",
+        f"- Numero problemi Deliveroo: {_app_problem_count(problem_summary, 'Deliveroo')}",
+        f"- Numero problemi Glovo: {_app_problem_count(problem_summary, 'Glovo')}",
+        f"- Numero valutazioni di severita Deliveroo: {_app_rating_count(problem_summary, ratings, 'Deliveroo')}",
+        f"- Numero valutazioni di severita Glovo: {_app_rating_count(problem_summary, ratings, 'Glovo')}",
+        f"- Campi severity_mean, severity_median, severity_std presenti: {'si' if present else 'no'}",
+        "- Criterio conteggio euristiche: ogni codice E1-E10 presente nella cella `heuristic` viene contato una volta; celle multi-euristica come `E1;E3` contribuiscono a entrambi i conteggi.",
+        "",
+        "## Conteggi E1-E10 Deliveroo",
+        heuristic_counts[heuristic_counts["app"].astype(str).str.casefold() == "deliveroo"].to_markdown(index=False),
+        "",
+        "## Conteggi E1-E10 Glovo",
+        heuristic_counts[heuristic_counts["app"].astype(str).str.casefold() == "glovo"].to_markdown(index=False),
+        "",
+        "## Categorie Deliveroo",
+        category_counts[category_counts["app"].astype(str).str.casefold() == "deliveroo"].to_markdown(index=False),
+        "",
+        "## Categorie Glovo",
+        category_counts[category_counts["app"].astype(str).str.casefold() == "glovo"].to_markdown(index=False),
+        "",
+        "## Nota metodologica",
+        "La severita media sintetizza la gravita complessiva del problema, mentre la mediana riduce l'effetto di valutazioni estreme. La deviazione standard indica il grado di accordo tra valutatori: valori piu alti suggeriscono maggiore variabilita nella percezione della gravita.",
+        "",
+        "## Warning",
+        *(warnings if warnings else ["Nessun warning rilevante."]),
+        "",
+    ]
+    target.write_text("\n".join(lines), encoding="utf-8")
+    return target
+
+
+def _app_problem_count(problem_summary: pd.DataFrame, app: str) -> int:
+    return int((problem_summary["app"].astype(str).str.casefold() == app.casefold()).sum()) if "app" in problem_summary else 0
+
+
+def _app_rating_count(problem_summary: pd.DataFrame, ratings: pd.DataFrame, app: str) -> int:
+    ids = set(problem_summary.loc[problem_summary["app"].astype(str).str.casefold() == app.casefold(), "problem_id"].astype(str))
+    return int(ratings[ratings["problem_id"].astype(str).isin(ids)]["severity"].count()) if not ratings.empty else 0
 
 
 def build_expert_problem_matrix(clean: pd.DataFrame, ratings: pd.DataFrame) -> pd.DataFrame:
@@ -962,7 +1196,11 @@ def _plot_problem_expert_heatmap(matrix: pd.DataFrame, path: Path) -> None:
 def _plot_count_from_summary(summary: pd.DataFrame, column: str, path: Path, title: str) -> None:
     if summary.empty or column not in summary:
         return
-    counts = summary.groupby(column, dropna=False).size().reset_index(name="count")
+    if column == "heuristic":
+        rows = [{"heuristic": code} for value in summary[column] for code in _split_heuristics(value)]
+        counts = pd.DataFrame(rows).value_counts("heuristic").reset_index(name="count") if rows else pd.DataFrame(columns=["heuristic", "count"])
+    else:
+        counts = summary.groupby(column, dropna=False).size().reset_index(name="count")
     _plot_count_bar(counts, column, title, path)
 
 
@@ -1012,8 +1250,8 @@ def _group_text(summary: pd.DataFrame, label_col: str) -> str:
 
 
 def build_problems_slide_table(summary: pd.DataFrame) -> pd.DataFrame:
-    source_columns = ["final_problem_id", "app", "short_description", "heuristics", "severity_mean", "priority_band"]
-    display_columns = ["ID problema", "App", "Problema", "Euristiche", "Severità media", "Priorità"]
+    source_columns = ["final_problem_id", "app", "short_description", "heuristics", "severity_mean", "severity_median", "severity_std", "priority_band"]
+    display_columns = ["ID", "App", "Problema", "Euristica", "Sev. media", "Sev. mediana", "Dev. st.", "Priorita"]
     if summary.empty:
         return pd.DataFrame(columns=display_columns)
     table = summary.copy()
@@ -1022,15 +1260,22 @@ def build_problems_slide_table(summary: pd.DataFrame) -> pd.DataFrame:
         "title": "short_description",
         "heuristic": "heuristics",
         "mean_severity": "severity_mean",
+        "median_severity": "severity_median",
+        "std_severity": "severity_std",
     }
     table = table.rename(columns={source: target for source, target in rename_map.items() if source in table.columns and target not in table.columns})
     if "priority_band" not in table.columns and "severity_mean" in table.columns:
         table["priority_band"] = pd.to_numeric(table["severity_mean"], errors="coerce").map(priority_band)
+    if "severity_std" in table.columns:
+        table["severity_std"] = pd.to_numeric(table["severity_std"], errors="coerce").fillna(0).round(2)
+    for metric in ["severity_mean", "severity_median"]:
+        if metric in table.columns:
+            table[metric] = pd.to_numeric(table[metric], errors="coerce").round(2)
     for column in source_columns:
         if column not in table.columns:
             table[column] = ""
     table = table[source_columns].copy()
-    table["short_description"] = table["short_description"].astype(str).map(lambda text: text if len(text) <= 105 else text[:102].rstrip() + "...")
+    table["short_description"] = table["short_description"].astype(str).map(lambda text: text if len(text) <= 82 else text[:79].rstrip() + "...")
     table.columns = display_columns
     return table
 

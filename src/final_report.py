@@ -318,7 +318,7 @@ def _load_final_user_test_trials(config: dict) -> pd.DataFrame:
     if normalized_path.exists():
         trials = pd.read_csv(normalized_path, encoding="utf-8-sig")
         if not trials.empty and {"participant_id", "app", "task_id", "time_seconds", "outcome"}.issubset(trials.columns):
-            valid_outcomes = {"success", "assisted_success", "partial_success", "failure", "timeout"}
+            valid_outcomes = {"success", "success_with_issue", "assisted_success", "partial_success", "failure", "timeout"}
             trials = trials[trials["outcome"].isin(valid_outcomes)].copy()
             return pd.DataFrame(
                 {
@@ -327,7 +327,8 @@ def _load_final_user_test_trials(config: dict) -> pd.DataFrame:
                     "task_id": trials["task_id"],
                     "task_name": trials.get("task_label", trials["task_id"]),
                     "completion_time_sec": pd.to_numeric(trials["time_seconds"], errors="coerce"),
-                    "success": trials["outcome"].isin(["success", "assisted_success", "partial_success"]),
+                    "outcome": trials["outcome"],
+                    "success": trials["outcome"].eq("success"),
                     "errors_count": pd.to_numeric(trials.get("error_count", 0), errors="coerce").fillna(0),
                     "help_requests": pd.to_numeric(trials.get("help_count", 0), errors="coerce").fillna(0),
                     "notes": trials.get("notes", ""),
@@ -338,7 +339,7 @@ def _load_final_user_test_trials(config: dict) -> pd.DataFrame:
 
 
 def _user_test_times_unified(df: pd.DataFrame) -> pd.DataFrame:
-    columns = ["participant_id", "app", "task_id", "task_label", "time_seconds", "success", "error_count", "notes"]
+    columns = ["participant_id", "app", "task_id", "task_label", "time_seconds", "outcome", "success", "error_count", "notes"]
     if df.empty:
         return pd.DataFrame(columns=columns)
     result = pd.DataFrame(
@@ -348,6 +349,7 @@ def _user_test_times_unified(df: pd.DataFrame) -> pd.DataFrame:
             "task_id": df["task_id"],
             "task_label": df.get("task_name", df["task_id"]),
             "time_seconds": df["completion_time_sec"],
+            "outcome": df.get("outcome", np.where(df["success"], "success", "failure")),
             "success": df["success"],
             "error_count": df["errors_count"],
             "notes": df["notes"] if "notes" in df else "",
@@ -360,7 +362,8 @@ def _user_test_times_summary(df: pd.DataFrame) -> pd.DataFrame:
     columns = ["app", "task_id", "task_label", "n", "mean_seconds", "median_seconds", "std_seconds", "min_seconds", "q1_seconds", "q3_seconds", "max_seconds"]
     if df.empty:
         return pd.DataFrame(columns=columns)
-    summary = df.groupby(["app", "task_id", "task_name"], sort=True).agg(
+    autonomous = df[df["success"]].copy()
+    summary = autonomous.groupby(["app", "task_id", "task_name"], sort=True).agg(
         n=("user_id", "nunique"),
         mean_seconds=("completion_time_sec", "mean"),
         median_seconds=("completion_time_sec", "median"),
@@ -377,7 +380,8 @@ def _user_test_task_stats(df: pd.DataFrame) -> pd.DataFrame:
     columns = ["app", "task", "n", "mean_seconds", "median_seconds", "std_seconds", "min_seconds", "max_seconds", "success_rate", "mean_errors"]
     if df.empty:
         return pd.DataFrame(columns=columns)
-    summary = df.groupby(["app", "task_id"], sort=True).agg(
+    autonomous = df[df["success"]].copy()
+    summary = autonomous.groupby(["app", "task_id"], sort=True).agg(
         n=("user_id", "nunique"),
         mean_seconds=("completion_time_sec", "mean"),
         median_seconds=("completion_time_sec", "median"),
@@ -387,6 +391,10 @@ def _user_test_task_stats(df: pd.DataFrame) -> pd.DataFrame:
         success_rate=("success", "mean"),
         mean_errors=("errors_count", "mean"),
     ).reset_index().rename(columns={"task_id": "task"})
+    totals = df.groupby(["app", "task_id"], sort=True).agg(total=("user_id", "nunique"), autonomous_success=("success", "sum")).reset_index()
+    summary = summary.drop(columns=["success_rate"], errors="ignore").merge(totals, on=["app", "task_id"], how="right")
+    summary["success_rate"] = summary["autonomous_success"] / summary["total"]
+    summary["n"] = summary["total"]
     return summary[columns]
 
 
@@ -397,10 +405,27 @@ def _user_test_inferential_stats(df: pd.DataFrame, config: dict) -> pd.DataFrame
     systems = [config["project"]["system_1"], config["project"]["system_2"]]
     rows = []
     for task, group in df.groupby("task_id", sort=True):
-        left = group[group["app"].astype(str).str.casefold() == systems[0].casefold()][["user_id", "completion_time_sec"]]
-        right = group[group["app"].astype(str).str.casefold() == systems[1].casefold()][["user_id", "completion_time_sec"]]
+        autonomous = group[group["success"]]
+        left = autonomous[autonomous["app"].astype(str).str.casefold() == systems[0].casefold()][["user_id", "completion_time_sec"]]
+        right = autonomous[autonomous["app"].astype(str).str.casefold() == systems[1].casefold()][["user_id", "completion_time_sec"]]
         paired = left.merge(right, on="user_id", suffixes=("_deliveroo", "_glovo"))
-        if len(paired) < 2:
+        if len(paired) < 5:
+            rows.append(
+                {
+                    "metric": "completion_time_sec",
+                    "task": task,
+                    "test_name": "N appaiato insufficiente",
+                    "n": len(paired),
+                    "deliveroo_mean": paired["completion_time_sec_deliveroo"].mean() if "completion_time_sec_deliveroo" in paired else np.nan,
+                    "glovo_mean": paired["completion_time_sec_glovo"].mean() if "completion_time_sec_glovo" in paired else np.nan,
+                    "mean_diff": np.nan,
+                    "p_value": np.nan,
+                    "effect_size": np.nan,
+                    "ci_low": np.nan,
+                    "ci_high": np.nan,
+                    "interpretation": "N appaiato insufficiente sui soli successi autonomi.",
+                }
+            )
             continue
         diff = paired["completion_time_sec_deliveroo"] - paired["completion_time_sec_glovo"]
         normal = len(diff) >= 3 and stats.shapiro(diff).pvalue >= 0.05
@@ -455,14 +480,15 @@ def _task_efficiency_stats(df: pd.DataFrame, config: dict) -> pd.DataFrame:
     systems = [config["project"]["system_1"], config["project"]["system_2"]]
     rows = []
     for (task_id, task_label), group in df.groupby(["task_id", "task_name"], sort=True):
-        left = group[group["app"].astype(str).str.casefold() == systems[0].casefold()][["user_id", "completion_time_sec"]].dropna()
-        right = group[group["app"].astype(str).str.casefold() == systems[1].casefold()][["user_id", "completion_time_sec"]].dropna()
+        autonomous = group[group["success"]]
+        left = autonomous[autonomous["app"].astype(str).str.casefold() == systems[0].casefold()][["user_id", "completion_time_sec"]].dropna()
+        right = autonomous[autonomous["app"].astype(str).str.casefold() == systems[1].casefold()][["user_id", "completion_time_sec"]].dropna()
         paired = left.merge(right, on="user_id", suffixes=("_deliveroo", "_glovo"))
-        deliveroo_values = paired["completion_time_sec_deliveroo"] if len(paired) >= 2 else left["completion_time_sec"]
-        glovo_values = paired["completion_time_sec_glovo"] if len(paired) >= 2 else right["completion_time_sec"]
+        deliveroo_values = paired["completion_time_sec_deliveroo"] if len(paired) >= 5 else left["completion_time_sec"]
+        glovo_values = paired["completion_time_sec_glovo"] if len(paired) >= 5 else right["completion_time_sec"]
         if len(deliveroo_values) == 0 or len(glovo_values) == 0:
             continue
-        if len(paired) >= 2:
+        if len(paired) >= 5:
             diff = paired["completion_time_sec_deliveroo"] - paired["completion_time_sec_glovo"]
             try:
                 normal = len(diff) >= 3 and stats.shapiro(diff).pvalue >= 0.05
@@ -479,15 +505,15 @@ def _task_efficiency_stats(df: pd.DataFrame, config: dict) -> pd.DataFrame:
             ci_low, ci_high = _bootstrap_ci(diff)
             mean_diff = float(diff.mean())
         else:
-            p_value = float(stats.mannwhitneyu(left["completion_time_sec"], right["completion_time_sec"], alternative="two-sided").pvalue)
-            test_name = "Mann-Whitney U"
+            p_value = np.nan
+            test_name = "N appaiato insufficiente"
             mean_diff = float(left["completion_time_sec"].mean() - right["completion_time_sec"].mean())
-            ci_low, ci_high = _bootstrap_ci_unpaired(left["completion_time_sec"], right["completion_time_sec"])
+            ci_low, ci_high = np.nan, np.nan
             pooled = pd.concat([left["completion_time_sec"], right["completion_time_sec"]]).std(ddof=1)
             effect_size = mean_diff / pooled if pooled else 0.0
         faster = systems[0] if deliveroo_values.mean() < glovo_values.mean() else systems[1]
-        significance = "indica" if p_value < 0.05 else "non indica"
-        stability = "stabile" if ci_low * ci_high > 0 else "incerta"
+        significance = "indica" if pd.notna(p_value) and p_value < 0.05 else "non indica"
+        stability = "stabile" if pd.notna(ci_low) and pd.notna(ci_high) and ci_low * ci_high > 0 else "incerta"
         rows.append(
             {
                 "task_id": task_id,

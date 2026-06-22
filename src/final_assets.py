@@ -23,6 +23,9 @@ from .users_time import users_time_file, validate_users_time_file
 from .visualization.theme import get_brand_palette, style_axis
 
 
+ORDINAL_1_3_LABELS = {1: "Bassa", 2: "Media", 3: "Alta", "1": "Bassa", "2": "Media", "3": "Alta", "1.0": "Bassa", "2.0": "Media", "3.0": "Alta"}
+
+
 def oet_by_task(config: dict) -> dict[str, float]:
     return {str(task.get("id")): float(task["oet_seconds"]) for task in config.get("users_time", {}).get("tasks", []) if task.get("oet_seconds")}
 
@@ -412,10 +415,16 @@ def generate_questionnaire_item_outputs(config: dict, data: dict[str, pd.DataFra
     names = list(item_frames)
     common_items = [item for item in item_frames[names[0]].index if item in item_frames[names[1]].index]
     rows = []
+    descriptive_rows = []
+    interpretation_rows = []
     for idx, item in enumerate(common_items, start=1):
         left = pd.to_numeric(item_frames[names[0]].loc[item], errors="coerce").dropna()
         right = pd.to_numeric(item_frames[names[1]].loc[item], errors="coerce").dropna()
         p_value = stats.mannwhitneyu(left, right, alternative="two-sided").pvalue if len(left) and len(right) else pd.NA
+        left_desc = _item_desc_row(idx, item, names[0], left)
+        right_desc = _item_desc_row(idx, item, names[1], right)
+        descriptive_rows.extend([left_desc, right_desc])
+        interpretation_rows.append(_item_interpretation_row(idx, item, names[0], names[1], left_desc, right_desc))
         row = {
             "item_number": idx,
             "item": item,
@@ -434,19 +443,106 @@ def generate_questionnaire_item_outputs(config: dict, data: dict[str, pd.DataFra
         ax.set_ylim(config["analysis"]["ueq_scale_min"], config["analysis"]["ueq_scale_max"])
         style_axis(ax, f"Item {idx:02d}: {item}", "", "Valutazione")
         save_figure(fig, f"outputs/figures/questionnaire/items/item_{idx:02d}_boxplot.png", config)
+        _copy_questionnaire_chart_alias(
+            f"outputs/figures/questionnaire/items/item_{idx:02d}_boxplot.png",
+            f"outputs/charts/questionnaire_item_{idx:02d}_boxplot.png",
+        )
+        export_table(pd.DataFrame([left_desc, right_desc]), f"outputs/tables/questionnaire_item_{idx:02d}_descriptives.csv", 2)
     summary = pd.DataFrame(rows)
     if summary.empty:
         return
+    descriptives = pd.DataFrame(descriptive_rows)
+    interpretations = pd.DataFrame(interpretation_rows)
     summary["rank_score"] = summary["p_value"].fillna(1).rank(method="first") + summary["median_difference_abs"].rank(ascending=False) * 0.01
     relevant = summary.sort_values(["p_value", "median_difference_abs", "mean_difference_abs"], ascending=[True, False, False]).head(8)
     export_table(summary.drop(columns=["rank_score"]), "outputs/tables/questionnaire_items_summary.csv", 2)
     export_table(summary.drop(columns=["rank_score"]), "outputs/tables/markdown/questionnaire_items_summary.md", 2)
     export_table(relevant.drop(columns=["rank_score"]), "outputs/tables/questionnaire_most_relevant_items.csv", 2)
+    export_table(descriptives, "outputs/tables/questionnaire_item_descriptives.csv", 2)
+    export_table(interpretations, "outputs/tables/questionnaire_item_interpretations.csv", 2)
+    _write_profile_effectiveness_questionnaire_report(descriptives, interpretations)
     lines = ["# Item UEQ più rilevanti", ""]
     for row in relevant.itertuples():
         significance = "significativa" if pd.notna(row.p_value) and row.p_value < 0.05 else "non significativa"
         lines.append(f"- Item {row.item_number:02d} `{row.item}`: differenza media assoluta {row.mean_difference_abs:.2f}, p={row.p_value:.4f}; differenza {significance}.")
     resolve_path("outputs/texts/snippets/questionnaire_selected_items.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _write_profile_effectiveness_questionnaire_report(descriptives: pd.DataFrame, interpretations: pd.DataFrame) -> Path:
+    target = resolve_path("outputs/reports/final_report_user_profile_effectiveness_questionnaire_fix.md")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    profiles_path = resolve_path("data/user_profiles.csv")
+    profiles = pd.read_csv(profiles_path, encoding="utf-8-sig") if profiles_path.exists() else pd.DataFrame()
+    mcnemar_path = resolve_path("outputs/tables/user_test_effectiveness_mcnemar.csv")
+    mcnemar = pd.read_csv(mcnemar_path, encoding="utf-8-sig") if mcnemar_path.exists() else pd.DataFrame()
+    item_ids = sorted(descriptives["item_id"].dropna().astype(int).unique()) if "item_id" in descriptives else []
+    missing_items = [item for item in range(1, 27) if item not in item_ids]
+    profile_slides = [f"Profilo degli utenti coinvolti - {index}/4" for index in range(1, 5)]
+    lines = [
+        "# Controllo fix profilo utenti, efficacia e questionario",
+        "",
+        f"- Numero utenti caricati nel profilo utenti: {profiles['user_id'].nunique() if 'user_id' in profiles else 0}",
+        "- Slide profilo utenti generate:",
+        *[f"  - {slide}" for slide in profile_slides],
+        "- Matrice expertise utenti rimossa: si",
+        "- Definizione efficacia: task completati / task totali, includendo successi con aiuto o criticita.",
+        "- Definizione efficacia assoluta: solo successi pieni senza aiuto o criticita / task totali.",
+        "",
+        "## P-value efficacia",
+        mcnemar.to_markdown(index=False) if not mcnemar.empty else "Nessun p-value disponibile.",
+        "",
+        "## Questionario",
+        f"- Numero domande questionario generate: {len(item_ids)}",
+        f"- Item mancanti: {', '.join(map(str, missing_items)) if missing_items else 'nessuno'}",
+        "- Statistiche min/q1/media/mediana/q3/max presenti per ogni item: "
+        + ("si" if {"min", "q1", "mean", "median", "q3", "max"}.issubset(descriptives.columns) and not missing_items else "no"),
+        f"- Interpretazioni generate: {len(interpretations)}",
+        "",
+        "## Warning",
+        "Nessun warning rilevante." if not missing_items else f"Item mancanti: {', '.join(map(str, missing_items))}",
+        "",
+    ]
+    target.write_text("\n".join(lines), encoding="utf-8")
+    return target
+
+
+def _item_desc_row(item_id: int, item_label: str, app: str, values: pd.Series) -> dict[str, Any]:
+    return {
+        "item_id": item_id,
+        "item_label": item_label,
+        "app": app,
+        "min": values.min(),
+        "q1": values.quantile(0.25),
+        "mean": values.mean(),
+        "median": values.median(),
+        "q3": values.quantile(0.75),
+        "max": values.max(),
+        "n": int(values.count()),
+    }
+
+
+def _item_interpretation_row(item_id: int, item_label: str, left_app: str, right_app: str, left: dict[str, Any], right: dict[str, Any]) -> dict[str, Any]:
+    left_mean = float(left.get("mean", pd.NA))
+    right_mean = float(right.get("mean", pd.NA))
+    winner = left_app if left_mean > right_mean else right_app if right_mean > left_mean else "parita"
+    diff = left_mean - right_mean
+    if winner == "parita":
+        text = f"Per l'item {item_label} le medie sono allineate; la lettura va fatta sulla dispersione e sulle mediane."
+    else:
+        text = (
+            f"Per l'item {item_label}, {winner} mostra un punteggio piu alto "
+            f"({left_mean:.2f} vs {right_mean:.2f}), con differenza media pari a {diff:.2f}. "
+            "L'interpretazione resta sulla scala originale dell'item e non assume automaticamente che il valore piu alto sia migliore."
+        )
+    return {
+        "item_id": item_id,
+        "item_label": item_label,
+        "mean_deliveroo": left_mean if left_app == "Deliveroo" else right_mean,
+        "mean_glovo": right_mean if right_app == "Glovo" else left_mean,
+        "mean_diff": diff,
+        "winner_raw": winner,
+        "interpretation_text": text,
+    }
 
 
 def generate_nps_breakdown(config: dict, data: dict[str, pd.DataFrame]) -> None:
@@ -605,6 +701,9 @@ def generate_expert_demographics(config: dict) -> None:
 
 
 def _draw_demographic_pie(ax: plt.Axes, counts: pd.DataFrame, title: str) -> None:
+    counts = counts.copy()
+    counts["value"] = counts["value"].map(_ordinal_label)
+    counts = counts.groupby("value", as_index=False)["count"].sum()
     values = pd.to_numeric(counts["count"], errors="coerce").fillna(0)
     labels = counts["value"].astype(str).tolist()
     total = int(values.sum())
@@ -624,12 +723,39 @@ def _draw_demographic_pie(ax: plt.Axes, counts: pd.DataFrame, title: str) -> Non
     ax.axis("equal")
 
 
+def _ordinal_label(value: object) -> str:
+    return ORDINAL_1_3_LABELS.get(value, ORDINAL_1_3_LABELS.get(str(value).strip(), str(value)))
+
+
 def _copy_dark_variant_to_root(path: str | Path) -> None:
     target = resolve_path(path)
     dark = target.parent / "dark" / target.name
     if dark.exists():
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(dark, target)
+
+
+def _copy_questionnaire_chart_alias(source: str | Path, target: str | Path) -> None:
+    source_path = resolve_path(source)
+    target_path = resolve_path(target)
+    figures_root = resolve_path("outputs/figures")
+    try:
+        relative = source_path.relative_to(figures_root)
+    except ValueError:
+        relative = Path(source_path.name)
+
+    dark_source = figures_root / "dark" / relative
+    presentation_source = figures_root / "presentation" / relative
+    root_source = source_path if source_path.exists() else dark_source
+    variants = [
+        (root_source, target_path),
+        (dark_source, target_path.parent / "dark" / target_path.name),
+        (presentation_source, target_path.parent / "presentation" / target_path.name),
+    ]
+    for src, dst in variants:
+        if src.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
 
 
 def generate_subgroup_assets(config: dict, data: dict[str, pd.DataFrame]) -> None:

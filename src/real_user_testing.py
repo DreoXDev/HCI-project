@@ -20,6 +20,10 @@ from .tables import export_table
 from .visualization.theme import get_brand_palette, style_axis
 
 
+ORDINAL_1_3_LABELS = {1: "Bassa", 2: "Media", 3: "Alta", "1": "Bassa", "2": "Media", "3": "Alta", "1.0": "Bassa", "2.0": "Media", "3.0": "Alta"}
+CRITICAL_OUTCOMES = {"assisted_success", "success_with_issue", "partial_success"}
+
+
 WIDE_TIMES = [
     ("U1", "Valentina", "01:41.07", "01:40.27", "02:53.90", "00:32.82", "01:02.96", "01:26.15"),
     ("U2", "Valentina", "01:14.47", "00:57.22", "01:09.89", "00:37.21", "00:05.53", "01:01.28"),
@@ -94,6 +98,7 @@ def generate_real_user_testing_outputs(config: dict) -> dict[str, Path]:
     efficiency = _efficiency_by_task(times)
     comparison = _efficiency_comparison(times)
     effectiveness = _effectiveness_by_task(times)
+    effectiveness_mcnemar = _effectiveness_mcnemar(times)
     assistance = _assistance_errors(times)
     wide = _wide_times(times)
     qualitative = pd.DataFrame(QUALITATIVE_NOTES, columns=["app", "theme", "note"])
@@ -101,9 +106,15 @@ def generate_real_user_testing_outputs(config: dict) -> dict[str, Path]:
 
     _write_csv(wide, "outputs/tables/user_testing_times_wide.csv")
     _write_csv(efficiency, "outputs/tables/user_test_efficiency_by_task.csv")
+    _write_csv(efficiency, "outputs/tables/user_test_efficiency_by_task_autonomous.csv")
     _write_csv(comparison, "outputs/tables/user_test_efficiency_comparison.csv")
+    _write_csv(comparison, "outputs/tables/user_test_efficiency_comparison_autonomous.csv")
     _write_csv(_efficiency_comparison_slide(comparison), "outputs/tables/user_test_efficiency_comparison_slide.csv")
     _write_csv(effectiveness, "outputs/tables/user_test_effectiveness_by_task.csv")
+    _write_csv(_effectiveness_general_table(effectiveness), "outputs/tables/user_test_effectiveness.csv")
+    _write_csv(_effectiveness_absolute_table(effectiveness), "outputs/tables/user_test_absolute_effectiveness.csv")
+    _write_csv(effectiveness_mcnemar, "outputs/tables/user_test_effectiveness_mcnemar.csv")
+    _write_csv(_non_autonomous_tasks(times), "outputs/tables/user_test_non_autonomous_tasks.csv")
     _write_csv(assistance, "outputs/tables/user_test_assistance_errors.csv")
     _write_csv(_assistance_events_slide(times), "outputs/tables/user_test_assistance_events_slide.csv")
     _write_csv(qualitative, "outputs/tables/user_test_qualitative_notes.csv")
@@ -112,6 +123,7 @@ def generate_real_user_testing_outputs(config: dict) -> dict[str, Path]:
     _plot_efficiency(times, config)
     _plot_effectiveness(effectiveness, config)
     _plot_profiles(profiles, config)
+    _write_autonomous_success_report(times, wide, effectiveness, comparison)
     return {"times": resolve_path("data/user_testing_times.csv"), "profiles": resolve_path("data/user_profiles.csv")}
 
 
@@ -142,7 +154,7 @@ def _trials_from_times(times: pd.DataFrame, config: dict) -> pd.DataFrame:
     task_names = {index + 1: task.get("name", f"Task {index + 1}") for index, task in enumerate(config.get("users_time", {}).get("tasks", [])[:3])}
     rows = []
     for row in times.itertuples(index=False):
-        normalized_outcome = "partial_success" if row.outcome == "success_with_issue" else row.outcome
+        normalized_outcome = row.outcome
         rows.append(
             {
                 "participant_id": row.user_id,
@@ -151,9 +163,9 @@ def _trials_from_times(times: pd.DataFrame, config: dict) -> pd.DataFrame:
                 "task_label": task_names.get(int(row.task), f"Task {row.task}"),
                 "time_seconds": row.time_seconds,
                 "outcome": normalized_outcome,
-                "completed": normalized_outcome in {"success", "assisted_success", "partial_success"},
-                "correct": normalized_outcome in {"success", "assisted_success", "partial_success"},
-                "assisted": row.assistance in {"verbal_help", "workaround"} or normalized_outcome == "assisted_success",
+                "completed": normalized_outcome in {"success", "success_with_issue", "assisted_success", "partial_success"},
+                "correct": normalized_outcome == "success",
+                "assisted": row.assistance in {"verbal_help", "workaround"} or normalized_outcome in {"assisted_success", "partial_success"},
                 "error_count": 1 if str(row.error_flag).casefold() == "true" else 0,
                 "critical_error_count": 0,
                 "help_count": 1 if row.assistance == "verbal_help" or normalized_outcome == "assisted_success" else 0,
@@ -166,7 +178,7 @@ def _trials_from_times(times: pd.DataFrame, config: dict) -> pd.DataFrame:
 def _build_user_profiles(config: dict) -> pd.DataFrame:
     source = resolve_path("data/raw/questionnaire_deliveroo.csv")
     if not source.exists():
-        return pd.DataFrame(columns=["user_id", "age_group", "gender", "occupation", "delivery_familiarity", "digital_familiarity", "food_delivery_frequency", "notes"])
+        return pd.DataFrame(columns=["user_id", "age_group", "gender", "occupation", "delivery_familiarity", "food_delivery_frequency"])
     df = pd.read_csv(source, encoding="utf-8-sig").set_index("item")
     rows = []
     for index in range(1, 25):
@@ -180,16 +192,29 @@ def _build_user_profiles(config: dict) -> pd.DataFrame:
                 "gender": df.loc["genere", col] if "genere" in df.index else "unknown",
                 "occupation": df.loc["situazione lavorativa", col] if "situazione lavorativa" in df.index else "unknown",
                 "delivery_familiarity": delivery,
-                "digital_familiarity": delivery,
                 "food_delivery_frequency": raw_fam if pd.notna(raw_fam) else "unknown",
-                "notes": "digital_familiarity riusa la familiarita delivery: il questionario non contiene una variabile digitale separata.",
             }
         )
     return pd.DataFrame(rows)
 
 
 def _profile_slide_table(profiles: pd.DataFrame) -> pd.DataFrame:
-    return profiles[["user_id", "age_group", "gender", "occupation", "delivery_familiarity", "digital_familiarity"]].copy()
+    columns = ["user_id", "age_group", "gender", "occupation", "delivery_familiarity", "food_delivery_frequency"]
+    table = profiles[[column for column in columns if column in profiles.columns]].copy()
+    if "delivery_familiarity" in table:
+        table["delivery_familiarity"] = table["delivery_familiarity"].map(_ordinal_label)
+    if "food_delivery_frequency" in table:
+        table["food_delivery_frequency"] = table["food_delivery_frequency"].map(_ordinal_label)
+    return table.rename(
+        columns={
+            "user_id": "Utente",
+            "age_group": "Eta / fascia",
+            "gender": "Genere",
+            "occupation": "Profilo",
+            "delivery_familiarity": "Familiarita delivery",
+            "food_delivery_frequency": "Frequenza uso delivery",
+        }
+    )
 
 
 def _write_profile_method() -> None:
@@ -199,10 +224,8 @@ def _write_profile_method() -> None:
             "",
             "- Gli ID sono anonimizzati come U1-U24 e allineati ai tempi user testing.",
             "- La familiarita delivery del questionario usa valori 1-3.",
-            "- La matrice mantiene la scala originale 1-3: 1 = bassa, 2 = media, 3 = alta.",
-            "- Non e presente una variabile separata di familiarita digitale generale; `digital_familiarity` riusa lo stesso valore dichiarato.",
-            "- Eventuali piccoli spostamenti dei punti sono usati solo nel grafico per evitare sovrapposizioni e non modificano i dati.",
-            "- La matrice e descrittiva e non va interpretata come misura psicometrica robusta o come expertise bidimensionale indipendente.",
+            "- Non e disponibile una variabile indipendente di familiarita digitale; la matrice di expertise utenti non viene generata.",
+            "- Le categorie ordinali 1-3 sono presentate come Bassa, Media e Alta senza introdurre variabili derivate non osservate.",
             "",
         ]
     )
@@ -214,7 +237,7 @@ def _write_profile_method() -> None:
 def _efficiency_by_task(times: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for (app, task), group in times.groupby(["app", "task"], sort=True):
-        values = group["time_seconds"]
+        values = group.loc[group["outcome"].eq("success"), "time_seconds"]
         ci_low, ci_high = _mean_ci(values)
         rows.append(
             {
@@ -238,7 +261,25 @@ def _efficiency_by_task(times: pd.DataFrame) -> pd.DataFrame:
 def _efficiency_comparison(times: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for task, group in times.groupby("task", sort=True):
-        pivot = group.pivot(index="user_id", columns="app", values="time_seconds").dropna()
+        autonomous = group[group["outcome"].eq("success")]
+        pivot = autonomous.pivot(index="user_id", columns="app", values="time_seconds").dropna()
+        if len(pivot) < 5:
+            rows.append(
+                {
+                    "task": task,
+                    "paired_n": len(pivot),
+                    "deliveroo_mean": pivot["Deliveroo"].mean() if "Deliveroo" in pivot else np.nan,
+                    "glovo_mean": pivot["Glovo"].mean() if "Glovo" in pivot else np.nan,
+                    "mean_diff_deliveroo_minus_glovo": np.nan,
+                    "test_name": "N appaiato insufficiente",
+                    "statistic": np.nan,
+                    "p_value": np.nan,
+                    "ci95_diff_low": np.nan,
+                    "ci95_diff_high": np.nan,
+                    "interpretation": "N appaiato insufficiente per un confronto robusto sui soli successi autonomi.",
+                }
+            )
+            continue
         diff = pivot["Deliveroo"] - pivot["Glovo"]
         normal = len(diff) >= 3 and stats.shapiro(diff).pvalue >= 0.05
         if normal:
@@ -289,8 +330,10 @@ def _efficiency_comparison_slide(comparison: pd.DataFrame) -> pd.DataFrame:
 def _effectiveness_by_task(times: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for (app, task), group in times.groupby(["app", "task"], sort=True):
-        strict = group["outcome"].isin(["success", "success_with_issue"])
-        extended = group["outcome"].isin(["success", "success_with_issue", "assisted_success"])
+        completed = group["outcome"].isin(["success", "assisted_success", "success_with_issue", "partial_success"])
+        autonomous = group["outcome"].eq("success")
+        critical = group["outcome"].isin(CRITICAL_OUTCOMES)
+        failures = group["outcome"].isin(["failure", "timeout"])
         assisted = group["assistance"].isin(["verbal_help", "workaround"]) | group["outcome"].eq("assisted_success")
         issues = group["error_flag"].astype(str).str.casefold().eq("true")
         rows.append(
@@ -298,10 +341,24 @@ def _effectiveness_by_task(times: pd.DataFrame) -> pd.DataFrame:
                 "app": app,
                 "task": task,
                 "n": len(group),
-                "strict_success_count": int(strict.sum()),
-                "strict_success_rate": strict.mean(),
-                "extended_success_count": int(extended.sum()),
-                "extended_success_rate": extended.mean(),
+                "completed_count": int(completed.sum()),
+                "efficacy_rate": completed.mean(),
+                "autonomous_success_count": int(autonomous.sum()),
+                "absolute_efficacy_rate": autonomous.mean(),
+                "autonomous_success_rate": autonomous.mean(),
+                "n_assisted": int(group["outcome"].eq("assisted_success").sum()),
+                "n_with_issue": int(group["outcome"].eq("success_with_issue").sum()),
+                "n_partial": int(group["outcome"].eq("partial_success").sum()),
+                "critical_completion_count": int(critical.sum()),
+                "critical_completion_rate": critical.mean(),
+                "failure_count": int(failures.sum()),
+                "failure_rate": failures.mean(),
+                "non_autonomous_count": int((~autonomous).sum()),
+                "non_autonomous_rate": (~autonomous).mean(),
+                "strict_success_count": int(autonomous.sum()),
+                "strict_success_rate": autonomous.mean(),
+                "extended_success_count": int(autonomous.sum()),
+                "extended_success_rate": autonomous.mean(),
                 "assisted_count": int(assisted.sum()),
                 "assisted_rate": assisted.mean(),
                 "issue_count": int(issues.sum()),
@@ -309,6 +366,52 @@ def _effectiveness_by_task(times: pd.DataFrame) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows)
+
+
+def _effectiveness_general_table(effectiveness: pd.DataFrame) -> pd.DataFrame:
+    return effectiveness[
+        ["app", "task", "n", "completed_count", "efficacy_rate", "n_assisted", "n_with_issue", "n_partial", "failure_count"]
+    ].copy()
+
+
+def _effectiveness_absolute_table(effectiveness: pd.DataFrame) -> pd.DataFrame:
+    return effectiveness[
+        ["app", "task", "n", "autonomous_success_count", "absolute_efficacy_rate", "non_autonomous_count", "non_autonomous_rate"]
+    ].copy()
+
+
+def _effectiveness_mcnemar(times: pd.DataFrame) -> pd.DataFrame:
+    rows = []
+    for task, group in times.groupby("task", sort=True):
+        for metric, column, positive in [
+            ("Efficacia", "completed", {"success", "assisted_success", "success_with_issue", "partial_success"}),
+            ("Efficacia assoluta", "absolute", {"success"}),
+        ]:
+            prepared = group.assign(success_binary=group["outcome"].isin(positive))
+            pivot = prepared.pivot(index="user_id", columns="app", values="success_binary").dropna()
+            if {"Deliveroo", "Glovo"} - set(pivot.columns):
+                continue
+            b = int((pivot["Deliveroo"] & ~pivot["Glovo"]).sum())
+            c = int((~pivot["Deliveroo"] & pivot["Glovo"]).sum())
+            discordant = b + c
+            p_value = float(stats.binomtest(min(b, c), discordant, 0.5).pvalue) if discordant else np.nan
+            rows.append(
+                {
+                    "task": task,
+                    "metric": metric,
+                    "deliveroo_rate": float(pivot["Deliveroo"].mean()),
+                    "glovo_rate": float(pivot["Glovo"].mean()),
+                    "test_name": "McNemar exact",
+                    "discordant_pairs": discordant,
+                    "p_value": p_value,
+                    "interpretation": "p-value non calcolabile / campione discordante insufficiente" if discordant == 0 else _mcnemar_interpretation(p_value),
+                }
+            )
+    return pd.DataFrame(rows)
+
+
+def _mcnemar_interpretation(p_value: float) -> str:
+    return "Differenza significativa tra app sugli esiti appaiati." if pd.notna(p_value) and p_value < 0.05 else "Differenza non significativa sugli esiti appaiati."
 
 
 def _assistance_errors(times: pd.DataFrame) -> pd.DataFrame:
@@ -355,6 +458,13 @@ def _assistance_events_slide(times: pd.DataFrame) -> pd.DataFrame:
     return result.sort_values(["App", "Task", "Utente"])
 
 
+def _non_autonomous_tasks(times: pd.DataFrame) -> pd.DataFrame:
+    subset = times[~times["outcome"].eq("success")].copy()
+    if subset.empty:
+        return pd.DataFrame(columns=["user_id", "app", "task", "outcome", "time_raw", "issue_note"])
+    return subset[["user_id", "app", "task", "outcome", "time_raw", "issue_note"]].sort_values(["task", "app", "user_id"])
+
+
 def _event_label(row: pd.Series) -> str:
     if row.get("outcome") == "assisted_success" or row.get("assistance") == "verbal_help":
         return "Completata con aiuto"
@@ -367,8 +477,9 @@ def _wide_times(times: pd.DataFrame) -> pd.DataFrame:
     pivot = times.pivot_table(index="user_id", columns=["task", "app"], values="time_raw", aggfunc="first")
     result = pd.DataFrame({"user_id": sorted(times["user_id"].unique(), key=lambda value: int(value[1:]))})
     for task in [1, 2, 3]:
-        for app, suffix in [("Deliveroo", "D"), ("Glovo", "G")]:
-            result[f"Task {task} {suffix}"] = result["user_id"].map(lambda uid: pivot.loc[uid, (task, app)])
+        for app in ["Deliveroo", "Glovo"]:
+            result[f"Task {task} {app}"] = result["user_id"].map(lambda uid: pivot.loc[uid, (task, app)])
+    result = result.rename(columns={"user_id": "Utente"})
     return result
 
 
@@ -376,7 +487,7 @@ def _long_users_time(times: pd.DataFrame, config: dict) -> pd.DataFrame:
     task_names = {index + 1: task.get("name", f"Task {index + 1}") for index, task in enumerate(config.get("users_time", {}).get("tasks", [])[:3])}
     rows = []
     for row in times.itertuples(index=False):
-        success = row.outcome in {"success", "success_with_issue", "assisted_success"}
+        success = row.outcome == "success"
         rows.append(
             {
                 "user_id": row.user_id,
@@ -397,7 +508,7 @@ def _long_users_time(times: pd.DataFrame, config: dict) -> pd.DataFrame:
 
 def _testing_by_expertise_group(times: pd.DataFrame, profiles: pd.DataFrame) -> pd.DataFrame:
     profiles = profiles.copy()
-    profiles["expertise_score"] = profiles[["delivery_familiarity", "digital_familiarity"]].mean(axis=1)
+    profiles["expertise_score"] = pd.to_numeric(profiles["delivery_familiarity"], errors="coerce")
     median = profiles["expertise_score"].median()
     profiles["expertise_group"] = np.where(profiles["expertise_score"] < median, "low_expertise", "high_expertise")
     merged = times.merge(profiles[["user_id", "expertise_group"]], on="user_id", how="left")
@@ -425,17 +536,19 @@ def _plot_efficiency(times: pd.DataFrame, config: dict) -> None:
     charts = resolve_path("outputs/charts")
     charts.mkdir(parents=True, exist_ok=True)
     palette = get_brand_palette(config)
+    autonomous = times[times["outcome"].eq("success")].copy()
     for task in [1, 2, 3]:
-        subset = times[times["task"] == task]
+        subset = autonomous[autonomous["task"] == task]
         fig, ax = plt.subplots(figsize=(8, 4.8))
         sns.boxplot(data=subset, x="app", y="time_seconds", hue="app", palette=palette, legend=False, ax=ax)
         sns.stripplot(data=subset, x="app", y="time_seconds", color="#F8FAFC", size=4, alpha=0.65, ax=ax)
-        style_axis(ax, f"Efficienza Task {task}", "", "Secondi")
+        style_axis(ax, f"Efficienza autonoma Task {task}", "", "Secondi")
         save_figure(fig, charts / f"user_test_efficiency_task_{task}.png", config)
         _copy_root_png(charts / f"user_test_efficiency_task_{task}.png")
+        _copy_chart_alias(charts / f"user_test_efficiency_task_{task}.png", charts / f"user_test_efficiency_task_{task}_autonomous.png")
     fig, ax = plt.subplots(figsize=(9, 5))
-    sns.barplot(data=times, x="task", y="time_seconds", hue="app", palette=palette, errorbar="ci", ax=ax)
-    style_axis(ax, "Efficienza complessiva per task", "Task", "Secondi medi")
+    sns.barplot(data=autonomous, x="task", y="time_seconds", hue="app", palette=palette, errorbar="ci", ax=ax)
+    style_axis(ax, "Efficienza autonoma per task", "Task", "Secondi medi")
     save_figure(fig, charts / "user_test_efficiency_overall.png", config)
     _copy_root_png(charts / "user_test_efficiency_overall.png")
 
@@ -444,8 +557,12 @@ def _plot_effectiveness(effectiveness: pd.DataFrame, config: dict) -> None:
     charts = resolve_path("outputs/charts")
     palette = get_brand_palette(config)
     for metric, name, title in [
-        ("strict_success_rate", "user_test_effectiveness_strict.png", "Efficacia stretta"),
-        ("extended_success_rate", "user_test_effectiveness_extended.png", "Efficacia estesa"),
+        ("efficacy_rate", "user_test_effectiveness.png", "Efficacia dei task"),
+        ("autonomous_success_rate", "user_test_effectiveness_autonomous.png", "Efficacia autonoma"),
+        ("absolute_efficacy_rate", "user_test_absolute_effectiveness.png", "Efficacia assoluta"),
+        ("autonomous_success_rate", "user_test_effectiveness_strict.png", "Efficacia autonoma"),
+        ("non_autonomous_rate", "user_test_non_autonomous_by_task.png", "Task non completate in autonomia"),
+        ("non_autonomous_rate", "user_test_effectiveness_extended.png", "Task non completate in autonomia"),
         ("assisted_rate", "user_test_assisted_tasks.png", "Task assistite"),
     ]:
         fig, ax = plt.subplots(figsize=(9, 5))
@@ -454,6 +571,42 @@ def _plot_effectiveness(effectiveness: pd.DataFrame, config: dict) -> None:
         style_axis(ax, title, "Task", "Quota")
         save_figure(fig, charts / name, config)
         _copy_root_png(charts / name)
+
+
+def _write_autonomous_success_report(times: pd.DataFrame, wide: pd.DataFrame, effectiveness: pd.DataFrame, comparison: pd.DataFrame) -> Path:
+    target = resolve_path("outputs/reports/user_testing_autonomous_success_update.md")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    chunks = [wide.iloc[start : start + 6] for start in range(0, len(wide), 6)]
+    excluded = _non_autonomous_tasks(times)
+    lines = [
+        "# Controllo successi autonomi user test",
+        "",
+        f"- Numero utenti nella tabella tempi: {wide['Utente'].nunique() if 'Utente' in wide else 0}",
+        "- Mapping grafici familiarita: 1 = Bassa, 2 = Media, 3 = Alta.",
+        "",
+        "## Utenti mostrati per slide",
+    ]
+    for index, chunk in enumerate(chunks, start=1):
+        lines.append(f"- Tabella tempi user test - {index}/4: {', '.join(chunk['Utente'].astype(str))}")
+    lines.extend(
+        [
+            "",
+            "## Successi pieni per app/task",
+            effectiveness[["app", "task", "autonomous_success_count", "n", "autonomous_success_rate"]].to_markdown(index=False),
+            "",
+            "## Completamenti con criticita per app/task",
+            effectiveness[["app", "task", "critical_completion_count", "failure_count", "non_autonomous_count", "non_autonomous_rate"]].to_markdown(index=False),
+            "",
+            "## Task escluse dall'efficienza autonoma",
+            excluded.to_markdown(index=False),
+            "",
+            "## Coppie valide per p-value",
+            comparison[["task", "paired_n", "test_name", "p_value"]].to_markdown(index=False),
+            "",
+        ]
+    )
+    target.write_text("\n".join(lines), encoding="utf-8")
+    return target
 
 
 def _plot_profiles(profiles: pd.DataFrame, config: dict) -> None:
@@ -477,37 +630,22 @@ def _plot_profiles(profiles: pd.DataFrame, config: dict) -> None:
     _copy_root_png(charts / "user_demographics_age_gender.png")
 
     fig, ax = plt.subplots(figsize=(8, 4.8))
-    sns.countplot(data=profiles, x="delivery_familiarity", color="#00CCBC", ax=ax)
-    style_axis(ax, "Familiarita delivery", "Score 1-10", "Utenti")
+    count_profiles = profiles.copy()
+    count_profiles["delivery_familiarity_label"] = count_profiles["delivery_familiarity"].map(_ordinal_label)
+    sns.countplot(data=count_profiles, x="delivery_familiarity_label", order=["Bassa", "Media", "Alta"], color="#00CCBC", ax=ax)
+    style_axis(ax, "Familiarita delivery", "Scala 1-3 ricodificata", "Utenti")
     save_figure(fig, charts / "user_profile_delivery_familiarity.png", config)
     _copy_root_png(charts / "user_profile_delivery_familiarity.png")
 
-    fig, ax = plt.subplots(figsize=(8.8, 6.2))
-    rng = np.random.default_rng(42)
-    jitter_x = rng.uniform(-0.05, 0.05, len(profiles))
-    jitter_y = rng.uniform(-0.05, 0.05, len(profiles))
-    x = profiles["delivery_familiarity"].astype(float)
-    y = profiles["digital_familiarity"].astype(float)
-    ax.scatter(x + jitter_x, y + jitter_y, s=120, c="#00CCBC", alpha=0.8, edgecolors="#F8FAFC", linewidths=1.2)
-    for uid, px, py in zip(profiles["user_id"], x + jitter_x, y + jitter_y):
-        ax.text(px + 0.08, py + 0.05, uid, color="#F8FAFC", fontsize=8)
-    ax.axvline(2, color="#CBD5E1", linestyle="--", linewidth=1)
-    ax.axhline(2, color="#CBD5E1", linestyle="--", linewidth=1)
-    ax.set_xlim(0.5, 3.5)
-    ax.set_ylim(0.5, 3.5)
-    ax.set_xticks([1, 2, 3], ["1 - bassa", "2 - media", "3 - alta"])
-    ax.set_yticks([1, 2, 3], ["1 - bassa", "2 - media", "3 - alta"])
-    ax.text(
-        0.02,
-        -0.18,
-        "Scala originale 1-3; piccoli spostamenti solo visuali. Matrice descrittiva: asse verticale non indipendente.",
-        transform=ax.transAxes,
-        color="#CBD5E1",
-        fontsize=9,
-    )
-    style_axis(ax, "Matrice descrittiva del profilo utenti", "Familiarita food delivery (1-3)", "Familiarita / expertise dichiarata (1-3)")
-    save_figure(fig, charts / "user_expertise_matrix.png", config)
-    _copy_root_png(charts / "user_expertise_matrix.png")
+    for obsolete in [
+        charts / "user_expertise_matrix.png",
+        charts / "user_expertise_matrix.svg",
+        charts / "dark" / "user_expertise_matrix.png",
+        charts / "dark" / "user_expertise_matrix.svg",
+        charts / "presentation" / "user_expertise_matrix.png",
+        charts / "presentation" / "user_expertise_matrix.svg",
+    ]:
+        resolve_path(obsolete).unlink(missing_ok=True)
 
 
 def _plot_demographic_pair(
@@ -536,7 +674,7 @@ def _plot_demographic_pie_chart(
 
 
 def _draw_pie(ax: plt.Axes, values: pd.Series, title: str) -> None:
-    counts = values.value_counts()
+    counts = values.map(_ordinal_label).value_counts()
     labels = [str(label) for label in counts.index]
     total = int(counts.sum())
     colors = sns.color_palette("Set2", n_colors=max(3, len(counts)))
@@ -553,6 +691,10 @@ def _draw_pie(ax: plt.Axes, values: pd.Series, title: str) -> None:
         text.set_weight("bold")
     ax.set_title(title, color="#F8FAFC", fontsize=14, pad=14)
     ax.axis("equal")
+
+
+def _ordinal_label(value: Any) -> str:
+    return ORDINAL_1_3_LABELS.get(value, ORDINAL_1_3_LABELS.get(str(value).strip(), str(value)))
 
 
 def _seconds(raw: str) -> float:
@@ -622,3 +764,21 @@ def _copy_root_png(path: Path) -> None:
         import shutil
 
         shutil.copy2(dark, source)
+
+
+def _copy_chart_alias(source: Path, target: Path) -> None:
+    root_source = resolve_path(source)
+    root_target = resolve_path(target)
+    if root_source.exists():
+        root_target.parent.mkdir(parents=True, exist_ok=True)
+        import shutil
+
+        shutil.copy2(root_source, root_target)
+    for variant in ["dark", "presentation"]:
+        variant_source = root_source.parent / variant / root_source.name
+        variant_target = root_target.parent / variant / root_target.name
+        if variant_source.exists():
+            variant_target.parent.mkdir(parents=True, exist_ok=True)
+            import shutil
+
+            shutil.copy2(variant_source, variant_target)

@@ -213,12 +213,22 @@ def _reference_order_specs(
         theme="glovo",
     ))
     add(_comparison_or_blank(
-        "Distribuzione delle euristiche",
-        "outputs/figures/dark/heuristics/heuristics_distribution.png",
-        "outputs/figures/dark/heuristics/heuristics_by_category.png",
+        f"Distribuzione delle euristiche - {systems[0]}",
+        "outputs/charts/heuristic_distribution_deliveroo.png",
+        "outputs/charts/heuristic_categories_pie_deliveroo.png",
         texts,
-        "heuristic_distribution",
+        "heuristic_distribution_deliveroo",
         available_templates,
+        theme="deliveroo",
+    ))
+    add(_comparison_or_blank(
+        f"Distribuzione delle euristiche - {systems[1]}",
+        "outputs/charts/heuristic_distribution_glovo.png",
+        "outputs/charts/heuristic_categories_pie_glovo.png",
+        texts,
+        "heuristic_distribution_glovo",
+        available_templates,
+        theme="glovo",
     ))
     add(_text_spec("Valutazione quantitativa", texts, "heuristic_quantitative_conclusion", available_templates))
 
@@ -252,11 +262,13 @@ def _reference_order_specs(
     add(_table_or_blank("Profilo degli utenti coinvolti", "outputs/tables/user_profiles_slide.csv", texts, "user_demographics", available_templates))
     add(_comparison_or_blank("Composizione del campione utenti", "outputs/charts/users_age_pie.png", "outputs/charts/users_gender_pie.png", texts, "user_demographics", available_templates))
     add(_comparison_or_blank("Composizione utenti - familiarita e profilo", "outputs/charts/users_occupation_pie.png", "outputs/charts/users_delivery_familiarity_pie.png", texts, "user_familiarity_profile", available_templates))
-    add(_graph_or_blank("Matrice descrittiva del profilo utenti", "outputs/charts/user_expertise_matrix.png", texts, "user_expertise_matrix", available_templates))
-    add(_table_or_blank("Tabella unitaria tempi user test", "outputs/tables/user_testing_times_wide.csv", texts, "users_time_summary", available_templates))
+    add(_graph_or_blank("Familiarita degli utenti con il food delivery", "outputs/charts/users_delivery_familiarity_pie.png", texts, "user_familiarity_profile", available_templates))
+    add(_table_or_blank("Tabella tempi user test", "outputs/tables/user_testing_times_wide.csv", texts, "users_time_summary", available_templates))
     add(_text_spec("Legenda efficacia", texts, "effectiveness_legend", available_templates))
-    add(_graph_or_blank("Efficacia stretta per task", "outputs/charts/user_test_effectiveness_strict.png", texts, "effectiveness_intro", available_templates))
-    add(_graph_or_blank("Efficacia estesa per task", "outputs/charts/user_test_effectiveness_extended.png", texts, "effectiveness_intro", available_templates))
+    add(_graph_or_blank("Efficacia dei task", "outputs/charts/user_test_effectiveness.png", texts, "effectiveness_intro", available_templates))
+    add(_graph_or_blank("Efficacia assoluta dei task", "outputs/charts/user_test_absolute_effectiveness.png", texts, "effectiveness_intro", available_templates))
+    add(_table_or_blank("Confronto statistico efficacia", "outputs/tables/user_test_effectiveness_mcnemar.csv", texts, "effectiveness_intro", available_templates))
+    add(_graph_or_blank("Task non completate in autonomia", "outputs/charts/user_test_non_autonomous_by_task.png", texts, "effectiveness_intro", available_templates))
     add(_table_or_blank("Task assistite e issue", "outputs/tables/user_test_assistance_events_slide.csv", texts, "effectiveness_intro", available_templates))
     for task_idx in range(1, task_count + 1):
         task = f"t{task_idx:02d}"
@@ -299,19 +311,9 @@ def _reference_order_specs(
         "user_familiarity_profile",
         available_templates,
     ))
-    for pair in _questionnaire_item_pairs():
-        add(_questionnaire_pair_spec(pair, texts, available_templates))
+    for spec in _questionnaire_full_item_specs(texts, available_templates):
+        add(spec)
     add(_text_spec("Confronto tra sistemi", texts, "questionnaire_comparison_intro", available_templates))
-    for item_idx in [1, 4, 9, 13, 23]:
-        add(_questionnaire_item_spec(
-            f"Confronto statistico - Domanda {item_idx}",
-            f"outputs/figures/dark/questionnaire/items/item_{item_idx:02d}_boxplot.png",
-            texts,
-            "questionnaire_stat_placeholder",
-            available_templates,
-            item_idx=item_idx,
-            statistical=True,
-        ))
     add(_graph_or_blank("Confronto statistico item chiave", "outputs/assets/final_report/dark/questionnaire_top_differences.png", texts, "questionnaire_statistical_comparison", available_templates))
     add(_table_or_blank("Sintesi descrittiva per item", "data/processed/final_report/questionnaire_item_descriptive_stats.csv", texts, "questionnaire_statistical_comparison", available_templates))
     add(_text_spec("Sintesi dei risultati del questionario", texts, "questionnaire_synthesis", available_templates))
@@ -740,6 +742,42 @@ def _questionnaire_item_pairs() -> list[list[int]]:
     return _chunks([item for item in ids if item], 2)
 
 
+def _questionnaire_full_item_specs(texts: dict[str, str], available_templates: set[str]) -> list[dict[str, Any]]:
+    rows = _read_dict_rows(resolve_path("outputs/tables/questionnaire_items_summary.csv"))
+    ids = sorted({_safe_int(row.get("item_number")) for row in rows if _safe_int(row.get("item_number"))})
+    specs: list[dict[str, Any]] = []
+    for item_idx in ids:
+        if not item_idx:
+            continue
+        label = _questionnaire_item_label(item_idx)
+        graph = _questionnaire_item_spec(
+            f"Domanda {item_idx} - {label}",
+            f"outputs/charts/questionnaire_item_{item_idx:02d}_boxplot.png",
+            texts,
+            "questionnaire_item_placeholder",
+            available_templates,
+            item_idx=item_idx,
+        )
+        if graph:
+            specs.append(graph)
+        table = _table_or_blank(
+            f"Statistiche descrittive - Domanda {item_idx}",
+            f"outputs/tables/questionnaire_item_{item_idx:02d}_descriptives.csv",
+            texts,
+            "questionnaire_item_placeholder",
+            available_templates,
+        )
+        if table:
+            specs.append(table)
+    return specs
+
+
+def _questionnaire_item_label(item_idx: int) -> str:
+    rows = _read_dict_rows(resolve_path("outputs/tables/questionnaire_items_summary.csv"))
+    row = next((item for item in rows if _safe_int(item.get("item_number")) == item_idx), None)
+    return str(row.get("item") or f"Item {item_idx}") if row else f"Item {item_idx}"
+
+
 def _questionnaire_pair_spec(pair: list[int], texts: dict[str, str], available_templates: set[str]) -> dict[str, Any] | None:
     if not pair:
         return None
@@ -797,21 +835,23 @@ def _comparison_or_blank(
     texts: dict[str, str],
     fallback_key: str,
     available_templates: set[str],
+    *,
+    theme: str = "neutral",
 ) -> dict[str, Any] | None:
     left = resolve_path(left_image)
     right = resolve_path(right_image)
     if left.exists() and right.exists() and _has_template(available_templates, "comparison"):
         return {
             "template": "comparison",
-            "theme": "neutral",
+            "theme": theme,
             "fields": {"COMPARISON_TITLE": title, "SUMMARY_TEXT": texts.get(fallback_key, "")},
             "images": {"LEFT_GRAPH": _rel(left), "RIGHT_GRAPH": _rel(right)},
         }
     if left.exists():
-        return _graph_or_blank(title, left_image, texts, fallback_key, available_templates)
+        return _graph_or_blank(title, left_image, texts, fallback_key, available_templates, theme=theme)
     if right.exists():
-        return _graph_or_blank(title, right_image, texts, fallback_key, available_templates)
-    return _blank_spec(title, texts, fallback_key, available_templates)
+        return _graph_or_blank(title, right_image, texts, fallback_key, available_templates, theme=theme)
+    return _blank_spec(title, texts, fallback_key, available_templates, theme=theme)
 
 
 def _table_or_blank(
@@ -837,8 +877,8 @@ def _table_or_blank(
             "table": {
                 "placeholder": "TABLE_MAIN",
                 "source": _rel(table_path),
-                "max_rows": max(8, len(rows) - 1) if is_evaluator_table else _rows_per_slide_for_table(rows, 5 if "problems_slide" in table_path.name else 10),
-                "paginate": "problems_slide" in table_path.name,
+                "max_rows": 6 if table_path.name in {"user_testing_times_wide.csv", "user_profiles_slide.csv"} else max(8, len(rows) - 1) if is_evaluator_table else _rows_per_slide_for_table(rows, 5 if "problems_slide" in table_path.name else 10),
+                "paginate": "problems_slide" in table_path.name or table_path.name in {"user_testing_times_wide.csv", "user_profiles_slide.csv"},
                 "title_prefix": title,
                 **_table_render_options(rows),
             },
@@ -883,6 +923,8 @@ def _fallback_reference_texts() -> dict[str, str]:
         "manual_evaluator_table": "",
         "table_footnote": "Output generato dalla pipeline di analisi.",
         "heuristic_final_summary": "La valutazione euristica evidenzia che le criticita piu rilevanti non riguardano soltanto la quantita di problemi individuati, ma la loro collocazione nei momenti decisionali del flusso d'ordine: scelta del prodotto, configurazione del carrello, checkout, pagamento e controllo dello stato dell'ordine.",
+        "heuristic_distribution_deliveroo": "Per Deliveroo, la distribuzione delle euristiche violate evidenzia quali principi di usabilita risultano piu frequentemente coinvolti nei problemi osservati. La torta per categorie permette di leggere la concentrazione delle criticita rispetto a dimensioni cognitive, percettive e di gestione degli errori.",
+        "heuristic_distribution_glovo": "Per Glovo, la distribuzione delle euristiche violate mostra il profilo delle criticita emerse nella valutazione esperta. Il grafico a torta evidenzia il peso relativo delle categorie di problemi, rendendo piu immediata la lettura delle aree di interazione maggiormente coinvolte.",
         "deliveroo_relevant_problems": "In Deliveroo le criticita piu rilevanti si concentrano sulla trasparenza informativa, sulla gestione del flusso d'ordine e sul sovraccarico promozionale, con effetti diretti su controllo percepito e recupero degli errori.",
         "glovo_relevant_problems": "In Glovo emergono criticita legate alla coerenza del checkout, alla visibilita delle informazioni e alla presenza di elementi commerciali o accessori che competono con il task principale.",
         "shared_criticalities": "Il confronto mostra pattern ricorrenti del dominio food delivery: conferma dell'ordine, trasparenza informativa, controllo del carrello, annullamento e feedback post-ordine.",
@@ -890,10 +932,12 @@ def _fallback_reference_texts() -> dict[str, str]:
         "dark_patterns_deliveroo": "In Deliveroo i pattern piu evidenti riguardano la gestione dell'attenzione e la riduzione della trasparenza nei momenti di acquisto. I contenuti promozionali competono con le informazioni funzionali, mentre carrello e conferma dell'ordine non sempre rendono esplicito stato e conseguenze dell'azione.",
         "dark_patterns_glovo": "In Glovo i pattern piu critici emergono dall'integrazione di elementi commerciali o accessori in flussi operativi gia complessi: upselling nel carrello, contenuti sponsorizzati poco distinguibili e funzioni social non strettamente necessarie.",
         "dark_patterns_impact": "Queste scelte non impediscono il completamento del task, ma possono ridurre controllo percepito, fiducia e capacita di recupero in caso di errore. L'impatto diventa piu serio quando la frizione compare vicino a checkout, pagamento o tracking dell'ordine.",
-        "user_test_statistical_significance": "I tempi dei task sono stati confrontati tra Deliveroo e Glovo considerando gli stessi utenti sulle due applicazioni. Il risultato distingue differenze descrittive da differenze statisticamente piu robuste.",
-        "effectiveness_efficiency_joint": "La sola efficienza temporale non basta per valutare l'usabilita del flusso. Nei task di food delivery e necessario leggere insieme tempo, successo, errori e osservazioni qualitative.\n\nUn'interazione veloce puo risultare problematica se porta l'utente a perdere il controllo del carrello, a non comprendere lo stato dell'ordine o a confermare un pagamento senza verifica esplicita.",
+        "effectiveness_intro": "Sono state distinte due metriche: l'efficacia misura il completamento complessivo del task, mentre l'efficacia assoluta considera solo i task completati autonomamente e senza criticita annotate.",
+        "effectiveness_legend": "Efficacia: task completata, anche con aiuto o criticita.\n\nEfficacia assoluta: task completata senza aiuto e senza criticita annotate.\n\nI casi completati con aiuto o workaround sono inclusi nell'efficacia generale, ma esclusi dall'efficacia assoluta.",
+        "efficiency_intro": "Le analisi di efficienza principale considerano solo i tempi dei task completati autonomamente. I tempi dei task completati con aiuto sono riportati nei dati grezzi, ma non usati per stimare l'efficienza autonoma.",
+        "user_test_statistical_significance": "I tempi dei task sono stati confrontati tra Deliveroo e Glovo considerando gli stessi utenti sulle due applicazioni. Per i p-value principali vengono usate solo coppie con successo autonomo su entrambe le app; con meno di 5 coppie valide il confronto viene indicato come non sufficiente.",
+        "effectiveness_efficiency_joint": "La sola efficienza temporale non basta per valutare l'usabilita del flusso. Nei task di food delivery e necessario leggere insieme tempo, successo autonomo, richieste di aiuto, errori e osservazioni qualitative.\n\nUn'interazione veloce puo risultare problematica se porta l'utente a perdere il controllo del carrello, a non comprendere lo stato dell'ordine o a confermare un pagamento senza verifica esplicita.",
         "qualitative_observations": "Le note qualitative collegano i dati numerici alle frizioni osservate: indirizzo, carrello, checkout, contenuti commerciali e tracking diventano punti in cui l'utente puo perdere orientamento o fiducia.",
-        "user_expertise_matrix": "La matrice mostra la distribuzione dei partecipanti rispetto alla familiarita con servizi di food delivery e all'esperienza digitale dichiarata. Poiche il questionario non contiene una variabile digitale separata, la matrice va letta come rappresentazione descrittiva utile a contestualizzare tempi, errori e task assistiti.",
         "questionnaire_statistical_comparison": "Il confronto tra item del questionario evidenzia dove la percezione soggettiva separa maggiormente le due applicazioni e aiuta a collegare opinioni, prestazioni e problemi euristici.",
         "questionnaire_synthesis": "Il questionario mostra la percezione soggettiva degli utenti dopo l'interazione. I risultati vanno letti come complemento dei test: tempi ed errori descrivono la prestazione osservabile, mentre le risposte soggettive indicano fiducia, chiarezza, soddisfazione e disponibilita a riutilizzare o consigliare il servizio.",
         "ueq_interpretation": "Le scale UEQ distinguono qualita pragmatica dell'interazione, legata a chiarezza, efficienza e controllo, e qualita edonica, legata a stimolazione, attrattiva e originalita. Il punto centrale e capire quali dimensioni confermano le criticita osservate nei test.",

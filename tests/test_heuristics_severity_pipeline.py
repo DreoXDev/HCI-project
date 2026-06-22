@@ -6,9 +6,13 @@ import pandas as pd
 import pytest
 
 from src.formbricks_heuristics_pipeline import (
+    build_heuristic_category_counts,
     build_expert_problem_matrix,
     build_heuristic_final_dataset,
+    build_heuristic_occurrence_counts,
     build_problem_severity_summary,
+    build_problems_slide_table,
+    heuristic_category_mapping,
     normalize_formbricks_severity_export,
     normalize_problem_id_from_column,
     normalize_severity_strict,
@@ -130,6 +134,29 @@ def test_join_final_dataset_and_matrix_are_correct() -> None:
     assert summary.loc[summary["problem_id"] == "P001", "mean_severity"].iloc[0] == 3.5
     assert matrix.loc[matrix["problem_id"] == "P001", "E01"].iloc[0] == 3
     assert matrix.loc[matrix["problem_id"] == "P001", "mean_severity"].iloc[0] == 3.5
+
+
+def test_distribution_counts_split_multiple_heuristics_and_categories_sum() -> None:
+    clean = _clean().copy()
+    clean.loc[0, "heuristic"] = "E1;E3"
+    ratings, _ = normalize_formbricks_severity_export(_formbricks_export(), problems=clean)
+    summary = build_problem_severity_summary(clean, ratings)
+    heuristic_counts = build_heuristic_occurrence_counts(summary)
+    category_counts = build_heuristic_category_counts(heuristic_counts, heuristic_category_mapping())
+
+    deliveroo = heuristic_counts[heuristic_counts["app"] == "Deliveroo"]
+    assert deliveroo.loc[deliveroo["heuristic"] == "E1", "count"].iloc[0] == 1
+    assert deliveroo.loc[deliveroo["heuristic"] == "E3", "count"].iloc[0] == 1
+    assert category_counts[category_counts["app"] == "Deliveroo"]["count"].sum() == deliveroo["count"].sum()
+
+
+def test_problem_slide_table_includes_median_and_std() -> None:
+    ratings, _ = normalize_formbricks_severity_export(_formbricks_export(), problems=_clean())
+    summary = build_problem_severity_summary(_clean(), ratings)
+    slide = build_problems_slide_table(summary)
+
+    assert {"Sev. media", "Sev. mediana", "Dev. st."} <= set(slide.columns)
+    assert slide.loc[slide["ID"] == "P001", "Dev. st."].iloc[0] > 0
 
 
 def test_severity_pipeline_writes_expected_outputs(tmp_path: Path) -> None:

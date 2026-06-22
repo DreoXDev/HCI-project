@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import re
+import zipfile
 
 import pandas as pd
 
@@ -93,6 +94,52 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
         empty_tasks = observed.groupby("task_id").size()
         _check(bool((empty_tasks > 0).all()), "Nessun task senza dati", "Almeno un task e senza dati", rows)
 
+    wide_times = resolve_path("outputs/tables/user_testing_times_wide.csv")
+    if wide_times.exists():
+        wide_df = pd.read_csv(wide_times, encoding="utf-8-sig")
+        user_col = "Utente" if "Utente" in wide_df.columns else "user_id"
+        users = wide_df[user_col].astype(str).tolist() if user_col in wide_df else []
+        expected_users = [f"U{index}" for index in range(1, 25)]
+        _check(len(users) == 24, "Tabella tempi wide contiene 24 utenti", f"Tabella tempi wide contiene {len(users)}/24 utenti", rows)
+        _check(sorted(users, key=lambda value: int(value[1:]) if value.startswith("U") and value[1:].isdigit() else 999) == expected_users, "Utenti U1-U24 presenti una sola volta nella tabella tempi", "Utenti mancanti o duplicati nella tabella tempi", rows)
+    else:
+        _check(False, "", "Tabella tempi wide mancante", rows)
+
+    profile_table = resolve_path("outputs/tables/user_profiles_slide.csv")
+    if profile_table.exists():
+        profiles_slide = pd.read_csv(profile_table, encoding="utf-8-sig")
+        user_col = "Utente" if "Utente" in profiles_slide.columns else "user_id"
+        profile_users = profiles_slide[user_col].astype(str).tolist() if user_col in profiles_slide else []
+        _check(len(profile_users) == 24, "Profilo utenti contiene 24 utenti", f"Profilo utenti contiene {len(profile_users)}/24 utenti", rows)
+        _check("digital_familiarity" not in profiles_slide.columns and "Familiarita digitale" not in profiles_slide.columns, "Profilo utenti non inventa familiarita digitale", "Profilo utenti contiene familiarita digitale non disponibile", rows)
+        familiarity_cols = [column for column in profiles_slide.columns if "Familiarita" in column or "Frequenza" in column]
+        raw_ordinal = profiles_slide[familiarity_cols].astype(str).isin(["1", "2", "3", "1.0", "2.0", "3.0"]).any().any() if familiarity_cols else False
+        _check(not raw_ordinal, "Profilo utenti usa label Bassa/Media/Alta", "Profilo utenti mostra ancora valori 1/2/3", rows)
+    else:
+        _check(False, "", "Tabella profilo utenti mancante", rows)
+
+    effectiveness_path = resolve_path("outputs/tables/user_test_effectiveness_by_task.csv")
+    non_autonomous_path = resolve_path("outputs/tables/user_test_non_autonomous_tasks.csv")
+    if effectiveness_path.exists() and non_autonomous_path.exists():
+        effectiveness = pd.read_csv(effectiveness_path, encoding="utf-8-sig")
+        excluded = pd.read_csv(non_autonomous_path, encoding="utf-8-sig")
+        bad_outcomes = {"assisted_success", "success_with_issue", "partial_success"}
+        _check(bool(bad_outcomes.issubset(set(excluded.get("outcome", pd.Series(dtype=str)).astype(str))) or bad_outcomes.intersection(set(excluded.get("outcome", pd.Series(dtype=str)).astype(str)))), "Task assistite/parziali escluse dalle metriche autonome", "Nessuna evidenza di esclusione task assistite/parziali", rows)
+        deliveroo_t3 = effectiveness[(effectiveness["app"] == "Deliveroo") & (effectiveness["task"].astype(int) == 3)]
+        _check(not deliveroo_t3.empty and int(deliveroo_t3["autonomous_success_count"].iloc[0]) == 16, "Deliveroo Task 3 conta solo successi autonomi", "Deliveroo Task 3 include successi assistiti nei successi", rows)
+    else:
+        _check(False, "", "Output efficacia autonoma/non autonoma mancanti", rows)
+
+    for output in [
+        "outputs/tables/user_test_effectiveness.csv",
+        "outputs/tables/user_test_absolute_effectiveness.csv",
+        "outputs/tables/user_test_effectiveness_mcnemar.csv",
+        "outputs/tables/user_test_efficiency_by_task_autonomous.csv",
+        "outputs/tables/user_test_efficiency_comparison_autonomous.csv",
+        "outputs/reports/user_testing_autonomous_success_update.md",
+    ]:
+        _check(resolve_path(output).exists(), f"Output autonomo presente: {output}", f"Output autonomo mancante: {output}", rows)
+
     for key, system in [("heuristics_system_1", systems[0]), ("heuristics_system_2", systems[1])]:
         df = data.get(key, pd.DataFrame())
         expert_cols = [c for c in df.columns if str(c).startswith("Expert")]
@@ -122,23 +169,54 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
             _check("description" in df and not df["description"].astype(str).str.contains(r"\.\.\.", regex=True).any(), f"Nessuna ellissi nelle descrizioni {app}", f"Ellissi trovata nelle descrizioni {app}", rows)
             if {"severity_mean", "problem_id"}.issubset(df.columns):
                 sortable = df.copy()
+                _check({"severity_median", "severity_std"}.issubset(sortable.columns), f"Statistiche complete presenti per {app}", f"Mediana/deviazione standard mancanti per {app}", rows)
                 sortable["severity_mean"] = pd.to_numeric(sortable["severity_mean"], errors="coerce").fillna(-1)
-                sort_columns = ["severity_mean"]
-                ascending = [False]
-                if "source_count" in sortable.columns:
-                    sortable["source_count"] = pd.to_numeric(sortable["source_count"], errors="coerce").fillna(0)
-                    sort_columns.append("source_count")
-                    ascending.append(False)
-                sort_columns.append("problem_id")
-                ascending.append(True)
+                sortable["severity_median"] = pd.to_numeric(sortable.get("severity_median"), errors="coerce").fillna(-1)
+                sortable["severity_std"] = pd.to_numeric(sortable.get("severity_std"), errors="coerce").fillna(-1)
+                if "priority_rank" not in sortable.columns:
+                    sortable["priority_rank"] = sortable.get("priority_band", "").map({"A": 0, "B": 1, "C": 2, "unrated": 9}).fillna(9).astype(int)
+                sort_columns = ["priority_rank", "severity_mean", "severity_median", "severity_std", "problem_id"]
+                ascending = [True, False, False, False, True]
                 sorted_df = sortable.sort_values(sort_columns, ascending=ascending, kind="mergesort")
-                _check(df["problem_id"].tolist() == sorted_df["problem_id"].tolist(), f"Problemi {app} ordinati per severita", f"Problemi {app} non ordinati per severita", rows)
+                _check(df["problem_id"].tolist() == sorted_df["problem_id"].tolist(), f"Problemi {app} ordinati per priorita e severita", f"Problemi {app} non ordinati per priorita e severita", rows)
 
     demographics_ok = run_demographics_quality_check(config)
     _check(demographics_ok, "Audit composizione campioni demografici superato", "Audit composizione campioni demografici fallito", rows)
 
     deck_findings = audit_final_deck_text()
     _check(not deck_findings, "Deck finale senza placeholder o path tecnici", f"Deck finale contiene {len(deck_findings)} testo/i vietato/i", rows)
+    pptx_path = resolve_path("outputs/slides/final_report.pptx")
+    if pptx_path.exists():
+        try:
+            with zipfile.ZipFile(pptx_path) as deck:
+                slide_texts = []
+                full_text = []
+                for name in deck.namelist():
+                    if name.startswith("ppt/slides/slide") and name.endswith(".xml"):
+                        xml = deck.read(name).decode("utf-8", errors="ignore")
+                        plain = re.sub(r"<[^>]+>", " ", xml)
+                        full_text.append(plain)
+                        if "Tabella tempi user test" in plain:
+                            slide_texts.append(plain)
+                _check(len(slide_texts) == 4, "Deck contiene 4 slide tabella tempi user test", f"Deck contiene {len(slide_texts)}/4 slide tabella tempi user test", rows)
+                combined = " ".join(slide_texts)
+                _check(all(f"U{index}" in combined for index in range(1, 25)), "Deck tempi contiene U1-U24", "Deck tempi non contiene tutti gli utenti U1-U24", rows)
+                all_deck_text = " ".join(full_text)
+                _check("Matrice descrittiva del profilo utenti" not in all_deck_text and "user_expertise_matrix" not in all_deck_text, "Deck non contiene matrice expertise utenti", "Deck contiene ancora matrice expertise utenti", rows)
+                _check("Apple Mappe" not in all_deck_text and "Google Maps" not in all_deck_text, "Deck senza label esempio Apple/Google", "Deck contiene label esempio Apple/Google", rows)
+        except Exception as exc:
+            _check(False, "", f"Audit slide tempi non eseguibile: {exc}", rows)
+
+    item_desc = resolve_path("outputs/tables/questionnaire_item_descriptives.csv")
+    item_interpretations = resolve_path("outputs/tables/questionnaire_item_interpretations.csv")
+    if item_desc.exists():
+        desc = pd.read_csv(item_desc, encoding="utf-8-sig")
+        item_ids = set(desc.get("item_id", pd.Series(dtype=int)).dropna().astype(int))
+        _check(set(range(1, 27)).issubset(item_ids), "Questionario copre le 26 domande", f"Questionario copre {len(item_ids)}/26 domande", rows)
+        _check({"min", "q1", "mean", "median", "q3", "max"}.issubset(desc.columns), "Descrittive questionario complete", "Descrittive questionario min/q1/media/mediana/q3/max mancanti", rows)
+    else:
+        _check(False, "", "Descrittive questionario per item mancanti", rows)
+    _check(item_interpretations.exists(), "Interpretazioni questionario presenti", "Interpretazioni questionario mancanti", rows)
 
     deck_config = resolve_path("slides/config/slide_deck.yml")
     if deck_config.exists():
