@@ -110,6 +110,7 @@ FORMBRICKS_METADATA_COLUMNS = {
     "useragent - browser",
 }
 PROBLEM_ID_PATTERN = re.compile(r"\[(P\d{3,}|P[DG]\d{2,})\]", re.IGNORECASE)
+CANONICAL_PROBLEM_ID_RE = re.compile(r"^P[DG]\d{2}$")
 
 
 def load_raw_heuristics_mapping(path: str | Path = "config/heuristics_raw_mapping.yml") -> dict[str, Any]:
@@ -487,9 +488,9 @@ def validate_clean_problems(path_or_df: str | Path | pd.DataFrame) -> CleanValid
     duplicated = sorted(ids[ids.duplicated() & (ids != "")].unique())
     if duplicated:
         errors.append(f"problem_id duplicati: {', '.join(duplicated)}")
-    malformed = ids[(ids != "") & ~ids.str.match(r"^P\d{3,}$")]
+    malformed = ids[(ids != "") & ~ids.str.match(r"^P[DG]\d{2}$")]
     if not malformed.empty:
-        errors.append(f"problem_id con formato non valido: {', '.join(malformed.unique())}. Usa P001, P002, ...")
+        errors.append(f"problem_id con formato non valido: {', '.join(malformed.unique())}. Usa PD01-PD20 e PG01-PG20.")
     if "source_count" in df.columns:
         counts = pd.to_numeric(df["source_count"], errors="coerce")
         invalid = df["source_count"].notna() & (df["source_count"].astype(str).str.strip() != "") & counts.isna()
@@ -526,7 +527,7 @@ def normalize_formbricks_severity_export(
         raise ValueError("Colonna ID esperto non trovata. Inserisci una domanda tipo 'Qual e il tuo id esperto'.")
     problem_columns = detect_problem_rating_columns(export.columns)
     if not problem_columns:
-        raise ValueError("Nessuna colonna rating con pattern [P001] trovata nell'export Formbricks.")
+        raise ValueError("Nessuna colonna rating con pattern [PD01]/[PG01] o legacy [P001] trovata nell'export Formbricks.")
     valid_ids = set()
     if problems is not None:
         valid_ids = set(problems["problem_id"].astype(str).str.strip().str.upper())
@@ -593,20 +594,27 @@ def detect_problem_rating_columns(columns: pd.Index | list[str]) -> list[tuple[s
 
 def normalize_problem_id_from_column(raw_problem_id: str, column_text: str = "") -> str:
     problem_id = raw_problem_id.upper()
-    if re.match(r"^P\d{3,}$", problem_id):
-        return problem_id
     qualified = re.match(r"^P([DG])(\d{2,})$", problem_id)
     if qualified:
         app_prefix, number_text = qualified.groups()
-        number = int(number_text)
-        offset = 0 if app_prefix == "D" else 20
-        return f"P{offset + number:03d}"
+        return f"P{app_prefix}{int(number_text):02d}"
+    global_id = re.match(r"^P(\d{3,})$", problem_id)
+    if global_id:
+        number = int(global_id.group(1))
+        text = comparable(column_text)
+        if 1 <= number <= 20:
+            prefix = "G" if "glovo" in text and "deliveroo" not in text else "D"
+            return f"P{prefix}{number:02d}"
+        if 21 <= number <= 40:
+            return f"PG{number - 20:02d}"
     if problem_id.startswith("P") and problem_id[1:].isdigit():
         number = int(problem_id[1:])
         text = comparable(column_text)
         if number <= 20 and "glovo" in text and "deliveroo" not in text:
-            return f"P{20 + number:03d}"
-        return f"P{number:03d}"
+            return f"PG{number:02d}"
+        if number <= 20:
+            return f"PD{number:02d}"
+        return f"PG{number - 20:02d}"
     return problem_id
 
 
@@ -723,7 +731,10 @@ def run_severity_pipeline(
     ratings_path = output_root / "problem_ratings_long.csv"
     final_path = output_root / "heuristic_final_dataset.csv"
     _write_csv_return(ratings_long, ratings_path)
-    evaluators_path = _write_csv_return(build_severity_evaluators_slide_table(ratings_export), public_output_root / "tables" / "heuristics_evaluators_slide.csv")
+    evaluators_slide = build_profile_evaluators_slide_table(output_root / "expert_profiles.csv")
+    if evaluators_slide.empty:
+        evaluators_slide = build_severity_evaluators_slide_table(ratings_export)
+    evaluators_path = _write_csv_return(evaluators_slide, public_output_root / "tables" / "heuristics_evaluators_slide.csv")
     final, join_warnings = build_heuristic_final_dataset(problems, ratings_long, strict=strict)
     _write_csv_return(final, final_path)
     result = write_final_heuristics_outputs(final, out_dir=out_dir, processed_dir=processed_dir)
@@ -755,6 +766,38 @@ def build_severity_evaluators_slide_table(export: pd.DataFrame) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows).drop_duplicates("Valutatore")
+
+
+def build_profile_evaluators_slide_table(path: str | Path) -> pd.DataFrame:
+    target = resolve_path(path)
+    if not target.exists():
+        return pd.DataFrame()
+    profiles = pd.read_csv(target, encoding="utf-8-sig")
+    if profiles.empty or "evaluator_id" not in profiles.columns:
+        return pd.DataFrame()
+    columns = [
+        "evaluator_id",
+        "expert_group",
+        "gender",
+        "age_group",
+        "occupation",
+        "familiarity",
+        "usability_experience",
+        "domain_experience",
+    ]
+    slide = profiles[[column for column in columns if column in profiles.columns]].copy()
+    return slide.rename(
+        columns={
+            "evaluator_id": "Valutatore",
+            "expert_group": "Gruppo",
+            "gender": "Genere",
+            "age_group": "Eta",
+            "occupation": "Occupazione",
+            "familiarity": "Familiarita",
+            "usability_experience": "Esperienza usabilita",
+            "domain_experience": "Esperienza dominio",
+        }
+    ).drop_duplicates("Valutatore")
 
 
 def _value_by_alias(row: pd.Series, columns: list[str], aliases: list[str]) -> str:
@@ -870,6 +913,7 @@ def build_problem_severity_summary(clean: pd.DataFrame, ratings: pd.DataFrame) -
         problem_id = getattr(problem, "problem_id")
         subset = ratings[ratings["problem_id"].astype(str) == problem_id]
         values = pd.to_numeric(subset["severity"], errors="coerce").dropna()
+        source_count = _numeric_count(getattr(problem, "source_count", 1), default=1)
         rows.append(
             {
                 "problem_id": problem_id,
@@ -878,6 +922,7 @@ def build_problem_severity_summary(clean: pd.DataFrame, ratings: pd.DataFrame) -
                 "heuristic": getattr(problem, "heuristic", ""),
                 "title": getattr(problem, "title", ""),
                 "description": getattr(problem, "description", ""),
+                "source_count": source_count,
                 "mean_severity": round(float(values.mean()), 2) if not values.empty else np.nan,
                 "median_severity": round(float(values.median()), 2) if not values.empty else np.nan,
                 "std_severity": round(float(values.std(ddof=1)), 2) if len(values) > 1 else 0.0,
@@ -944,15 +989,27 @@ def _split_heuristics(value: Any) -> list[str]:
     return list(dict.fromkeys(codes))
 
 
+def _numeric_count(value: Any, *, default: int = 0) -> int:
+    if value is None or (isinstance(value, float) and np.isnan(value)):
+        return default
+    text = str(value).strip()
+    if not text:
+        return default
+    parsed = pd.to_numeric(pd.Series([text]), errors="coerce").iloc[0]
+    if pd.isna(parsed):
+        return default
+    return max(0, int(parsed))
+
+
 def build_heuristic_occurrence_counts(problem_summary: pd.DataFrame) -> pd.DataFrame:
     apps = sorted(problem_summary["app"].dropna().astype(str).unique()) if "app" in problem_summary else ["Deliveroo", "Glovo"]
     base = pd.MultiIndex.from_product([apps, HEURISTIC_ORDER], names=["app", "heuristic"]).to_frame(index=False)
-    rows: list[dict[str, str]] = []
+    rows: list[dict[str, str | int]] = []
     for row in problem_summary.itertuples(index=False):
         app = str(getattr(row, "app", ""))
         for code in _split_heuristics(getattr(row, "heuristic", "")):
-            rows.append({"app": app, "heuristic": code})
-    counts = pd.DataFrame(rows).value_counts(["app", "heuristic"]).reset_index(name="count") if rows else pd.DataFrame(columns=["app", "heuristic", "count"])
+            rows.append({"app": app, "heuristic": code, "count": 1})
+    counts = pd.DataFrame(rows).groupby(["app", "heuristic"], as_index=False)["count"].sum() if rows else pd.DataFrame(columns=["app", "heuristic", "count"])
     return base.merge(counts, on=["app", "heuristic"], how="left").fillna({"count": 0}).assign(count=lambda df: df["count"].astype(int))
 
 
@@ -1062,7 +1119,7 @@ def write_distribution_control_report(
         f"- Numero valutazioni di severita Deliveroo: {_app_rating_count(problem_summary, ratings, 'Deliveroo')}",
         f"- Numero valutazioni di severita Glovo: {_app_rating_count(problem_summary, ratings, 'Glovo')}",
         f"- Campi severity_mean, severity_median, severity_std presenti: {'si' if present else 'no'}",
-        "- Criterio conteggio euristiche: ogni codice E1-E10 presente nella cella `heuristic` viene contato una volta; celle multi-euristica come `E1;E3` contribuiscono a entrambi i conteggi.",
+        "- Criterio conteggio euristiche: ogni problema unitario conta una volta per ciascun codice E1-E10 indicato nella cella `heuristic`. Celle multi-euristica come `E1;E3` contribuiscono a entrambi i conteggi, ma non vengono pesate per numero di valutatori o `source_count`.",
         "",
         "## Conteggi E1-E10 Deliveroo",
         heuristic_counts[heuristic_counts["app"].astype(str).str.casefold() == "deliveroo"].to_markdown(index=False),

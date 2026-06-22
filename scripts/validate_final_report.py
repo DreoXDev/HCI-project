@@ -55,7 +55,6 @@ REQUIRED_UEQ_ASSETS = [
     "slides/assets/generated/ueq/ueq_scale_comparison_deliveroo_vs_glovo.png",
 ]
 REQUIRED_USER_TEST_ASSETS = [
-    "outputs/charts/user_expertise_matrix.png",
     "outputs/charts/user_demographics_age_gender.png",
     "outputs/charts/users_age_pie.png",
     "outputs/charts/users_gender_pie.png",
@@ -73,14 +72,28 @@ REQUIRED_USER_TEST_ASSETS = [
     "outputs/charts/user_test_efficiency_task_2.png",
     "outputs/charts/user_test_efficiency_task_3.png",
     "outputs/charts/user_test_efficiency_overall.png",
+    "outputs/charts/effectiveness_outcome_matrix.png",
+    "outputs/charts/efficiency_summary.png",
+    "outputs/charts/efficiency_task_1_boxplot.png",
+    "outputs/charts/efficiency_task_1_paired_lines.png",
+    "outputs/charts/efficiency_task_2_boxplot.png",
+    "outputs/charts/efficiency_task_2_paired_lines.png",
+    "outputs/charts/efficiency_task_3_boxplot.png",
+    "outputs/charts/efficiency_task_3_paired_lines.png",
+    "outputs/charts/ueq_benchmark_comparison.png",
+    "outputs/charts/subgroup_ueq_heatmap.png",
 ]
 REQUIRED_SLIDE_TITLES = [
     "Profilo degli utenti coinvolti",
     "Composizione del campione utenti",
-    "Matrice descrittiva del profilo utenti",
-    "Tabella unitaria tempi user test",
-    "Efficacia stretta per task",
-    "Efficacia estesa per task",
+    "Efficacia - matrice esiti utenti/task",
+    "Efficacia relativa - sintesi",
+    "Efficacia assoluta - sintesi",
+    "Efficienza - riepilogo",
+    "Efficienza statistica - sintesi",
+    "UEQ D9",
+    "UEQ benchmark - confronto sintetico",
+    "Confronto statistico complessivo",
     "Task assistite e issue",
 ]
 
@@ -266,6 +279,8 @@ def _validate_profiles(profile_path: Path, times_path: Path) -> list[str]:
     if pd.to_numeric(profiles["delivery_familiarity"], errors="coerce").dropna().shape[0] < 24:
         errors.append("delivery_familiarity is incomplete in user_profiles.csv.")
     for column in ["delivery_familiarity", "digital_familiarity"]:
+        if column not in profiles.columns:
+            continue
         numeric = pd.to_numeric(profiles[column], errors="coerce")
         if numeric.dropna().min() < 1 or numeric.dropna().max() > 3:
             errors.append(f"{column} must remain on original 1-3 scale.")

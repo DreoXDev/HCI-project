@@ -390,11 +390,12 @@ def _user_test_task_stats(df: pd.DataFrame) -> pd.DataFrame:
         max_seconds=("completion_time_sec", "max"),
         success_rate=("success", "mean"),
         mean_errors=("errors_count", "mean"),
-    ).reset_index().rename(columns={"task_id": "task"})
+    ).reset_index()
     totals = df.groupby(["app", "task_id"], sort=True).agg(total=("user_id", "nunique"), autonomous_success=("success", "sum")).reset_index()
     summary = summary.drop(columns=["success_rate"], errors="ignore").merge(totals, on=["app", "task_id"], how="right")
     summary["success_rate"] = summary["autonomous_success"] / summary["total"]
     summary["n"] = summary["total"]
+    summary = summary.rename(columns={"task_id": "task"})
     return summary[columns]
 
 

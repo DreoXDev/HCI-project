@@ -114,6 +114,7 @@ def generate_slides(
                 header_font_size=float(table.get("header_font_size") or table.get("font_size") or 7.5),
                 max_cell_chars=int(table.get("max_cell_chars") or 70),
                 column_widths=table.get("column_widths"),
+                bounds=table.get("bounds"),
             )
         _clear_unresolved_placeholders(slide)
         _style_and_fit_slide_text_dark(slide, template_id=template_id)
@@ -298,8 +299,19 @@ def replace_placeholder_with_table(
     header_font_size: float = 7.5,
     max_cell_chars: int = 70,
     column_widths: list[float] | None = None,
+    bounds: list[int] | tuple[int, int, int, int] | None = None,
 ) -> None:
-    shape = _find_placeholder_shape(slide, placeholder_name)
+    explicit_bounds = tuple(int(value) for value in bounds) if bounds and len(bounds) == 4 else None
+    if explicit_bounds is not None:
+        shape = _find_visual_table_placeholder(slide)
+        fallback_bounds = explicit_bounds
+    else:
+        normalized_placeholder = _normalize_placeholder(placeholder_name)
+        uses_visual_slot = "LEFT" in normalized_placeholder or "RIGHT" in normalized_placeholder
+        shape = _find_visual_image_placeholder(slide, placeholder_name) if uses_visual_slot else None
+        fallback_bounds = _fallback_image_bounds(placeholder_name) if uses_visual_slot and shape is None else None
+    if shape is None and fallback_bounds is None:
+        shape = _find_placeholder_shape(slide, placeholder_name)
     if shape is None:
         shape = _find_visual_table_placeholder(slide)
     rows = _read_csv_rows(csv_path)
@@ -307,7 +319,9 @@ def replace_placeholder_with_table(
         raise SlideGenerationError(f"Table CSV is empty: {resolve_path(csv_path)}")
     rows = _slice_table_rows(rows, start_row=start_row, max_rows=max_rows)
 
-    if shape is None:
+    if fallback_bounds is not None:
+        left, top, width, height = fallback_bounds
+    elif shape is None:
         left, top, width, height = 571500, 1533525, 11049000, 4750000
     else:
         left, top, width, height = shape.left, shape.top, shape.width, shape.height
@@ -1057,6 +1071,8 @@ def _slice_table_rows(rows: list[list[str]], *, start_row: int = 0, max_rows: in
 
 def _expand_table_bounds_if_needed(left: int, top: int, width: int, height: int) -> tuple[int, int, int, int]:
     slide_width = 12192000
+    if left >= int(slide_width * 0.5):
+        return left, top, width, height
     if width >= int(slide_width * 0.7):
         shrink_x = 260000
         shrink_y = 180000

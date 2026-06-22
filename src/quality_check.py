@@ -50,11 +50,15 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
 
     clean_problems = resolve_path("data/processed/heuristics/clean_problems.csv")
     severity_export = resolve_path("data/formbricks_raw/heuristics/severity_ratings_export.csv")
+    clean_df = pd.DataFrame()
     if clean_problems.exists():
         clean_result = validate_clean_problems(clean_problems)
         _check(clean_result.valid, "clean_problems.csv valido", "clean_problems.csv non valido", rows)
         clean_df = pd.read_csv(clean_problems)
         _check(len(clean_df) == 40, "40 problemi consolidati presenti", f"Problemi consolidati presenti: {len(clean_df)}/40", rows)
+        expected_problem_ids = [f"PD{index:02d}" for index in range(1, 21)] + [f"PG{index:02d}" for index in range(1, 21)]
+        actual_problem_ids = clean_df.get("problem_id", pd.Series(dtype=str)).astype(str).str.strip().tolist()
+        _check(actual_problem_ids == expected_problem_ids, "Problem ID canonici PD01-PD20 e PG01-PG20", "Problem ID canonici non corrispondono a PD01-PD20 e PG01-PG20", rows)
     else:
         _check(False, "", "clean_problems.csv mancante", rows)
     if severity_export.exists():
@@ -70,6 +74,29 @@ def run_quality_check(config: dict, output_path: str | Path = "outputs/reports/f
             _check(False, "", f"Import severita reale non riuscito: {exc}", rows)
     else:
         _check(False, "", "severity_ratings_export.csv mancante", rows)
+    heuristic_distribution = resolve_path("outputs/tables/heuristic_distribution_counts.csv")
+    heuristic_categories = resolve_path("outputs/tables/heuristic_category_counts.csv")
+    if not clean_df.empty and heuristic_distribution.exists() and heuristic_categories.exists():
+        expected_rows = []
+        for problem in clean_df.itertuples(index=False):
+            for code in re.findall(r"\bE(?:10|[1-9])\b", str(getattr(problem, "heuristic", "")).upper()):
+                expected_rows.append({"app": getattr(problem, "app", ""), "heuristic": code, "count": 1})
+        expected = pd.DataFrame(expected_rows).groupby(["app", "heuristic"], as_index=False)["count"].sum() if expected_rows else pd.DataFrame(columns=["app", "heuristic", "count"])
+        actual = pd.read_csv(heuristic_distribution)
+        actual_nonzero = actual[pd.to_numeric(actual["count"], errors="coerce").fillna(0).astype(int) > 0].copy()
+        actual_nonzero["count"] = pd.to_numeric(actual_nonzero["count"], errors="coerce").fillna(0).astype(int)
+        expected = expected.sort_values(["app", "heuristic"]).reset_index(drop=True)
+        actual_nonzero = actual_nonzero.sort_values(["app", "heuristic"]).reset_index(drop=True)
+        _check(expected.equals(actual_nonzero), "Distribuzione euristiche conta ogni problema unitario una volta", "Distribuzione euristiche non corrisponde ai problemi unitari", rows)
+        categories = pd.read_csv(heuristic_categories)
+        _check(
+            actual.groupby("app")["count"].sum().astype(int).to_dict() == categories.groupby("app")["count"].sum().astype(int).to_dict(),
+            "Conteggi categorie euristiche coerenti con conteggi E1-E10",
+            "Conteggi categorie euristiche non coerenti con E1-E10",
+            rows,
+        )
+    else:
+        _check(False, "", "Output distribuzione euristiche mancanti", rows)
     try:
         integrity = run_data_integrity_audit()
         _check(integrity.valid, "Audit integrita dati 40x8=320 superato", f"Audit integrita dati fallito: {'; '.join(integrity.failures)}", rows)

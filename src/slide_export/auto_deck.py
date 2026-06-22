@@ -6,43 +6,23 @@ from pathlib import Path
 from typing import Any
 
 from ..config import resolve_path
+from .auto_deck_formatting import (
+    chunks as _chunks,
+    compact as _compact,
+    findings_from_markdown as _findings_from_markdown,
+    float_or_none as _float_or_none,
+    format_average as _format_average,
+    format_value as _format_value,
+    humanize as _humanize,
+    markdown_body as _markdown_body,
+    number_field as _number_field,
+    one_line_markdown as _one_line_markdown,
+    safe_int as _safe_int,
+    slug as _slug,
+)
+from .auto_deck_config import APPENDIX_IMAGE_EXTENSIONS, DEFAULT_AUTO_CONFIG, SECTION_TITLES
 from .external_deck import user_task_deck_slide_specs
 from .template_variants import infer_theme_from_app, resolve_template_id
-
-
-SECTION_TITLES = {
-    "sample": "Campione e partecipanti",
-    "heuristics": "Valutazione euristica",
-    "user_tests": "User test",
-    "users_time": "Tempi, errori e successo",
-    "questionnaire": "Questionario UEQ e NPS",
-    "conclusions": "Sintesi e raccomandazioni",
-    "tables": "Tabelle di supporto",
-    "sources": "Mappa asset generati",
-}
-
-DEFAULT_AUTO_CONFIG = {
-    "enabled": False,
-    "mode": "append",
-    "figure_style": "dark",
-    "include_figures": True,
-    "include_tables": True,
-    "include_text_findings": True,
-    "include_text_slides": True,
-    "include_slide_pack_text": False,
-    "include_sources": True,
-    "reference_texts": "slides/content/reference_static_texts.md",
-    "table_rows_per_slide": 12,
-    "task_count": 5,
-    "appendix_assets_root": "slides/assets/appendices",
-    "include_empty_appendices": False,
-    "include_asset_manifest": False,
-    "final_delivery": False,
-    "max_slides": None,
-    "exclude": [],
-}
-
-APPENDIX_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
 
 
 def expand_auto_slides(deck_config: dict[str, Any], available_templates: set[str]) -> dict[str, Any]:
@@ -263,42 +243,27 @@ def _reference_order_specs(
     add(_comparison_or_blank("Composizione del campione utenti", "outputs/charts/users_age_pie.png", "outputs/charts/users_gender_pie.png", texts, "user_demographics", available_templates))
     add(_comparison_or_blank("Composizione utenti - familiarita e profilo", "outputs/charts/users_occupation_pie.png", "outputs/charts/users_delivery_familiarity_pie.png", texts, "user_familiarity_profile", available_templates))
     add(_graph_or_blank("Familiarita degli utenti con il food delivery", "outputs/charts/users_delivery_familiarity_pie.png", texts, "user_familiarity_profile", available_templates))
-    add(_table_or_blank("Tabella tempi user test", "outputs/tables/user_testing_times_wide.csv", texts, "users_time_summary", available_templates))
     add(_text_spec("Legenda efficacia", texts, "effectiveness_legend", available_templates))
-    add(_graph_or_blank("Efficacia dei task", "outputs/charts/user_test_effectiveness.png", texts, "effectiveness_intro", available_templates))
-    add(_graph_or_blank("Efficacia assoluta dei task", "outputs/charts/user_test_absolute_effectiveness.png", texts, "effectiveness_intro", available_templates))
-    add(_table_or_blank("Confronto statistico efficacia", "outputs/tables/user_test_effectiveness_mcnemar.csv", texts, "effectiveness_intro", available_templates))
-    add(_graph_or_blank("Task non completate in autonomia", "outputs/charts/user_test_non_autonomous_by_task.png", texts, "effectiveness_intro", available_templates))
-    add(_table_or_blank("Task assistite e issue", "outputs/tables/user_test_assistance_events_slide.csv", texts, "effectiveness_intro", available_templates))
+    add(_graph_or_blank("Efficacia - matrice esiti utenti/task", "outputs/charts/effectiveness_outcome_matrix.png", texts, "effectiveness_intro", available_templates))
+    add(_table_or_blank("Efficacia relativa - sintesi", "outputs/tables/slide_effectiveness_relative_summary.csv", texts, "effectiveness_intro", available_templates))
+    add(_table_or_blank("Efficacia assoluta - sintesi", "outputs/tables/slide_effectiveness_absolute_summary.csv", texts, "effectiveness_intro", available_templates))
     for task_idx in range(1, task_count + 1):
         task = f"t{task_idx:02d}"
         add(_graph_or_blank(f"Efficacia - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_effectiveness.png", texts, "task_result_placeholder", available_templates))
-        add(_graph_or_blank(f"Errori - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_error_breakdown.png", texts, "task_error_placeholder", available_templates))
-    add(_graph_or_blank("Efficienza", "outputs/figures/dark/user_tests/efficiency_boxplot.png", texts, "efficiency_intro", available_templates))
+    add(_graph_or_blank("Efficienza - riepilogo tempi mediani", "outputs/charts/efficiency_summary.png", texts, "efficiency_intro", available_templates))
+    add(_table_or_blank("Efficienza - riepilogo", "outputs/tables/slide_efficiency_summary.csv", texts, "efficiency_intro", available_templates))
+    add(_table_or_blank("Efficienza statistica - sintesi", "outputs/tables/slide_efficiency_stat_summary.csv", texts, "user_test_statistical_significance", available_templates))
     for task_idx in range(1, task_count + 1):
-        task = f"t{task_idx:02d}"
-        add(_graph_or_blank(f"Efficienza - Task {task_idx}", f"outputs/charts/user_test_efficiency_task_{task_idx}.png", texts, "task_result_placeholder", available_templates))
-        add(_graph_or_blank(f"Efficienza statistica - Task {task_idx}", f"outputs/assets/final_report/dark/task_efficiency_{task}.png", texts, "user_test_statistical_significance", available_templates))
-    add(_comparison_or_blank(
-        "Successo e distribuzione tempi",
-        "outputs/figures/dark/users_time_success_rate.png",
-        "outputs/figures/dark/users_time_boxplot_by_task.png",
-        texts,
-        "users_time_summary",
-        available_templates,
-    ))
-    add(_comparison_or_blank(
-        "Tempi, successo ed errori",
-        "outputs/figures/dark/users_time_mean_by_task.png",
-        "outputs/figures/dark/users_time_errors_by_task.png",
-        texts,
-        "users_time_summary",
-        available_templates,
-    ))
-    add(_graph_or_blank("Confronto statistico dei task", "outputs/assets/final_report/dark/user_test_time_diff_ci.png", texts, "user_test_statistical_significance", available_templates))
-    add(_table_or_blank("Confronto statistico dei task - tabella", "outputs/tables/user_test_efficiency_comparison_slide.csv", texts, "user_test_statistical_significance", available_templates))
+        add(_comparison_or_blank(
+            f"Efficienza - Task {task_idx}",
+            f"outputs/charts/efficiency_task_{task_idx}_boxplot.png",
+            f"outputs/charts/efficiency_task_{task_idx}_paired_lines.png",
+            texts,
+            "user_test_statistical_significance",
+            available_templates,
+        ))
+    add(_table_or_blank("Efficienza assoluta - confronto con OET", "outputs/tables/slide_efficiency_oet_summary.csv", texts, "user_test_statistical_significance", available_templates))
     add(_text_spec("Efficacia ed efficienza: lettura congiunta", texts, "effectiveness_efficiency_joint", available_templates))
-    add(_table_or_blank("Osservazioni qualitative durante i test", "outputs/tables/user_test_qualitative_notes.csv", texts, "qualitative_observations", available_templates))
 
     add(_section_slide("Questionario"))
     add(_text_spec("Introduzione al questionario", texts, "questionnaire_intro", available_templates))
@@ -311,28 +276,31 @@ def _reference_order_specs(
         "user_familiarity_profile",
         available_templates,
     ))
-    for spec in _questionnaire_full_item_specs(texts, available_templates):
+    for spec in _questionnaire_key_item_specs(texts, available_templates):
         add(spec)
     add(_text_spec("Confronto tra sistemi", texts, "questionnaire_comparison_intro", available_templates))
-    add(_graph_or_blank("Confronto statistico item chiave", "outputs/assets/final_report/dark/questionnaire_top_differences.png", texts, "questionnaire_statistical_comparison", available_templates))
-    add(_table_or_blank("Sintesi descrittiva per item", "data/processed/final_report/questionnaire_item_descriptive_stats.csv", texts, "questionnaire_statistical_comparison", available_templates))
+    add(_graph_or_blank("UEQ benchmark - confronto sintetico", "outputs/charts/ueq_benchmark_comparison.png", texts, "ueq_interpretation", available_templates))
+    add(_table_or_blank("UEQ - confronto dimensioni", "outputs/tables/slide_ueq_scale_summary.csv", texts, "ueq_interpretation", available_templates))
+    add(_table_or_blank("UEQ - test per dimensione", "outputs/tables/slide_ueq_scale_tests_summary.csv", texts, "ueq_interpretation", available_templates))
+    add(_table_or_blank("Benchmark UEQ - confronto sintetico", "outputs/tables/slide_ueq_benchmark_comparison.csv", texts, "ueq_interpretation", available_templates))
+    add(_graph_or_blank("Sottogruppi UEQ - heatmap differenze", "outputs/charts/subgroup_ueq_heatmap.png", texts, "user_familiarity_profile", available_templates))
+    add(_table_or_blank("Sottogruppi - sintesi esplorativa", "outputs/tables/slide_subgroup_compact.csv", texts, "user_familiarity_profile", available_templates))
     add(_text_spec("Sintesi dei risultati del questionario", texts, "questionnaire_synthesis", available_templates))
-    add(_graph_or_blank("Distribuzione risposte UEQ - Deliveroo", "slides/assets/generated/ueq/ueq_distribution_deliveroo.png", texts, "ueq_summary", available_templates, theme="deliveroo"))
-    add(_graph_or_blank("Distribuzione risposte UEQ - Glovo", "slides/assets/generated/ueq/ueq_distribution_glovo.png", texts, "ueq_summary", available_templates, theme="glovo"))
-    add(_table_or_blank("Analisi dei dati UEQ - Deliveroo", "data/processed/final_report/ueq_item_summary_deliveroo_slide.csv", texts, "ueq_table_placeholder", available_templates, theme="deliveroo"))
-    add(_table_or_blank("Analisi dei dati UEQ - Glovo", "data/processed/final_report/ueq_item_summary_glovo_slide.csv", texts, "ueq_table_placeholder", available_templates, theme="glovo"))
-    add(_graph_or_blank("Media risultati UEQ - Deliveroo", "slides/assets/generated/ueq/ueq_mean_results_deliveroo.png", texts, "ueq_summary", available_templates, theme="deliveroo"))
-    add(_graph_or_blank("Media risultati UEQ - Glovo", "slides/assets/generated/ueq/ueq_mean_results_glovo.png", texts, "ueq_summary", available_templates, theme="glovo"))
-    add(_graph_or_blank("Comparazione con benchmark - Deliveroo", "slides/assets/generated/ueq/ueq_benchmark_deliveroo.png", texts, "ueq_interpretation", available_templates, theme="deliveroo"))
-    add(_table_or_blank("Benchmark UEQ - Deliveroo", "data/processed/final_report/ueq_benchmark_deliveroo_slide.csv", texts, "ueq_interpretation", available_templates, theme="deliveroo"))
-    add(_graph_or_blank("Comparazione con benchmark - Glovo", "slides/assets/generated/ueq/ueq_benchmark_glovo.png", texts, "ueq_interpretation", available_templates, theme="glovo"))
-    add(_table_or_blank("Benchmark UEQ - Glovo", "data/processed/final_report/ueq_benchmark_glovo_slide.csv", texts, "ueq_interpretation", available_templates, theme="glovo"))
-    add(_graph_or_blank("Confronto scale UEQ Deliveroo vs Glovo", "slides/assets/generated/ueq/ueq_scale_comparison_deliveroo_vs_glovo.png", texts, "ueq_interpretation", available_templates))
+    add(_graph_or_blank("Benchmark UEQ - Deliveroo", "outputs/charts/ueq_benchmark_deliveroo.png", texts, "ueq_interpretation", available_templates, theme="deliveroo"))
+    add(_graph_or_blank("Benchmark UEQ - Glovo", "outputs/charts/ueq_benchmark_glovo.png", texts, "ueq_interpretation", available_templates, theme="glovo"))
     add(_text_spec("UEQ: conferme e contraddizioni rispetto ai test", texts, "ueq_confirmations_contradictions", available_templates))
-    add(_graph_or_blank("Net Promoter Score: raccomandabilita percepita", "outputs/assets/final_report/dark/nps_breakdown.png", texts, "nps_interpreted", available_templates))
+    add(_comparison_with_table_or_blank(
+        "Net Promoter Score: raccomandabilita percepita",
+        "outputs/figures/dark/questionnaire/nps_stacked_bar.png",
+        "outputs/tables/nps_breakdown.csv",
+        texts,
+        "nps_interpreted",
+        available_templates,
+    ))
 
     add(_section_slide("Sintesi finale"))
     add(_text_spec("Conclusioni: confronto complessivo", texts, "conclusions_overall", available_templates))
+    add(_table_or_blank("Confronto statistico complessivo", "outputs/tables/slide_system_comparison_compact.csv", texts, "integrated_evidence", available_templates))
     add(_text_spec("Evidenze integrate", texts, "integrated_evidence", available_templates))
     add(_text_spec("Raccomandazioni prioritarie", texts, "priority_recommendations", available_templates))
     add(_text_spec("Verdetto finale", texts, "final_verdict_argument", available_templates))
@@ -750,25 +718,66 @@ def _questionnaire_full_item_specs(texts: dict[str, str], available_templates: s
         if not item_idx:
             continue
         label = _questionnaire_item_label(item_idx)
-        graph = _questionnaire_item_spec(
-            f"Domanda {item_idx} - {label}",
-            f"outputs/charts/questionnaire_item_{item_idx:02d}_boxplot.png",
-            texts,
-            "questionnaire_item_placeholder",
-            available_templates,
-            item_idx=item_idx,
-        )
+        title = f"Domanda {item_idx} - {label}"
+        boxplot = resolve_path(f"outputs/charts/questionnaire_item_{item_idx:02d}_boxplot.png")
+        table = resolve_path(f"outputs/tables/questionnaire_item_{item_idx:02d}_descriptives.csv")
+        if boxplot.exists() and table.exists() and _has_template(available_templates, "comparison"):
+            specs.append(
+                {
+                    "template": "comparison",
+                    "theme": "neutral",
+                    "fields": {"COMPARISON_TITLE": title, "SUMMARY_TEXT": ""},
+                    "images": {"LEFT_GRAPH": _rel(boxplot)},
+                    "table": {
+                        "placeholder": "RIGHT_GRAPH",
+                        "source": _rel(table),
+                        "max_rows": 2,
+                        "font_size": 6.1,
+                        "header_font_size": 6.4,
+                        "max_cell_chars": 18,
+                        "column_widths": [0.22, 0.13, 0.13, 0.13, 0.13, 0.13, 0.13],
+                        "bounds": [6286500, 1439350, 5334000, 3228975],
+                    },
+                }
+            )
+            continue
+        graph = _questionnaire_item_spec(title, str(boxplot), texts, "questionnaire_item_placeholder", available_templates, item_idx=item_idx)
         if graph:
             specs.append(graph)
-        table = _table_or_blank(
-            f"Statistiche descrittive - Domanda {item_idx}",
-            f"outputs/tables/questionnaire_item_{item_idx:02d}_descriptives.csv",
-            texts,
-            "questionnaire_item_placeholder",
-            available_templates,
-        )
-        if table:
-            specs.append(table)
+    return specs
+
+
+def _questionnaire_key_item_specs(texts: dict[str, str], available_templates: set[str]) -> list[dict[str, Any]]:
+    key_ids = [1, 4, 9, 13, 20, 21, 23]
+    specs: list[dict[str, Any]] = []
+    for item_idx in sorted(dict.fromkeys(key_ids)):
+        label = _questionnaire_item_label(item_idx)
+        title = f"UEQ D{item_idx} - {label}"
+        boxplot = resolve_path(f"outputs/charts/questionnaire_item_{item_idx:02d}_boxplot.png")
+        table = resolve_path(f"outputs/tables/questionnaire_item_{item_idx:02d}_descriptives.csv")
+        if boxplot.exists() and table.exists() and _has_template(available_templates, "comparison"):
+            specs.append(
+                {
+                    "template": "comparison",
+                    "theme": "neutral",
+                    "fields": {"COMPARISON_TITLE": title, "SUMMARY_TEXT": _questionnaire_item_insight(item_idx, statistical=True)},
+                    "images": {"LEFT_GRAPH": _rel(boxplot)},
+                    "table": {
+                        "placeholder": "RIGHT_GRAPH",
+                        "source": _rel(table),
+                        "max_rows": 2,
+                        "font_size": 6.1,
+                        "header_font_size": 6.4,
+                        "max_cell_chars": 18,
+                        "column_widths": [0.22, 0.13, 0.13, 0.13, 0.13, 0.13, 0.13],
+                        "bounds": [6286500, 1439350, 5334000, 3228975],
+                    },
+                }
+            )
+            continue
+        graph = _questionnaire_item_spec(title, str(boxplot), texts, "questionnaire_item_placeholder", available_templates, item_idx=item_idx, statistical=True)
+        if graph:
+            specs.append(graph)
     return specs
 
 
@@ -854,6 +863,41 @@ def _comparison_or_blank(
     return _blank_spec(title, texts, fallback_key, available_templates, theme=theme)
 
 
+def _comparison_with_table_or_blank(
+    title: str,
+    left_image: str,
+    table: str,
+    texts: dict[str, str],
+    fallback_key: str,
+    available_templates: set[str],
+    *,
+    theme: str = "neutral",
+) -> dict[str, Any] | None:
+    image_path = resolve_path(left_image)
+    table_path = resolve_path(table)
+    if image_path.exists() and table_path.exists() and _has_template(available_templates, "comparison"):
+        return {
+            "template": "comparison",
+            "theme": theme,
+            "fields": {"COMPARISON_TITLE": title, "SUMMARY_TEXT": texts.get(fallback_key, "")},
+            "images": {"LEFT_GRAPH": _rel(image_path)},
+            "table": {
+                "placeholder": "RIGHT_GRAPH",
+                "source": _rel(table_path),
+                "max_rows": max(0, len(_read_csv_rows(table_path)) - 1),
+                "font_size": 6.3,
+                "header_font_size": 6.6,
+                "max_cell_chars": 18,
+                "bounds": [6286500, 1439350, 5334000, 3228975],
+            },
+        }
+    if image_path.exists():
+        return _graph_or_blank(title, left_image, texts, fallback_key, available_templates, theme=theme)
+    if table_path.exists():
+        return _table_or_blank(title, table, texts, fallback_key, available_templates, theme=theme)
+    return _blank_spec(title, texts, fallback_key, available_templates, theme=theme)
+
+
 def _table_or_blank(
     title: str,
     table: str,
@@ -867,6 +911,20 @@ def _table_or_blank(
     if table_path.exists() and _has_template(available_templates, "table_large"):
         rows = _read_csv_rows(table_path)
         is_evaluator_table = table_path.name == "heuristics_evaluators_slide.csv"
+        is_ueq_item_table = _is_ueq_item_summary_table(table_path)
+        rows_per_slide = (
+            12
+            if _is_dense_quantitative_table(table_path)
+            else 10
+            if _is_compact_appendix_table(table_path)
+            else max(0, len(rows) - 1)
+            if is_ueq_item_table
+            else 6
+            if table_path.name in {"user_testing_times_wide.csv", "user_profiles_slide.csv"}
+            else max(8, len(rows) - 1)
+            if is_evaluator_table
+            else _rows_per_slide_for_table(rows, 5 if "problems_slide" in table_path.name else 10)
+        )
         return {
             "template": "table_large",
             "theme": theme,
@@ -877,10 +935,11 @@ def _table_or_blank(
             "table": {
                 "placeholder": "TABLE_MAIN",
                 "source": _rel(table_path),
-                "max_rows": 6 if table_path.name in {"user_testing_times_wide.csv", "user_profiles_slide.csv"} else max(8, len(rows) - 1) if is_evaluator_table else _rows_per_slide_for_table(rows, 5 if "problems_slide" in table_path.name else 10),
-                "paginate": "problems_slide" in table_path.name or table_path.name in {"user_testing_times_wide.csv", "user_profiles_slide.csv"},
+                "max_rows": rows_per_slide,
+                "paginate": _should_paginate_reference_table(table_path),
                 "title_prefix": title,
                 **_table_render_options(rows),
+                **_single_slide_ueq_table_options(table_path),
             },
         }
     return _blank_spec(title, texts, fallback_key, available_templates, theme=theme)
@@ -1007,13 +1066,16 @@ def _guided_appendix_specs(texts: dict[str, str], available_templates: set[str])
 
 def _final_delivery_appendix_specs(texts: dict[str, str], available_templates: set[str]) -> list[dict[str, Any]]:
     entries = [
-        ("Appendice A6 - Tabelle complete tempi utente", "data/processed/final_report/user_test_times_unified.csv"),
+        ("Appendice A - Esiti task compatti", "outputs/tables/slide_appendix_task_outcomes_compact.csv"),
+        ("Appendice A - Tempi task compatti", "outputs/tables/slide_appendix_task_times_compact.csv"),
+        ("Appendice A - Task assistite e issue", "outputs/tables/user_test_assistance_events_slide.csv"),
         ("Appendice A7 - Note qualitative dei test", "data/processed/final_report/user_test_qualitative_observations.csv"),
-        ("Appendice A8 - Export valutazione problemi", "data/processed/heuristics/problem_severity_summary.csv"),
-        ("Appendice A9 - Descrittive questionario utenti", "data/processed/final_report/questionnaire_item_descriptive_stats.csv"),
-        ("Appendice A10 - Calcoli statistici task", "data/processed/final_report/task_efficiency_stats.csv"),
-        ("Appendice A11 - Problemi Deliveroo completi", "outputs/tables/final_problems_deliveroo.csv"),
-        ("Appendice A11 - Problemi Glovo completi", "outputs/tables/final_problems_glovo.csv"),
+        ("Appendice B - Statistiche efficacia", "outputs/tables/slide_effectiveness_relative_summary.csv"),
+        ("Appendice B - Statistiche efficienza", "outputs/tables/slide_efficiency_stat_summary.csv"),
+        ("Appendice B - OET", "outputs/tables/slide_efficiency_oet_summary.csv"),
+        ("Appendice C - UEQ item completi", "outputs/tables/slide_appendix_ueq_items_compact.csv"),
+        ("Appendice D - Benchmark UEQ", "outputs/tables/slide_ueq_benchmark_comparison.csv"),
+        ("Appendice D - Sottogruppi", "outputs/tables/slide_subgroup_compact.csv"),
         ("Appendice A12 - Log generazione finale", "outputs/final/final_report_generation_log.md"),
     ]
     specs: list[dict[str, Any]] = []
@@ -1150,6 +1212,56 @@ def _table_render_options(rows: list[list[str]]) -> dict[str, Any]:
     if columns >= 5:
         return {"font_size": 7.2, "header_font_size": 7.5, "max_cell_chars": 58}
     return {"font_size": 7.8, "header_font_size": 8.1, "max_cell_chars": 74}
+
+
+def _is_ueq_item_summary_table(path: Path) -> bool:
+    name = path.name
+    return name.startswith("ueq_item_summary_") and name.endswith("_slide.csv")
+
+
+def _single_slide_ueq_table_options(path: Path) -> dict[str, Any]:
+    if not _is_ueq_item_summary_table(path):
+        return {}
+    return {"font_size": 4.25, "header_font_size": 4.6, "max_cell_chars": 30}
+
+
+def _is_dense_quantitative_table(path: Path) -> bool:
+    return path.name in {
+        "effectiveness_by_task.csv",
+        "effectiveness_relative_tests.csv",
+        "effectiveness_absolute_tests.csv",
+        "efficiency_descriptives_by_task.csv",
+        "efficiency_relative_tests.csv",
+        "efficiency_absolute_tests.csv",
+        "ueq_item_descriptives.csv",
+        "ueq_item_tests.csv",
+        "ueq_scale_scores.csv",
+        "ueq_scale_descriptives.csv",
+        "ueq_scale_tests.csv",
+        "ueq_benchmark_summary.csv",
+        "subgroup_availability.csv",
+        "ueq_subgroup_scale_scores.csv",
+        "ueq_subgroup_item_scores.csv",
+        "task_subgroup_effectiveness.csv",
+        "task_subgroup_efficiency.csv",
+        "system_comparison_summary.csv",
+        "task_outcomes_normalized.csv",
+        "task_times_normalized.csv",
+    }
+
+
+def _is_compact_appendix_table(path: Path) -> bool:
+    return path.name.startswith("slide_appendix_")
+
+
+def _should_paginate_reference_table(path: Path) -> bool:
+    name = path.name
+    return (
+        "problems_slide" in name
+        or name in {"user_testing_times_wide.csv", "user_profiles_slide.csv"}
+        or _is_dense_quantitative_table(path)
+        or _is_compact_appendix_table(path)
+    )
 
 
 def _dedupe_missing_assets(specs: list[dict[str, Any]], used_assets: set[str], excludes: list[str]) -> list[dict[str, Any]]:
@@ -1373,97 +1485,6 @@ def _app_from_row(row: dict[str, str]) -> str:
     return ""
 
 
-def _format_value(value: Any, *, percent: bool = False, prefix: str = "", suffix: str = "") -> str:
-    if value in (None, ""):
-        return "n.d."
-    try:
-        number = float(str(value).replace(",", "."))
-    except (TypeError, ValueError):
-        return f"{prefix}{value}{suffix}"
-    if percent:
-        return f"{prefix}{number:.0%}{suffix}"
-    formatted = f"{number:.2f}".rstrip("0").rstrip(".")
-    return f"{prefix}{formatted}{suffix}"
-
-
-def _format_average(rows: list[dict[str, str]], column: str, *, percent: bool = False, suffix: str = "") -> str:
-    values = []
-    for row in rows:
-        try:
-            values.append(float(row[column]))
-        except (KeyError, TypeError, ValueError):
-            pass
-    if not values:
-        return "n.d."
-    value = sum(values) / len(values)
-    if percent:
-        return f"{value:.0%}"
-    return f"{value:.1f}{suffix}"
-
-
-def _number_field(row: dict[str, str] | None, key: str, prefix: str = "") -> str:
-    if not row or not row.get(key):
-        return "n.d."
-    try:
-        return f"{prefix}{float(row[key]):.2f}"
-    except ValueError:
-        return f"{prefix}{row[key]}"
-
-
-def _safe_int(value: Any) -> int:
-    try:
-        return int(float(str(value)))
-    except (TypeError, ValueError):
-        return 0
-
-
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(str(value).replace(",", "."))
-    except (TypeError, ValueError):
-        return None
-
-
-def _findings_from_markdown(text: str) -> list[str]:
-    text = re.sub(r"^#{1,6}\s*", "", text, flags=re.MULTILINE)
-    candidates = []
-    for line in text.splitlines():
-        line = re.sub(r"^\s*[-*]\s*", "", line).strip()
-        line = re.sub(r"[*_`]+", "", line)
-        if len(line) >= 24 and not line.lower().startswith(("asset consigliati", "testo suggerito")):
-            candidates.append(_compact(line, 150))
-    if candidates:
-        return candidates[:4]
-    paragraph = _compact(" ".join(text.split()), 150)
-    return [paragraph] if paragraph else []
-
-
-def _one_line_markdown(text: str) -> str:
-    return _compact(_findings_from_markdown(text)[0] if _findings_from_markdown(text) else "Risultati generati dalla pipeline.", 220)
-
-
-def _markdown_body(text: str) -> str:
-    lines = []
-    skip_section = False
-    for line in text.splitlines():
-        heading = re.match(r"^#{1,6}\s*(.+)\s*$", line)
-        if heading:
-            title = heading.group(1).strip().lower()
-            skip_section = title in {"asset consigliati", "note da completare manualmente"}
-            if title == "testo suggerito":
-                skip_section = False
-            continue
-        if skip_section:
-            continue
-        lines.append(line)
-    cleaned = "\n".join(lines)
-    cleaned = re.sub(r"^#{1,6}\s*", "", cleaned, flags=re.MULTILINE)
-    cleaned = re.sub(r"[*_`]+", "", cleaned)
-    cleaned = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", cleaned)
-    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
-    return cleaned.strip()
-
-
 def _insight_for_figure(path: Path) -> str:
     title = _title_from_path(path).lower()
     if "effectiveness" in path.name or "success" in path.name:
@@ -1484,24 +1505,6 @@ def _title_from_path(path: Path) -> str:
     name = re.sub(r"^item_(\d+)_boxplot$", r"Item \1 - distribuzione risposte", name)
     name = re.sub(r"^t(\d+)_(.+)$", lambda m: f"Task {m.group(1)} - {_humanize(m.group(2))}", name)
     return _humanize(name)
-
-
-def _humanize(value: str) -> str:
-    return re.sub(r"\s+", " ", value.replace("_", " ").replace("-", " ")).strip().capitalize()
-
-
-def _slug(value: str) -> str:
-    slug = re.sub(r"[^a-z0-9]+", "_", str(value).lower()).strip("_")
-    return slug or "asset"
-
-
-def _compact(value: str, limit: int) -> str:
-    text = " ".join(str(value).split())
-    return text if len(text) <= limit else text[: limit - 1].rstrip()
-
-
-def _chunks(values: list[str], size: int) -> list[list[str]]:
-    return [values[index : index + size] for index in range(0, len(values), size)]
 
 
 def _rel(path: Path) -> str:

@@ -146,8 +146,8 @@ def _problem_mapping(problems: pd.DataFrame) -> pd.DataFrame:
     for index, row in problems.reset_index(drop=True).iterrows():
         rows.append(
             {
-                "canonical_problem_id": f"P{index + 1:03d}",
-                "source_problem_id": row.get("problem_id", ""),
+                "canonical_problem_id": row.get("problem_id", ""),
+                "source_problem_id": row.get("raw_problem_ids", row.get("problem_id", "")),
                 "app": row.get("app", ""),
                 "title": row.get("title", ""),
                 "heuristic": row.get("heuristic", ""),

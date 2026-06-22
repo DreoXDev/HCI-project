@@ -19,6 +19,13 @@ problem_tables:
   include_description: true
   max_rows_per_slide: 5
 
+heuristics:
+  problem_evaluator_matrix:
+    # presence: mostra solo se il valutatore ha trovato/valutato il problema,
+    #           colorando le celle con il colore dell'app.
+    # severity: mostra la severita 0-4 assegnata dai valutatori.
+    mode: presence
+
 metadata:
   project_title: "Deliveroo vs Glovo"
   subtitle: "Analisi trasversale di usabilità"

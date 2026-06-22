@@ -1,0 +1,27 @@
+items:
+  Q01: {left_anchor: "fastidioso", right_anchor: "piacevole", scale: "Attractiveness", reversed: false, positive_direction: "right"}
+  Q02: {left_anchor: "incomprensibile", right_anchor: "comprensibile", scale: "Perspicuity", reversed: false, positive_direction: "right"}
+  Q03: {left_anchor: "creativo", right_anchor: "privo di fantasia", scale: "Novelty", reversed: true, positive_direction: "left"}
+  Q04: {left_anchor: "facile da apprendere", right_anchor: "difficile da apprendere", scale: "Perspicuity", reversed: true, positive_direction: "left"}
+  Q05: {left_anchor: "di grande valore", right_anchor: "di poco valore", scale: "Stimulation", reversed: true, positive_direction: "left"}
+  Q06: {left_anchor: "noioso", right_anchor: "appassionante", scale: "Stimulation", reversed: false, positive_direction: "right"}
+  Q07: {left_anchor: "non interessante", right_anchor: "interessante", scale: "Stimulation", reversed: false, positive_direction: "right"}
+  Q08: {left_anchor: "imprevedibile", right_anchor: "prevedibile", scale: "Dependability", reversed: false, positive_direction: "right"}
+  Q09: {left_anchor: "veloce", right_anchor: "lento", scale: "Efficiency", reversed: true, positive_direction: "left"}
+  Q10: {left_anchor: "originale", right_anchor: "convenzionale", scale: "Novelty", reversed: true, positive_direction: "left"}
+  Q11: {left_anchor: "ostruttivo", right_anchor: "di supporto", scale: "Dependability", reversed: false, positive_direction: "right"}
+  Q12: {left_anchor: "buono", right_anchor: "scarso", scale: "Attractiveness", reversed: true, positive_direction: "left"}
+  Q13: {left_anchor: "complicato", right_anchor: "facile", scale: "Perspicuity", reversed: false, positive_direction: "right"}
+  Q14: {left_anchor: "repellente", right_anchor: "attraente", scale: "Attractiveness", reversed: false, positive_direction: "right"}
+  Q15: {left_anchor: "usuale", right_anchor: "moderno", scale: "Novelty", reversed: false, positive_direction: "right"}
+  Q16: {left_anchor: "sgradevole", right_anchor: "gradevole", scale: "Attractiveness", reversed: false, positive_direction: "right"}
+  Q17: {left_anchor: "sicuro", right_anchor: "insicuro", scale: "Dependability", reversed: true, positive_direction: "left"}
+  Q18: {left_anchor: "attivante", right_anchor: "soporifero", scale: "Stimulation", reversed: true, positive_direction: "left"}
+  Q19: {left_anchor: "conforme alle aspettative", right_anchor: "non conforme alle aspettative", scale: "Dependability", reversed: true, positive_direction: "left"}
+  Q20: {left_anchor: "inefficiente", right_anchor: "efficiente", scale: "Efficiency", reversed: false, positive_direction: "right"}
+  Q21: {left_anchor: "chiaro", right_anchor: "confuso", scale: "Perspicuity", reversed: true, positive_direction: "left"}
+  Q22: {left_anchor: "non pragmatico", right_anchor: "pragmatico", scale: "Efficiency", reversed: false, positive_direction: "right"}
+  Q23: {left_anchor: "ordinato", right_anchor: "sovraccarico", scale: "Efficiency", reversed: true, positive_direction: "left"}
+  Q24: {left_anchor: "invitante", right_anchor: "non invitante", scale: "Attractiveness", reversed: true, positive_direction: "left"}
+  Q25: {left_anchor: "congeniale", right_anchor: "ostile", scale: "Attractiveness", reversed: true, positive_direction: "left"}
+  Q26: {left_anchor: "conservativo", right_anchor: "innovativo", scale: "Novelty", reversed: false, positive_direction: "right"}

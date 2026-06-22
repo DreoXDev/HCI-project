@@ -6,7 +6,9 @@ import pytest
 
 from src.slide_export import auto_deck
 from src import cli
+from src.final_assets import _problem_finder_matrix
 from src.slide_export.slide_manifest import generate_slide_manifest
+from src.slide_export.tables import table_specs_from_paginated_table
 from src.slide_export.pptx_generator import DECK_FONT_FAMILY, DELIVEROO_COLOR, GLOVO_COLOR, SECTION_TITLE_SIZE_SHORT, generate_slides
 from src.slide_export.template_variants import resolve_template_id
 
@@ -131,6 +133,82 @@ def test_auto_slide_expansion_uses_existing_assets(tmp_path: Path, monkeypatch: 
     assert "sources" in template_ids
 
 
+def test_reference_order_keeps_long_ueq_tables_on_single_slide(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def resolve_in_tmp(path: str | Path, base_dir: Path = tmp_path) -> Path:
+        value = Path(path)
+        return value if value.is_absolute() else tmp_path / value
+
+    monkeypatch.setattr(auto_deck, "resolve_path", resolve_in_tmp)
+    final_report_dir = tmp_path / "data/processed/final_report"
+    final_report_dir.mkdir(parents=True)
+    header = "Domanda,Media,Varianza,Dev. standard,N,Valore sinistro,Valore destro,Sottogruppo\n"
+    body = "\n".join(f"{index},0.1,1.2,1.1,24,left,right,Attrattivita" for index in range(1, 27))
+    table_path = final_report_dir / "ueq_item_summary_deliveroo_slide.csv"
+    table_path.write_text(header + body + "\n", encoding="utf-8")
+
+    spec = auto_deck._table_or_blank(
+        "Analisi dei dati UEQ - Deliveroo",
+        "data/processed/final_report/ueq_item_summary_deliveroo_slide.csv",
+        {},
+        "ueq_table_placeholder",
+        {"table_large"},
+        theme="deliveroo",
+    )
+    assert spec is not None
+    assert spec["table"]["paginate"] is False
+    assert spec["table"]["max_rows"] == 26
+    assert spec["table"]["font_size"] < 5
+
+    pages = table_specs_from_paginated_table(spec)
+    titles = [page["fields"]["TABLE_TITLE"] for page in pages]
+
+    assert titles == ["Analisi dei dati UEQ - Deliveroo"]
+
+
+def test_questionnaire_item_slides_use_editable_tables(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def resolve_in_tmp(path: str | Path, base_dir: Path = tmp_path) -> Path:
+        value = Path(path)
+        return value if value.is_absolute() else tmp_path / value
+
+    monkeypatch.setattr(auto_deck, "resolve_path", resolve_in_tmp)
+    summary = tmp_path / "outputs/tables/questionnaire_items_summary.csv"
+    table = tmp_path / "outputs/tables/questionnaire_item_01_descriptives.csv"
+    boxplot = tmp_path / "outputs/charts/questionnaire_item_01_boxplot.png"
+    for path in [summary, table, boxplot]:
+        path.parent.mkdir(parents=True, exist_ok=True)
+    summary.write_text("item_number,item\n1,fastidioso-piacevole\n", encoding="utf-8")
+    table.write_text("Metrica,Deliveroo,Glovo\nn,24,24\nMedia,4,5\n", encoding="utf-8")
+    boxplot.write_bytes(b"fake-png")
+
+    specs = auto_deck._questionnaire_full_item_specs({}, {"comparison"})
+
+    assert len(specs) == 1
+    assert specs[0]["images"] == {"LEFT_GRAPH": "outputs/charts/questionnaire_item_01_boxplot.png"}
+    assert specs[0]["table"]["placeholder"] == "RIGHT_GRAPH"
+    assert specs[0]["table"]["source"] == "outputs/tables/questionnaire_item_01_descriptives.csv"
+    assert specs[0]["table"]["bounds"][0] > 6_000_000
+
+
+def test_problem_finder_matrix_uses_finding_evaluators_not_all_ratings() -> None:
+    import pandas as pd
+
+    problems = pd.DataFrame(
+        [
+            {"problem_id": "PD01", "notes": "Original ID: PD01; valutatori: EU1, ED1"},
+            {"problem_id": "PD02", "notes": "Original ID: PD02; valutatori: EU2"},
+            {"problem_id": "PD03", "notes": "Original ID: PD03; valutatori:"},
+        ]
+    )
+
+    matrix = _problem_finder_matrix(problems, ["ED1", "EU1", "EU2", "EU3"], ["PD01", "PD02", "PD03"])
+
+    assert int(matrix.sum().sum()) == 3
+    assert matrix.loc["ED1", "PD01"] == 1
+    assert matrix.loc["EU1", "PD01"] == 1
+    assert matrix.loc["EU2", "PD02"] == 1
+    assert matrix.loc["EU3"].sum() == 0
+
+
 def test_auto_slide_expansion_creates_app_variants(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     def resolve_in_tmp(path: str | Path, base_dir: Path = tmp_path) -> Path:
         value = Path(path)
@@ -196,12 +274,16 @@ def test_reference_order_slide_expansion_follows_reference_sections(tmp_path: Pa
     errors = tmp_path / "outputs/figures/dark/user_tests/tasks/t01_error_breakdown.png"
     success = tmp_path / "outputs/figures/dark/users_time_success_rate.png"
     boxplot = tmp_path / "outputs/figures/dark/users_time_boxplot_by_task.png"
+    nps = tmp_path / "outputs/figures/dark/questionnaire/nps_stacked_bar.png"
+    nps_table = tmp_path / "outputs/tables/nps_breakdown.csv"
     figure.parent.mkdir(parents=True)
     expertise.parent.mkdir(parents=True, exist_ok=True)
     errors.parent.mkdir(parents=True, exist_ok=True)
-    for path in [figure, expertise, errors, success, boxplot]:
+    for path in [figure, expertise, errors, success, boxplot, nps]:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(b"fake-png")
+    nps_table.parent.mkdir(parents=True, exist_ok=True)
+    nps_table.write_text("system,detractors,passives,promoters,total,nps\nDeliveroo,15,6,3,24,-50\nGlovo,6,11,7,24,4.17\n", encoding="utf-8")
 
     expanded = auto_deck.expand_auto_slides(
         {
@@ -236,6 +318,8 @@ def test_reference_order_slide_expansion_follows_reference_sections(tmp_path: Pa
     assert any(slide.get("fields", {}).get("GRAPH_TITLE") == "Matrice di expertise" for slide in slides)
     assert any(slide.get("fields", {}).get("GRAPH_TITLE") == "Errori - Task 1" for slide in slides)
     assert any(slide.get("fields", {}).get("COMPARISON_TITLE") == "Successo e distribuzione tempi" for slide in slides)
+    nps_slides = [slide for slide in slides if slide.get("fields", {}).get("COMPARISON_TITLE") == "Net Promoter Score: raccomandabilita percepita"]
+    assert nps_slides and nps_slides[0].get("table", {}).get("source") == "outputs/tables/nps_breakdown.csv"
     assert all(slide.get("fields", {}).get("PROJECT_TITLE") != "Manuale" for slide in slides)
 
 

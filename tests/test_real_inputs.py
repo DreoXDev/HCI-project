@@ -13,7 +13,7 @@ def test_prepare_real_inputs_reports_partial_dataset(tmp_path, monkeypatch) -> N
     pd.DataFrame(
         [
             {
-                "problem_id": "P001",
+                "problem_id": "PD01",
                 "app": "Deliveroo",
                 "screen": "Home",
                 "heuristic": "E1",

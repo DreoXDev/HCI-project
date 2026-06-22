@@ -107,9 +107,9 @@ def _validate_heuristics(result: FinalDataValidationResult) -> None:
         result.errors.append(f"ERROR: clean_problems mancante: {path}")
         return
     df = pd.read_csv(path, encoding="utf-8-sig")
-    expected = [f"P{idx:03d}" for idx in range(1, 41)]
+    expected = [f"PD{idx:02d}" for idx in range(1, 21)] + [f"PG{idx:02d}" for idx in range(1, 21)]
     ids = df.get("problem_id", pd.Series(dtype=str)).astype(str).str.strip().tolist()
-    result.add(ids == expected, "clean_problems contiene esattamente P001-P040", "clean_problems non contiene esattamente P001-P040 in ordine stabile")
+    result.add(ids == expected, "clean_problems contiene esattamente PD01-PD20 e PG01-PG20", "clean_problems non contiene esattamente PD01-PD20 e PG01-PG20 in ordine stabile")
     result.add(len(df) == 40, "problemi euristici: 40 problemi", f"problemi euristici: {len(df)}/40")
     descriptions = df.get("description", pd.Series(dtype=str)).fillna("").astype(str).str.strip()
     too_short = df.loc[descriptions.str.len() < 40, "problem_id"].astype(str).tolist() if "problem_id" in df else []
@@ -170,8 +170,8 @@ def _validate_evaluator_outputs(result: FinalDataValidationResult) -> None:
     result.add(expertise_path.exists(), "grafico matrice expertise presente", f"grafico matrice expertise mancante: {expertise_path}")
 
     expected = {
-        "deliveroo": [f"P{idx:03d}" for idx in range(1, 21)],
-        "glovo": [f"P{idx:03d}" for idx in range(21, 41)],
+        "deliveroo": [f"PD{idx:02d}" for idx in range(1, 21)],
+        "glovo": [f"PG{idx:02d}" for idx in range(1, 21)],
     }
     for slug, expected_ids in expected.items():
         matrix_path = resolve_path(f"outputs/tables/problem_evaluator_matrix_{slug}.csv")
@@ -179,7 +179,7 @@ def _validate_evaluator_outputs(result: FinalDataValidationResult) -> None:
             result.warnings.append(f"WARNING: matrice problemi-valutatori {slug} non ancora generata")
             continue
         matrix = pd.read_csv(matrix_path, encoding="utf-8-sig")
-        problem_cols = [column for column in matrix.columns if re.fullmatch(r"P\d{3}", str(column))]
+        problem_cols = [column for column in matrix.columns if re.fullmatch(r"P[DG]\d{2}", str(column))]
         evaluator_count = matrix["evaluator"].dropna().astype(str).str.strip().nunique() if "evaluator" in matrix.columns else 0
         result.add(problem_cols == expected_ids, f"matrice {slug}: 20 problemi finali", f"matrice {slug}: colonne problema errate ({len(problem_cols)}): {', '.join(problem_cols[:25])}")
         result.add(evaluator_count == 8, f"matrice {slug}: 8 valutatori", f"matrice {slug}: {evaluator_count}/8 valutatori")

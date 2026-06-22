@@ -15,6 +15,18 @@ def _read_csv(path: str | Path) -> pd.DataFrame:
     return pd.read_csv(target, encoding="utf-8-sig") if target.exists() else pd.DataFrame()
 
 
+def _user_test_effectiveness_table() -> pd.DataFrame:
+    df = _read_csv("outputs/tables/user_test_effectiveness.csv")
+    if df.empty:
+        return df
+    normalized = df.copy()
+    if "system" not in normalized and "app" in normalized:
+        normalized["system"] = normalized["app"]
+    if "completion_rate" not in normalized and "efficacy_rate" in normalized:
+        normalized["completion_rate"] = normalized["efficacy_rate"]
+    return normalized
+
+
 def _safe_mean(df: pd.DataFrame, column: str) -> float | None:
     return float(df[column].mean()) if not df.empty and column in df else None
 
@@ -28,7 +40,7 @@ def _where_system(df: pd.DataFrame, system: str) -> pd.DataFrame:
 def compute_final_comparison_score(config: dict) -> pd.DataFrame:
     systems = [config["project"]["system_1"], config["project"]["system_2"]]
     weights = config.get("final_score", {}).get("weights", {})
-    effectiveness = _read_csv("outputs/tables/user_test_effectiveness.csv")
+    effectiveness = _user_test_effectiveness_table()
     efficiency = _read_csv("outputs/tables/user_test_efficiency.csv")
     ueq = _read_csv("outputs/tables/ueq_summary.csv")
     nps = _read_csv("outputs/tables/nps_summary.csv")
@@ -136,7 +148,7 @@ def _sample_text(systems: list[str]) -> str:
 
 
 def _user_tests_text(systems: list[str]) -> str:
-    eff = _read_csv("outputs/tables/user_test_effectiveness.csv")
+    eff = _user_test_effectiveness_table()
     speed = _read_csv("outputs/tables/user_test_efficiency.csv")
     if eff.empty or speed.empty:
         return "# Risultati user test\n\nI dati di user test non sono disponibili."
@@ -156,7 +168,7 @@ def _user_tests_text(systems: list[str]) -> str:
 
 
 def _user_test_effectiveness_text(systems: list[str]) -> str:
-    eff = _read_csv("outputs/tables/user_test_effectiveness.csv")
+    eff = _user_test_effectiveness_table()
     if eff.empty:
         return "# Efficacia user test\n\nDati non disponibili."
     completion = eff.groupby("system")["completion_rate"].mean().sort_values(ascending=False)

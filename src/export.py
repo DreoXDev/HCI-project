@@ -14,7 +14,7 @@ QUESTIONNAIRE_TEMPLATE = ",Utente 1,Utente 2\ngenere,Femmina,Maschio\neta,22,23\
 HEURISTICS_CLEAN_PROBLEMS_TEMPLATE = pd.DataFrame(
     [
         {
-            "problem_id": "P001",
+            "problem_id": "PD01",
             "app": "Deliveroo",
             "screen": "Checkout",
             "heuristic": "H4",
@@ -24,7 +24,7 @@ HEURISTICS_CLEAN_PROBLEMS_TEMPLATE = pd.DataFrame(
             "notes": "",
         },
         {
-            "problem_id": "P002",
+            "problem_id": "PG01",
             "app": "Glovo",
             "screen": "Home",
             "heuristic": "H8",
@@ -37,9 +37,9 @@ HEURISTICS_CLEAN_PROBLEMS_TEMPLATE = pd.DataFrame(
 )
 HEURISTICS_RATINGS_LONG_TEMPLATE = pd.DataFrame(
     [
-        {"expert_id": "E01", "problem_id": "P001", "severity": 3},
-        {"expert_id": "E01", "problem_id": "P002", "severity": 2},
-        {"expert_id": "E02", "problem_id": "P001", "severity": 4},
+        {"expert_id": "E01", "problem_id": "PD01", "severity": 3},
+        {"expert_id": "E01", "problem_id": "PG01", "severity": 2},
+        {"expert_id": "E02", "problem_id": "PD01", "severity": 4},
     ]
 )
 HEURISTICS_FORMBRICKS_EXAMPLE = pd.DataFrame(
@@ -50,10 +50,10 @@ HEURISTICS_FORMBRICKS_EXAMPLE = pd.DataFrame(
             "Timestamp": "2026-05-13 10:00:00",
             "Finished": True,
             "1. Qual e il tuo id esperto": "E01",
-            "2. [P001] Titolo breve problema": "3 - Problema maggiore",
-            "2. [P001] Titolo breve problema - Option ID": "opt_3",
-            "3. [P002] Titolo breve problema": "2 - Problema minore",
-            "3. [P002] Titolo breve problema - Option ID": "opt_2",
+            "2. [PD01] Titolo breve problema": "3 - Problema maggiore",
+            "2. [PD01] Titolo breve problema - Option ID": "opt_3",
+            "3. [PG01] Titolo breve problema": "2 - Problema minore",
+            "3. [PG01] Titolo breve problema - Option ID": "opt_2",
         }
     ]
 )

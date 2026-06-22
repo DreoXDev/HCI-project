@@ -1,0 +1,10 @@
+effectiveness:
+  autonomous_success_min_rate: 0.90
+  critical_error_max_rate: 0.10
+  failure_max_rate: 0.00
+efficiency:
+  task_oet_seconds:
+    T01: 45
+    T02: 90
+    T03: 60
+

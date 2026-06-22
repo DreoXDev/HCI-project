@@ -9,10 +9,13 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 from matplotlib.patches import Circle, Ellipse, FancyArrowPatch
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from scipy import stats
+import yaml
 
 from .config import resolve_path
 from .heuristics import clean_heuristics
@@ -20,7 +23,7 @@ from .plots import save_figure
 from .questionnaire import dynamic_demographic_rows, numeric_items, nps_summary
 from .tables import export_table
 from .users_time import users_time_file, validate_users_time_file
-from .visualization.theme import get_brand_palette, style_axis
+from .visualization.theme import BRAND_COLORS, get_brand_palette, style_axis
 
 
 ORDINAL_1_3_LABELS = {1: "Bassa", 2: "Media", 3: "Alta", "1": "Bassa", "2": "Media", "3": "Alta", "1.0": "Bassa", "2.0": "Media", "3.0": "Alta"}
@@ -53,6 +56,10 @@ def _ids(value: object) -> list[str]:
     return [part.strip() for part in str(value).split("-") if part and part.strip() and part.strip().lower() != "nan"]
 
 
+def _evaluator_ids(value: object) -> list[str]:
+    return list(dict.fromkeys(re.findall(r"\bE[DU]\d+\b", str(value).upper())))
+
+
 def problem_evaluator_matrix(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty or "Id valutatori" not in df.columns:
         return pd.DataFrame()
@@ -71,6 +78,77 @@ def problem_evaluator_matrix(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([matrix, total_row])
 
 
+def _problem_evaluator_matrix_mode(config: dict) -> str:
+    mode = (
+        config.get("heuristics", {})
+        .get("problem_evaluator_matrix", {})
+        .get("mode")
+    )
+    slide_config_path = resolve_path("slides/config/slide_deck.yml")
+    if slide_config_path.exists():
+        try:
+            with slide_config_path.open("r", encoding="utf-8") as fh:
+                slide_config = yaml.safe_load(fh) or {}
+            mode = (
+                slide_config.get("heuristics", {})
+                .get("problem_evaluator_matrix", {})
+                .get("mode", mode)
+            )
+        except Exception:
+            pass
+    normalized = str(mode or "presence").strip().casefold()
+    return "severity" if normalized == "severity" else "presence"
+
+
+def _plot_problem_evaluator_matrix(
+    heat: pd.DataFrame,
+    *,
+    system: str,
+    config: dict,
+    mode: str,
+) -> plt.Figure:
+    fig, ax = plt.subplots(figsize=(max(9, heat.shape[1] * 0.45), max(4.2, heat.shape[0] * 0.38)))
+    if mode == "severity":
+        sns.heatmap(
+            heat,
+            cmap="YlOrRd",
+            vmin=0,
+            vmax=4,
+            cbar_kws={"label": "Severita 0-4"},
+            linewidths=0.4,
+            linecolor="#E5E7EB",
+            ax=ax,
+        )
+    else:
+        present = heat.apply(pd.to_numeric, errors="coerce").fillna(0).gt(0).astype(int)
+        app_color = get_brand_palette(config).get(system, "#60A5FA")
+        cmap = ListedColormap([BRAND_COLORS["dark_background"], app_color])
+        sns.heatmap(
+            present,
+            cmap=cmap,
+            vmin=0,
+            vmax=1,
+            cbar=False,
+            linewidths=0.4,
+            linecolor="#334155",
+            ax=ax,
+        )
+    style_axis(ax, f"Matrice problemi-valutatori {system}", "Problemi finali", "Valutatori")
+    return fig
+
+
+def _problem_finder_matrix(subset: pd.DataFrame, expert_cols: list[str], problem_ids: list[str]) -> pd.DataFrame:
+    presence = pd.DataFrame(0, index=expert_cols, columns=problem_ids, dtype=int)
+    for row in subset.itertuples(index=False):
+        problem_id = str(getattr(row, "problem_id", ""))
+        if problem_id not in presence.columns:
+            continue
+        for evaluator_id in _evaluator_ids(getattr(row, "notes", "")):
+            if evaluator_id in presence.index:
+                presence.loc[evaluator_id, problem_id] = 1
+    return presence
+
+
 def _final_problem_evaluator_outputs(config: dict) -> bool:
     problems_path = resolve_path("data/processed/heuristics/clean_problems.csv")
     matrix_path = resolve_path("data/processed/heuristics/expert_problem_matrix.csv")
@@ -86,8 +164,13 @@ def _final_problem_evaluator_outputs(config: dict) -> bool:
     if not expert_cols:
         return False
 
-    merged = problems[["problem_id", "app"]].merge(ratings[["problem_id", *expert_cols]], on="problem_id", how="left")
+    problem_columns = ["problem_id", "app", "notes"]
+    for column in problem_columns:
+        if column not in problems.columns:
+            problems[column] = ""
+    merged = problems[problem_columns].merge(ratings[["problem_id", *expert_cols]], on="problem_id", how="left")
     systems = [config["project"]["system_1"], config["project"]["system_2"]]
+    matrix_mode = _problem_evaluator_matrix_mode(config)
     coverage_rows = []
     text_lines = ["# Copertura problemi euristici", ""]
     for system in systems:
@@ -101,35 +184,30 @@ def _final_problem_evaluator_outputs(config: dict) -> bool:
         problem_ids = subset["problem_id"].astype(str).tolist()
         heat = subset.set_index("problem_id")[expert_cols].T.apply(pd.to_numeric, errors="coerce")
         heat = heat.reindex(columns=problem_ids)
+        finder_heat = _problem_finder_matrix(subset, expert_cols, problem_ids)
 
-        matrix = heat.copy()
-        matrix["mean_by_evaluator"] = matrix.mean(axis=1).round(2)
+        matrix = finder_heat.copy() if matrix_mode == "presence" else heat.copy()
+        if matrix_mode == "presence":
+            matrix["total_by_evaluator"] = matrix.sum(axis=1)
+        else:
+            matrix["mean_by_evaluator"] = matrix.mean(axis=1).round(2)
         export_table(matrix.reset_index(names="evaluator"), f"outputs/tables/problem_evaluator_matrix_{slug}.csv", 2)
 
-        fig, ax = plt.subplots(figsize=(max(9, len(problem_ids) * 0.45), max(4.2, len(expert_cols) * 0.38)))
-        sns.heatmap(
-            heat,
-            cmap="YlOrRd",
-            vmin=0,
-            vmax=4,
-            cbar_kws={"label": "Severita 0-4"},
-            linewidths=0.4,
-            linecolor="#E5E7EB",
-            ax=ax,
-        )
-        style_axis(ax, f"Matrice problemi-valutatori {system}", "Problemi finali", "Valutatori")
+        fig = _plot_problem_evaluator_matrix(finder_heat if matrix_mode == "presence" else heat, system=system, config=config, mode=matrix_mode)
         save_figure(fig, f"outputs/figures/heuristics/problem_evaluator_matrix_{slug}.png", config)
 
         problem_means = heat.mean(axis=0).sort_values(ascending=False)
         evaluator_means = heat.mean(axis=1).sort_values(ascending=False)
         top_problem = str(problem_means.index[0]) if not problem_means.empty else "n.d."
         top_mean = float(problem_means.iloc[0]) if not problem_means.empty else 0.0
-        top_evaluators = ", ".join(evaluator_means.head(2).index.astype(str)) if not evaluator_means.empty else "n.d."
+        finder_counts = finder_heat.sum(axis=1).sort_values(ascending=False)
+        top_evaluators = ", ".join(finder_counts.head(2).index.astype(str)) if matrix_mode == "presence" and not finder_counts.empty else ", ".join(evaluator_means.head(2).index.astype(str)) if not evaluator_means.empty else "n.d."
         resolve_path(f"outputs/texts/snippets/problem_evaluator_matrix_{slug}.md").write_text(
             f"# Matrice problemi-valutatori {system}\n\n"
             f"La matrice usa i {len(problem_ids)} problemi finali e gli {len(expert_cols)} valutatori ufficiali. "
+            f"Modalita visuale: {'presenza del ritrovamento' if matrix_mode == 'presence' else 'severita 0-4'}. "
             f"Il problema con severita media piu alta e `{top_problem}` ({top_mean:.2f}/4). "
-            f"I valutatori con media piu alta sono {top_evaluators}.\n",
+            f"{'I valutatori con piu ritrovamenti sono' if matrix_mode == 'presence' else 'I valutatori con media piu alta sono'} {top_evaluators}.\n",
             encoding="utf-8",
         )
 
@@ -139,11 +217,16 @@ def _final_problem_evaluator_outputs(config: dict) -> bool:
                 "problem_count": len(problem_ids),
                 "evaluator_count": len(expert_cols),
                 "rating_cells": int(heat.notna().sum().sum()),
+                "finder_cells": int(finder_heat.sum().sum()),
+                "matrix_mode": matrix_mode,
                 "top_mean_problem": top_problem,
                 "top_mean_severity": round(top_mean, 2),
             }
         )
-        text_lines.append(f"- {system}: {len(problem_ids)} problemi finali x {len(expert_cols)} valutatori = {int(heat.notna().sum().sum())} valutazioni di severita.")
+        if matrix_mode == "presence":
+            text_lines.append(f"- {system}: {len(problem_ids)} problemi finali x {len(expert_cols)} valutatori = {int(finder_heat.sum().sum())} ritrovamenti. Modalita matrice: {matrix_mode}.")
+        else:
+            text_lines.append(f"- {system}: {len(problem_ids)} problemi finali x {len(expert_cols)} valutatori = {int(heat.notna().sum().sum())} valutazioni di severita. Modalita matrice: {matrix_mode}.")
 
     if not coverage_rows:
         return False
@@ -418,9 +501,18 @@ def generate_questionnaire_item_outputs(config: dict, data: dict[str, pd.DataFra
     descriptive_rows = []
     interpretation_rows = []
     for idx, item in enumerate(common_items, start=1):
-        left = pd.to_numeric(item_frames[names[0]].loc[item], errors="coerce").dropna()
-        right = pd.to_numeric(item_frames[names[1]].loc[item], errors="coerce").dropna()
-        p_value = stats.mannwhitneyu(left, right, alternative="two-sided").pvalue if len(left) and len(right) else pd.NA
+        left_raw = pd.to_numeric(item_frames[names[0]].loc[item], errors="coerce")
+        right_raw = pd.to_numeric(item_frames[names[1]].loc[item], errors="coerce")
+        left = left_raw.dropna()
+        right = right_raw.dropna()
+        paired = _paired_questionnaire_values(item_frames[names[0]], item_frames[names[1]], item, names[0], names[1])
+        if len(paired) >= 2 and not np.allclose(paired[names[0]], paired[names[1]], equal_nan=True):
+            p_value = float(stats.wilcoxon(paired[names[0]], paired[names[1]]).pvalue)
+        elif len(paired):
+            p_value = 1.0
+        else:
+            p_value = pd.NA
+        test_name = "Wilcoxon signed-rank"
         left_desc = _item_desc_row(idx, item, names[0], left)
         right_desc = _item_desc_row(idx, item, names[1], right)
         descriptive_rows.extend([left_desc, right_desc])
@@ -434,6 +526,8 @@ def generate_questionnaire_item_outputs(config: dict, data: dict[str, pd.DataFra
             f"{names[1]}_median": right.median(),
             "mean_difference_abs": abs(left.mean() - right.mean()),
             "median_difference_abs": abs(left.median() - right.median()),
+            "test_name": test_name,
+            "paired_n": int(len(paired)),
             "p_value": p_value,
         }
         rows.append(row)
@@ -447,7 +541,9 @@ def generate_questionnaire_item_outputs(config: dict, data: dict[str, pd.DataFra
             f"outputs/figures/questionnaire/items/item_{idx:02d}_boxplot.png",
             f"outputs/charts/questionnaire_item_{idx:02d}_boxplot.png",
         )
-        export_table(pd.DataFrame([left_desc, right_desc]), f"outputs/tables/questionnaire_item_{idx:02d}_descriptives.csv", 2)
+        slide_table = _questionnaire_item_slide_table(left_desc, right_desc, test_name, len(paired), p_value)
+        export_table(slide_table, f"outputs/tables/questionnaire_item_{idx:02d}_descriptives.csv", 2)
+        _plot_questionnaire_item_table(slide_table, f"outputs/charts/questionnaire_item_{idx:02d}_table.png")
     summary = pd.DataFrame(rows)
     if summary.empty:
         return
@@ -466,6 +562,72 @@ def generate_questionnaire_item_outputs(config: dict, data: dict[str, pd.DataFra
         significance = "significativa" if pd.notna(row.p_value) and row.p_value < 0.05 else "non significativa"
         lines.append(f"- Item {row.item_number:02d} `{row.item}`: differenza media assoluta {row.mean_difference_abs:.2f}, p={row.p_value:.4f}; differenza {significance}.")
     resolve_path("outputs/texts/snippets/questionnaire_selected_items.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _paired_questionnaire_values(left_items: pd.DataFrame, right_items: pd.DataFrame, item: str, left_name: str, right_name: str) -> pd.DataFrame:
+    common_columns = [column for column in left_items.columns if column in right_items.columns]
+    if common_columns:
+        left = pd.to_numeric(left_items.loc[item, common_columns], errors="coerce")
+        right = pd.to_numeric(right_items.loc[item, common_columns], errors="coerce")
+    else:
+        left = pd.to_numeric(left_items.loc[item], errors="coerce")
+        right = pd.to_numeric(right_items.loc[item], errors="coerce")
+    return pd.DataFrame({left_name: left, right_name: right}).dropna()
+
+
+def _questionnaire_item_slide_table(left_desc: dict[str, object], right_desc: dict[str, object], test_name: str, paired_n: int, p_value: object) -> pd.DataFrame:
+    def value(row: dict[str, object], key: str) -> object:
+        item = row.get(key)
+        return round(float(item), 2) if pd.notna(item) and isinstance(item, (int, float, np.integer, np.floating)) else item
+
+    rows = [
+        {
+            "App": str(row["app"]),
+            "Min": value(row, "min"),
+            "Q1": value(row, "q1"),
+            "Media": value(row, "mean"),
+            "Mediana": value(row, "median"),
+            "Q3": value(row, "q3"),
+            "Max": value(row, "max"),
+        }
+        for row in [left_desc, right_desc]
+    ]
+    return pd.DataFrame(rows)
+
+
+def _plot_questionnaire_item_table(table: pd.DataFrame, target: str | Path) -> Path:
+    path = resolve_path(target)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(7.4, 5.15))
+    fig.patch.set_facecolor("#111827")
+    ax.set_facecolor("#111827")
+    ax.axis("off")
+    display = table.astype(str).values.tolist()
+    table_artist = ax.table(
+        cellText=display,
+        colLabels=list(table.columns),
+        loc="center",
+        cellLoc="center",
+        colLoc="center",
+        colWidths=[0.22, *([0.13] * (len(table.columns) - 1))],
+    )
+    table_artist.auto_set_font_size(False)
+    table_artist.set_fontsize(9.2)
+    table_artist.scale(1, 1.33)
+    for (row, _col), cell in table_artist.get_celld().items():
+        cell.set_edgecolor("#334155")
+        cell.set_linewidth(0.8)
+        if row == 0:
+            cell.set_facecolor("#0F172A")
+            cell.get_text().set_color("#F8FAFC")
+            cell.get_text().set_weight("bold")
+        else:
+            cell.set_facecolor("#111827" if row % 2 else "#172033")
+            cell.get_text().set_color("#E5E7EB")
+    fig.tight_layout(pad=0.25)
+    fig.savefig(path, dpi=180, bbox_inches="tight", facecolor="#111827")
+    plt.close(fig)
+    return path
 
 
 def _write_profile_effectiveness_questionnaire_report(descriptives: pd.DataFrame, interpretations: pd.DataFrame) -> Path:
@@ -517,6 +679,8 @@ def _item_desc_row(item_id: int, item_label: str, app: str, values: pd.Series) -
         "median": values.median(),
         "q3": values.quantile(0.75),
         "max": values.max(),
+        "variance": values.var(ddof=1),
+        "std": values.std(ddof=1),
         "n": int(values.count()),
     }
 

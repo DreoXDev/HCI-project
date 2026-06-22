@@ -1,0 +1,49 @@
+main_keep:
+  - "Efficacia - matrice esiti utenti/task"
+  - "Efficacia relativa - sintesi"
+  - "Efficacia assoluta - sintesi"
+  - "Efficienza - riepilogo"
+  - "Efficienza statistica - sintesi"
+  - "UEQ - item chiave"
+  - "UEQ - confronto dimensioni"
+  - "UEQ - test per dimensione"
+  - "Benchmark UEQ - Deliveroo"
+  - "Benchmark UEQ - Glovo"
+  - "Benchmark UEQ - confronto sintetico"
+  - "Sottogruppi UEQ - heatmap differenze"
+  - "Confronto statistico complessivo"
+
+appendix_keep:
+  - "Appendice A - Esiti task compatti"
+  - "Appendice A - Tempi task compatti"
+  - "Appendice B - Statistiche efficacia"
+  - "Appendice B - Statistiche efficienza"
+  - "Appendice C - UEQ item completi"
+  - "Appendice D - Benchmark UEQ"
+  - "Appendice D - Sottogruppi"
+  - "Appendice E - Problemi Deliveroo"
+  - "Appendice E - Problemi Glovo"
+
+export_only:
+  - "outputs/tables/task_outcomes_normalized.csv"
+  - "outputs/tables/task_times_normalized.csv"
+  - "outputs/tables/effectiveness_relative_tests.csv"
+  - "outputs/tables/effectiveness_absolute_tests.csv"
+  - "outputs/tables/efficiency_relative_tests.csv"
+  - "outputs/tables/efficiency_absolute_tests.csv"
+  - "outputs/tables/ueq_item_descriptives.csv"
+  - "outputs/tables/ueq_item_tests.csv"
+  - "outputs/tables/ueq_scale_scores.csv"
+  - "outputs/tables/system_comparison_summary.csv"
+
+density_exempt_titles:
+  - "Tabella dei valutatori"
+  - "Problemi Deliveroo"
+  - "Problemi Glovo"
+
+limits:
+  main_max_rows: 6
+  main_max_columns: 7
+  appendix_max_rows: 10
+  appendix_max_columns: 7
+  deck_max_slides_warning: 160

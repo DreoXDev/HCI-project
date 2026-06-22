@@ -7,15 +7,15 @@ import pandas as pd
 
 HEURISTIC_CATEGORIES = {
     "E1": "Percezione",
-    "E2": "Cognizione",
-    "E3": "Errori",
+    "E2": "Percezione",
+    "E3": "Percezione",
     "E4": "Cognizione",
-    "E5": "Errori",
+    "E5": "Cognizione",
     "E6": "Cognizione",
     "E7": "Cognizione",
-    "E8": "Percezione",
+    "E8": "Errori",
     "E9": "Errori",
-    "E10": "Cognizione",
+    "E10": "Errori",
 }
 
 
