@@ -189,6 +189,61 @@ def test_questionnaire_item_slides_use_editable_tables(tmp_path: Path, monkeypat
     assert specs[0]["table"]["bounds"][0] > 6_000_000
 
 
+def test_task_comparison_slides_use_editable_tables(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def resolve_in_tmp(path: str | Path, base_dir: Path = tmp_path) -> Path:
+        value = Path(path)
+        return value if value.is_absolute() else tmp_path / value
+
+    monkeypatch.setattr(auto_deck, "resolve_path", resolve_in_tmp)
+    chart = tmp_path / "outputs/charts/effectiveness/task_1_stacked_outcomes.png"
+    table = tmp_path / "outputs/tables/user_tests/slide_effectiveness_t01.csv"
+    for path in [chart, table]:
+        path.parent.mkdir(parents=True, exist_ok=True)
+    chart.write_bytes(b"fake-png")
+    table.write_text("App,N,Autonomi,Assistiti,Issue/fall.\nDeliveroo,24,22,0,2\nGlovo,24,24,0,0\n", encoding="utf-8")
+
+    spec = auto_deck._comparison_with_table_or_blank(
+        "Efficacia - Task 1",
+        "outputs/charts/effectiveness/task_1_stacked_outcomes.png",
+        "outputs/tables/user_tests/slide_effectiveness_t01.csv",
+        {},
+        "task_result_placeholder",
+        {"comparison"},
+    )
+
+    assert spec["images"] == {"LEFT_GRAPH": "outputs/charts/effectiveness/task_1_stacked_outcomes.png"}
+    assert spec["table"]["placeholder"] == "RIGHT_GRAPH"
+    assert spec["table"]["source"] == "outputs/tables/user_tests/slide_effectiveness_t01.csv"
+    assert spec["table"]["bounds"] == [6286500, 1439350, 5334000, 3228975]
+
+
+def test_ueq_item_analysis_tables_are_paginated_dense_tables(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def resolve_in_tmp(path: str | Path, base_dir: Path = tmp_path) -> Path:
+        value = Path(path)
+        return value if value.is_absolute() else tmp_path / value
+
+    monkeypatch.setattr(auto_deck, "resolve_path", resolve_in_tmp)
+    source = tmp_path / "outputs/tables/ueq/ueq_item_analysis_deliveroo.csv"
+    source.parent.mkdir(parents=True, exist_ok=True)
+    source.write_text(
+        "Domanda,Media,Varianza,Dev. standard,N,Valore sinistro,Valore destro,Sottogruppo,Zona\n"
+        + "\n".join(f"Q{idx:02d},0,1,1,24,left,right,Scala,neutra" for idx in range(1, 27))
+        + "\n",
+        encoding="utf-8",
+    )
+
+    spec = auto_deck._table_or_blank(
+        "UEQ - Analisi dei dati - Deliveroo",
+        "outputs/tables/ueq/ueq_item_analysis_deliveroo.csv",
+        {},
+        "questionnaire_statistical_comparison",
+        {"table_large"},
+    )
+
+    assert spec["table"]["paginate"] is True
+    assert spec["table"]["max_rows"] == 12
+
+
 def test_problem_finder_matrix_uses_finding_evaluators_not_all_ratings() -> None:
     import pandas as pd
 
@@ -227,7 +282,7 @@ def test_auto_slide_expansion_creates_app_variants(tmp_path: Path, monkeypatch: 
     task_table.write_text("app,success_rate,mean_time_sec\nDeliveroo,0.8,22\nGlovo,1.0,18\n", encoding="utf-8")
     ueq_table.write_text(
         "item_number,item,Deliveroo_mean,Deliveroo_median,Glovo_mean,Glovo_median,mean_difference_abs,p_value,median_difference_abs\n"
-        "1,Chiarezza,1.2,1,0.6,0,0.6,0.04,1\n",
+        "1,Apprendibilita,1.2,1,0.6,0,0.6,0.04,1\n",
         encoding="utf-8",
     )
     text.write_text("# NPS\n\nDeliveroo risulta preferibile nel consiglio agli utenti, con un vantaggio chiaro nel dato sintetico.", encoding="utf-8")
@@ -269,7 +324,7 @@ def test_reference_order_slide_expansion_follows_reference_sections(tmp_path: Pa
         "## app_glovo\nTesto Glovo.\n",
         encoding="utf-8",
     )
-    figure = tmp_path / "outputs/figures/dark/questionnaire/ueq_scales.png"
+    figure = tmp_path / "outputs/charts/ueq_benchmark_comparison.png"
     expertise = tmp_path / "outputs/figures/dark/heuristics/expertise_matrix.png"
     errors = tmp_path / "outputs/figures/dark/user_tests/tasks/t01_error_breakdown.png"
     success = tmp_path / "outputs/figures/dark/users_time_success_rate.png"
@@ -314,7 +369,8 @@ def test_reference_order_slide_expansion_follows_reference_sections(tmp_path: Pa
         "Glovo",
         "Valutazione euristica",
     ]
-    assert any(slide.get("fields", {}).get("GRAPH_TITLE") == "Media risultati UEQ" for slide in slides)
+    assert not any(slide.get("fields", {}).get("GRAPH_TITLE") == "Media risultati UEQ" for slide in slides)
+    assert any(slide.get("fields", {}).get("GRAPH_TITLE") == "UEQ - confronto sintetico delle scale" for slide in slides)
     assert any(slide.get("fields", {}).get("GRAPH_TITLE") == "Matrice di expertise" for slide in slides)
     assert any(slide.get("fields", {}).get("GRAPH_TITLE") == "Errori - Task 1" for slide in slides)
     assert any(slide.get("fields", {}).get("COMPARISON_TITLE") == "Successo e distribuzione tempi" for slide in slides)

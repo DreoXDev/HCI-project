@@ -9,7 +9,7 @@ include_debug_footnotes: false
 
 appendices:
   include_empty_placeholders: false
-  include_task_deck_as_images: true
+  include_task_deck_as_images: false
   include_questionnaire_exports: false
   include_asset_manifest: false
 
@@ -50,6 +50,8 @@ auto_slides:
   include_sources: false
   include_asset_manifest: false
   include_empty_appendices: false
+  include_final_appendix: false
+  questionnaire_items: all
   final_delivery: true
   user_task_deck_source: slides/assets/user_task_deck/user_task_deck.pptx
   user_task_deck_pdf: slides/assets/user_task_deck/user_task_deck.pdf
@@ -79,7 +81,7 @@ slides:
   - template_id: graph_full
     fields:
       GRAPH_TITLE: "Distribuzione dei punteggi UEQ"
-      INSIGHT_TEXT: "Le scale UEQ evidenziano differenze utili per leggere efficacia percepita, chiarezza e attrattiva."
+      INSIGHT_TEXT: "Le scale UEQ evidenziano differenze utili per leggere efficacia percepita, apprendibilita e attrattivita."
     images:
       GRAPH_MAIN: outputs/figures/dark/questionnaire/ueq_scales.png
 

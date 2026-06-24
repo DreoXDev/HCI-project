@@ -29,10 +29,28 @@ def read_display_table(csv_path: str | Path) -> list[list[str]]:
 def paginate_rows(rows: list[list[str]], max_rows: int) -> list[list[list[str]]]:
     if not rows:
         return []
-    if max_rows <= 0:
+    ranges = balanced_row_ranges(max(0, len(rows) - 1), max_rows)
+    if not ranges:
         return [rows]
     header, data = rows[0], rows[1:]
-    return [[header, *data[start : start + max_rows]] for start in range(0, len(data), max_rows)] or [[header]]
+    return [[header, *data[start : start + count]] for start, count in ranges] or [[header]]
+
+
+def balanced_row_ranges(data_rows: int, max_rows: int) -> list[tuple[int, int]]:
+    if data_rows <= 0:
+        return [(0, 0)]
+    if max_rows <= 0:
+        return [(0, data_rows)]
+    capped_max = min(12, max_rows)
+    page_count = (data_rows + capped_max - 1) // capped_max
+    base, remainder = divmod(data_rows, page_count)
+    ranges = []
+    start = 0
+    for index in range(page_count):
+        count = base + (1 if index < remainder else 0)
+        ranges.append((start, count))
+        start += count
+    return ranges
 
 
 def table_specs_from_paginated_table(spec: dict[str, Any]) -> list[dict[str, Any]]:
@@ -40,13 +58,16 @@ def table_specs_from_paginated_table(spec: dict[str, Any]) -> list[dict[str, Any
     if not table.get("paginate"):
         return [spec]
     rows = read_display_table(table["source"])
-    pages = paginate_rows(rows, int(table.get("max_rows") or 6))
+    requested_max = 12
+    ranges = balanced_row_ranges(max(0, len(rows) - 1), requested_max)
+    pages = paginate_rows(rows, requested_max)
     if len(pages) <= 1:
         return [spec]
     specs = []
-    for index, _page in enumerate(pages):
+    for index, (start_row, count) in enumerate(ranges):
         clone = {**spec, "fields": dict(spec.get("fields") or {}), "table": dict(table)}
-        clone["table"]["start_row"] = index * int(table.get("max_rows") or 6)
+        clone["table"]["start_row"] = start_row
+        clone["table"]["max_rows"] = count
         base_title = table.get("title_prefix") or clone["fields"].get("TABLE_TITLE", "Tabella")
         separator = " — " if Path(str(table.get("source", ""))).name in {"user_testing_times_wide.csv", "user_profiles_slide.csv"} else " "
         suffix = f"{index + 1}/{len(pages)}" if separator.strip() == "—" else f"({index + 1}/{len(pages)})"

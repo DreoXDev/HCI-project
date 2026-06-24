@@ -346,12 +346,12 @@ Insight statistico calcolato automaticamente dalla tabella `questionnaire_items_
 
 ## ueq_scale
 La scala **UEQ** consente di misurare l'esperienza d'uso lungo dimensioni come:
-- attrattiva
-- perspicuita
+- attrattivita
+- apprendibilita
 - efficienza
-- affidabilita
+- controllabilita
 - stimolazione
-- novita
+- originalita
 
 Il confronto tra sistemi permette di leggere non solo la **prestazione funzionale**, ma anche il vissuto soggettivo degli utenti.
 

@@ -22,6 +22,7 @@ from .auto_deck_formatting import (
 )
 from .auto_deck_config import APPENDIX_IMAGE_EXTENSIONS, DEFAULT_AUTO_CONFIG, SECTION_TITLES
 from .external_deck import user_task_deck_slide_specs
+from .tables import balanced_row_ranges
 from .template_variants import infer_theme_from_app, resolve_template_id
 
 
@@ -243,31 +244,92 @@ def _reference_order_specs(
     add(_comparison_or_blank("Composizione del campione utenti", "outputs/charts/users_age_pie.png", "outputs/charts/users_gender_pie.png", texts, "user_demographics", available_templates))
     add(_comparison_or_blank("Composizione utenti - familiarita e profilo", "outputs/charts/users_occupation_pie.png", "outputs/charts/users_delivery_familiarity_pie.png", texts, "user_familiarity_profile", available_templates))
     add(_graph_or_blank("Familiarita degli utenti con il food delivery", "outputs/charts/users_delivery_familiarity_pie.png", texts, "user_familiarity_profile", available_templates))
+    add(_text_spec("Metodo - efficacia", texts, "effectiveness_method", available_templates))
     add(_text_spec("Legenda efficacia", texts, "effectiveness_legend", available_templates))
     add(_graph_or_blank("Efficacia - matrice esiti utenti/task", "outputs/charts/effectiveness_outcome_matrix.png", texts, "effectiveness_intro", available_templates))
+    add(_graph_or_blank("Errori - Task 1", "outputs/figures/dark/user_tests/tasks/t01_error_breakdown.png", texts, "effectiveness_intro", available_templates))
+    add(_comparison_or_blank(
+        "Successo e distribuzione tempi",
+        "outputs/figures/dark/users_time_success_rate.png",
+        "outputs/figures/dark/users_time_boxplot_by_task.png",
+        texts,
+        "effectiveness_intro",
+        available_templates,
+    ))
     add(_table_or_blank("Efficacia relativa - sintesi", "outputs/tables/slide_effectiveness_relative_summary.csv", texts, "effectiveness_intro", available_templates))
-    add(_table_or_blank("Efficacia assoluta - sintesi", "outputs/tables/slide_effectiveness_absolute_summary.csv", texts, "effectiveness_intro", available_templates))
     for task_idx in range(1, task_count + 1):
-        task = f"t{task_idx:02d}"
-        add(_graph_or_blank(f"Efficacia - Task {task_idx}", f"outputs/figures/dark/user_tests/tasks/{task}_effectiveness.png", texts, "task_result_placeholder", available_templates))
+        task = f"T{task_idx:02d}"
+        add(_comparison_with_table_or_blank(
+            f"Efficacia - Task {task_idx}",
+            f"outputs/charts/effectiveness/task_{task_idx}_stacked_outcomes.png",
+            f"outputs/tables/user_tests/slide_effectiveness_{task.lower()}.csv",
+            texts,
+            "task_result_placeholder",
+            available_templates,
+        ))
+    add(_text_spec("Metodo - efficacia assoluta", texts, "absolute_effectiveness_method", available_templates))
+    add(_comparison_with_table_or_blank(
+        "Efficacia assoluta - sintesi",
+        "outputs/figures/user_tests/absolute_effectiveness_vs_threshold.png",
+        "outputs/tables/slide_effectiveness_absolute_summary.csv",
+        texts,
+        "effectiveness_intro",
+        available_templates,
+    ))
+    for task_idx in range(1, task_count + 1):
+        task = f"T{task_idx:02d}"
+        add(_comparison_with_table_or_blank(
+            f"Efficacia assoluta - Task {task_idx}",
+            f"outputs/charts/absolute_effectiveness/task_{task_idx}_error_threshold.png",
+            f"outputs/tables/user_tests/slide_effectiveness_absolute_{task.lower()}.csv",
+            texts,
+            "task_result_placeholder",
+            available_templates,
+        ))
+    add(_text_spec("Metodo - efficienza", texts, "efficiency_method", available_templates))
     add(_graph_or_blank("Efficienza - riepilogo tempi mediani", "outputs/charts/efficiency_summary.png", texts, "efficiency_intro", available_templates))
     add(_table_or_blank("Efficienza - riepilogo", "outputs/tables/slide_efficiency_summary.csv", texts, "efficiency_intro", available_templates))
+    add(_table_or_blank("Efficienza - descrittive tempi", "outputs/tables/user_tests/efficiency_descriptives_by_task_app.csv", texts, "efficiency_intro", available_templates))
+    add(_table_or_blank("Efficienza - tempi utenti completi", "outputs/tables/efficiency/all_user_times_wide.csv", texts, "efficiency_intro", available_templates))
     add(_table_or_blank("Efficienza statistica - sintesi", "outputs/tables/slide_efficiency_stat_summary.csv", texts, "user_test_statistical_significance", available_templates))
     for task_idx in range(1, task_count + 1):
-        add(_comparison_or_blank(
+        task = f"T{task_idx:02d}"
+        add(_comparison_with_table_or_blank(
             f"Efficienza - Task {task_idx}",
-            f"outputs/charts/efficiency_task_{task_idx}_boxplot.png",
+            f"outputs/charts/efficiency/task_{task_idx}_boxplot_times.png",
+            f"outputs/tables/user_tests/slide_efficiency_{task.lower()}.csv",
+            texts,
+            "user_test_statistical_significance",
+            available_templates,
+        ))
+        add(_comparison_or_blank(
+            f"Efficienza - linee appaiate Task {task_idx}",
             f"outputs/charts/efficiency_task_{task_idx}_paired_lines.png",
+            f"outputs/charts/efficiency_task_{task_idx}_boxplot.png",
             texts,
             "user_test_statistical_significance",
             available_templates,
         ))
     add(_table_or_blank("Efficienza assoluta - confronto con OET", "outputs/tables/slide_efficiency_oet_summary.csv", texts, "user_test_statistical_significance", available_templates))
+    for task_idx in range(1, task_count + 1):
+        task = f"T{task_idx:02d}"
+        add(_comparison_with_table_or_blank(
+            f"Efficienza assoluta - Task {task_idx}",
+            f"outputs/charts/absolute_efficiency/task_{task_idx}_oet_comparison.png",
+            f"outputs/tables/user_tests/slide_efficiency_oet_{task.lower()}.csv",
+            texts,
+            "user_test_statistical_significance",
+            available_templates,
+        ))
+    add(_table_or_blank("Confronto statistico - Task utente", "outputs/tables/statistical_tests/slide_user_task_statistical_tests.csv", texts, "user_test_statistical_significance", available_templates))
     add(_text_spec("Efficacia ed efficienza: lettura congiunta", texts, "effectiveness_efficiency_joint", available_templates))
 
     add(_section_slide("Questionario"))
     add(_text_spec("Introduzione al questionario", texts, "questionnaire_intro", available_templates))
     add(_text_spec("Scala UEQ e metodo di scoring", texts, "ueq_scale", available_templates))
+    add(_table_or_blank("Item UEQ selezionati - metodo", "outputs/tables/questionnaire/slide_ueq_item_method.csv", texts, "questionnaire_statistical_comparison", available_templates))
+    for item_id in _selected_ueq_item_ids():
+        add(_table_or_blank(f"Confronto statistico UEQ - {item_id}", f"outputs/tables/questionnaire/slide_ueq_item_{item_id.lower()}.csv", texts, "questionnaire_statistical_comparison", available_templates))
     False and add(_comparison_or_blank(
         "Composizione utenti - familiarità e profilo",
         "outputs/figures/dark/sample/occupation_distribution.png",
@@ -276,13 +338,44 @@ def _reference_order_specs(
         "user_familiarity_profile",
         available_templates,
     ))
-    for spec in _questionnaire_key_item_specs(texts, available_templates):
+    questionnaire_items_mode = str(auto.get("questionnaire_items") or "key").strip().lower()
+    questionnaire_item_specs = _questionnaire_full_item_specs(texts, available_templates) if questionnaire_items_mode == "all" else _questionnaire_key_item_specs(texts, available_templates)
+    for spec in questionnaire_item_specs:
         add(spec)
     add(_text_spec("Confronto tra sistemi", texts, "questionnaire_comparison_intro", available_templates))
-    add(_graph_or_blank("UEQ benchmark - confronto sintetico", "outputs/charts/ueq_benchmark_comparison.png", texts, "ueq_interpretation", available_templates))
+    add(_graph_or_blank("UEQ - confronto sintetico delle scale", "outputs/charts/ueq_benchmark_comparison.png", texts, "ueq_interpretation", available_templates))
+    add(_comparison_with_table_or_blank(
+        "UEQ - Analisi dei sottogruppi - Deliveroo",
+        "outputs/charts/ueq/subgroup_analysis_deliveroo.png",
+        "outputs/tables/ueq/slide_scale_stats_deliveroo.csv",
+        texts,
+        "ueq_interpretation",
+        available_templates,
+        theme="deliveroo",
+    ))
+    add(_comparison_with_table_or_blank(
+        "UEQ - Analisi dei sottogruppi - Glovo",
+        "outputs/charts/ueq/subgroup_analysis_glovo.png",
+        "outputs/tables/ueq/slide_scale_stats_glovo.csv",
+        texts,
+        "ueq_interpretation",
+        available_templates,
+        theme="glovo",
+    ))
+    add(_graph_or_blank("UEQ - confronto scale Deliveroo vs Glovo", "outputs/charts/ueq/scale_comparison_deliveroo_vs_glovo.png", texts, "ueq_interpretation", available_templates))
+    add(_graph_or_blank("UEQ - distribuzione risposte raw 1..7 - Deliveroo", "outputs/charts/ueq/distribution_by_item_deliveroo.png", texts, "questionnaire_statistical_comparison", available_templates, theme="deliveroo"))
+    add(_graph_or_blank("UEQ - distribuzione risposte raw 1..7 - Glovo", "outputs/charts/ueq/distribution_by_item_glovo.png", texts, "questionnaire_statistical_comparison", available_templates, theme="glovo"))
+    add(_graph_or_blank("UEQ - media trasformata per domanda - Deliveroo", "outputs/charts/ueq/item_means_transformed_deliveroo.png", texts, "questionnaire_statistical_comparison", available_templates, theme="deliveroo"))
+    add(_graph_or_blank("UEQ - media trasformata per domanda - Glovo", "outputs/charts/ueq/item_means_transformed_glovo.png", texts, "questionnaire_statistical_comparison", available_templates, theme="glovo"))
+    add(_graph_or_blank("UEQ - confronto item-by-item trasformato Deliveroo vs Glovo", "outputs/charts/ueq/item_comparison_transformed_deliveroo_vs_glovo.png", texts, "questionnaire_statistical_comparison", available_templates))
+    add(_graph_or_blank("UEQ - benchmark confronto finale", "outputs/charts/ueq/benchmark_comparison.png", texts, "ueq_interpretation", available_templates))
+    add(_table_or_blank("UEQ - Analisi dei dati - Deliveroo", "outputs/tables/ueq/ueq_item_analysis_deliveroo.csv", texts, "questionnaire_statistical_comparison", available_templates, theme="deliveroo"))
+    add(_table_or_blank("UEQ - Analisi dei dati - Glovo", "outputs/tables/ueq/ueq_item_analysis_glovo.csv", texts, "questionnaire_statistical_comparison", available_templates, theme="glovo"))
     add(_table_or_blank("UEQ - confronto dimensioni", "outputs/tables/slide_ueq_scale_summary.csv", texts, "ueq_interpretation", available_templates))
     add(_table_or_blank("UEQ - test per dimensione", "outputs/tables/slide_ueq_scale_tests_summary.csv", texts, "ueq_interpretation", available_templates))
     add(_table_or_blank("Benchmark UEQ - confronto sintetico", "outputs/tables/slide_ueq_benchmark_comparison.csv", texts, "ueq_interpretation", available_templates))
+    add(_table_or_blank("UEQ benchmark - qualita pragmatica/edonica", "outputs/tables/questionnaire/slide_ueq_benchmark_quality_groups.csv", texts, "ueq_interpretation", available_templates))
+    add(_table_or_blank("UEQ benchmark - lettura operativa", "outputs/tables/questionnaire/slide_ueq_benchmark_operational_reading.csv", texts, "ueq_interpretation", available_templates))
     add(_graph_or_blank("Sottogruppi UEQ - heatmap differenze", "outputs/charts/subgroup_ueq_heatmap.png", texts, "user_familiarity_profile", available_templates))
     add(_table_or_blank("Sottogruppi - sintesi esplorativa", "outputs/tables/slide_subgroup_compact.csv", texts, "user_familiarity_profile", available_templates))
     add(_text_spec("Sintesi dei risultati del questionario", texts, "questionnaire_synthesis", available_templates))
@@ -301,11 +394,15 @@ def _reference_order_specs(
     add(_section_slide("Sintesi finale"))
     add(_text_spec("Conclusioni: confronto complessivo", texts, "conclusions_overall", available_templates))
     add(_table_or_blank("Confronto statistico complessivo", "outputs/tables/slide_system_comparison_compact.csv", texts, "integrated_evidence", available_templates))
+    add(_table_or_blank("Valutazione quantitativa - conclusioni e confronti", "outputs/tables/final/quantitative_conclusions.csv", texts, "integrated_evidence", available_templates))
+    add(_table_or_blank("Matrice decisionale Deliveroo vs Glovo", "outputs/tables/final/final_decision_matrix.csv", texts, "integrated_evidence", available_templates))
     add(_text_spec("Evidenze integrate", texts, "integrated_evidence", available_templates))
+    add(_table_or_blank("Verdetto operativo", "outputs/tables/final/final_system_verdict.csv", texts, "final_verdict_argument", available_templates))
     add(_text_spec("Raccomandazioni prioritarie", texts, "priority_recommendations", available_templates))
     add(_text_spec("Verdetto finale", texts, "final_verdict_argument", available_templates))
     appendix_specs = _appendix_specs(auto, systems, texts, available_templates, task_count)
-    if final_delivery:
+    include_final_appendix = bool(auto.get("include_final_appendix", True))
+    if final_delivery and include_final_appendix:
         add(_section_slide("Appendice"))
         for spec in _final_delivery_appendix_specs(texts, available_templates):
             add(spec)
@@ -487,11 +584,12 @@ def _table_specs(auto: dict[str, Any], available_templates: set[str], used_asset
     preferred_rows_per_slide = max(4, int(auto.get("table_rows_per_slide") or 12))
     for table in tables:
         rows = _read_csv_rows(table)
-        rows_per_slide = _rows_per_slide_for_table(rows, preferred_rows_per_slide)
+        rows_per_slide = min(12, max(1, preferred_rows_per_slide))
         table_options = _table_render_options(rows)
         data_rows = max(0, len(rows) - 1)
-        pages = max(1, (data_rows + rows_per_slide - 1) // rows_per_slide)
-        for page in range(pages):
+        ranges = balanced_row_ranges(data_rows, rows_per_slide)
+        pages = len(ranges)
+        for page, (start_row, count) in enumerate(ranges):
             title = _title_from_path(table)
             if pages > 1:
                 title = f"{title} ({page + 1}/{pages})"
@@ -506,8 +604,8 @@ def _table_specs(auto: dict[str, Any], available_templates: set[str], used_asset
                     "table": {
                         "placeholder": "TABLE_MAIN",
                         "source": _rel(table),
-                        "start_row": page * rows_per_slide,
-                        "max_rows": rows_per_slide,
+                        "start_row": start_row,
+                        "max_rows": count,
                         **table_options,
                     },
                 }
@@ -781,6 +879,26 @@ def _questionnaire_key_item_specs(texts: dict[str, str], available_templates: se
     return specs
 
 
+def _selected_ueq_item_ids() -> list[str]:
+    config_path = resolve_path("config.yaml")
+    if not config_path.exists():
+        return ["Q01", "Q04", "Q09", "Q13", "Q23"]
+    ids: list[str] = []
+    in_selected = False
+    for raw_line in config_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if line == "selected_ueq_items:":
+            in_selected = True
+            continue
+        if in_selected and line and not raw_line.startswith(" ") and not raw_line.startswith("-"):
+            break
+        if in_selected:
+            match = re.search(r"id:\s*([A-Za-z0-9_ -]+)", line)
+            if match:
+                ids.append(match.group(1).strip().strip('"').strip("'"))
+    return ids or ["Q01", "Q04", "Q09", "Q13", "Q23"]
+
+
 def _questionnaire_item_label(item_idx: int) -> str:
     rows = _read_dict_rows(resolve_path("outputs/tables/questionnaire_items_summary.csv"))
     row = next((item for item in rows if _safe_int(item.get("item_number")) == item_idx), None)
@@ -992,18 +1110,21 @@ def _fallback_reference_texts() -> dict[str, str]:
         "dark_patterns_glovo": "In Glovo i pattern piu critici emergono dall'integrazione di elementi commerciali o accessori in flussi operativi gia complessi: upselling nel carrello, contenuti sponsorizzati poco distinguibili e funzioni social non strettamente necessarie.",
         "dark_patterns_impact": "Queste scelte non impediscono il completamento del task, ma possono ridurre controllo percepito, fiducia e capacita di recupero in caso di errore. L'impatto diventa piu serio quando la frizione compare vicino a checkout, pagamento o tracking dell'ordine.",
         "effectiveness_intro": "Sono state distinte due metriche: l'efficacia misura il completamento complessivo del task, mentre l'efficacia assoluta considera solo i task completati autonomamente e senza criticita annotate.",
+        "effectiveness_method": "Efficacia relativa: quota di task completate, includendo successi autonomi e completamenti con aiuto o criticita.\n\nIl confronto tra Deliveroo e Glovo usa gli stessi utenti su entrambi i sistemi; per questo il test principale e McNemar exact per dati appaiati.\n\nIpotesi nulla: nessuna differenza tra le app nella probabilita di completamento. Soglia: p < .05.",
         "effectiveness_legend": "Efficacia: task completata, anche con aiuto o criticita.\n\nEfficacia assoluta: task completata senza aiuto e senza criticita annotate.\n\nI casi completati con aiuto o workaround sono inclusi nell'efficacia generale, ma esclusi dall'efficacia assoluta.",
+        "absolute_effectiveness_method": "Efficacia assoluta: task completata autonomamente, senza aiuto e senza issue critiche.\n\nLa lettura rispetto alla soglia ottimale considera i casi non autonomi o problematici come errori operativi. Il test binomiale verifica se la quota osservata supera la soglia configurata.\n\nLe soglie servono come riferimento operativo, non come verdetto assoluto.",
         "efficiency_intro": "Le analisi di efficienza principale considerano solo i tempi dei task completati autonomamente. I tempi dei task completati con aiuto sono riportati nei dati grezzi, ma non usati per stimare l'efficienza autonoma.",
+        "efficiency_method": "Efficienza relativa: confronto dei tempi tra Deliveroo e Glovo sugli stessi utenti.\n\nIl test viene scelto sulle differenze appaiate: paired t-test se compatibili con normalita, Wilcoxon signed-rank in caso contrario.\n\nEfficienza assoluta: confronto con OET, Optimal Execution Time, definito per ciascun task. Soglia di significativita: p < .05.",
         "user_test_statistical_significance": "I tempi dei task sono stati confrontati tra Deliveroo e Glovo considerando gli stessi utenti sulle due applicazioni. Per i p-value principali vengono usate solo coppie con successo autonomo su entrambe le app; con meno di 5 coppie valide il confronto viene indicato come non sufficiente.",
         "effectiveness_efficiency_joint": "La sola efficienza temporale non basta per valutare l'usabilita del flusso. Nei task di food delivery e necessario leggere insieme tempo, successo autonomo, richieste di aiuto, errori e osservazioni qualitative.\n\nUn'interazione veloce puo risultare problematica se porta l'utente a perdere il controllo del carrello, a non comprendere lo stato dell'ordine o a confermare un pagamento senza verifica esplicita.",
         "qualitative_observations": "Le note qualitative collegano i dati numerici alle frizioni osservate: indirizzo, carrello, checkout, contenuti commerciali e tracking diventano punti in cui l'utente puo perdere orientamento o fiducia.",
         "questionnaire_statistical_comparison": "Il confronto tra item del questionario evidenzia dove la percezione soggettiva separa maggiormente le due applicazioni e aiuta a collegare opinioni, prestazioni e problemi euristici.",
-        "questionnaire_synthesis": "Il questionario mostra la percezione soggettiva degli utenti dopo l'interazione. I risultati vanno letti come complemento dei test: tempi ed errori descrivono la prestazione osservabile, mentre le risposte soggettive indicano fiducia, chiarezza, soddisfazione e disponibilita a riutilizzare o consigliare il servizio.",
-        "ueq_interpretation": "Le scale UEQ distinguono qualita pragmatica dell'interazione, legata a chiarezza, efficienza e controllo, e qualita edonica, legata a stimolazione, attrattiva e originalita. Il punto centrale e capire quali dimensioni confermano le criticita osservate nei test.",
+        "questionnaire_synthesis": "Il questionario mostra la percezione soggettiva degli utenti dopo l'interazione. I risultati vanno letti come complemento dei test: tempi ed errori descrivono la prestazione osservabile, mentre le risposte soggettive indicano fiducia, apprendibilita, soddisfazione e disponibilita a riutilizzare o consigliare il servizio.",
+        "ueq_interpretation": "Le scale UEQ distinguono qualita pragmatica dell'interazione, legata ad apprendibilita, efficienza e controllabilita, e qualita edonica, legata ad attrattivita, stimolazione e originalita. Il punto centrale e capire quali dimensioni confermano le criticita osservate nei test.",
         "ueq_confirmations_contradictions": "Il confronto tra UEQ e test utente permette di individuare convergenze e contraddizioni. Quando una dimensione soggettiva conferma una criticita osservata, il problema diventa piu robusto; quando i dati divergono, l'app puo essere percepita positivamente pur introducendo frizioni operative specifiche.",
         "nps_interpreted": "Il Net Promoter Score sintetizza la disponibilita degli utenti a consigliare l'applicazione. Un NPS piu alto indica maggiore raccomandabilita percepita, ma non elimina eventuali criticita operative nei task o problemi euristici ad alta severita.",
         "conclusions_overall": "L'analisi mostra che Deliveroo e Glovo presentano entrambe un livello funzionale adeguato per completare i principali task di food delivery, ma introducono frizioni diverse lungo il percorso d'ordine.\n\nDeliveroo appare maggiormente critica nella gestione della trasparenza informativa, del carrello e del sovraccarico promozionale. Glovo presenta invece criticita piu evidenti nella coerenza del checkout, nella visibilita di alcune funzioni e nella distinzione tra contenuti funzionali, commerciali e accessori.",
-        "integrated_evidence": "Le tre fonti di evidenza convergono su alcune aree critiche comuni. La valutazione euristica individua problemi legati a controllo, prevenzione dell'errore e trasparenza; i test utente mostrano frizioni pratiche in indirizzo, carrello e checkout; il questionario misura la percezione soggettiva di chiarezza, efficienza e fiducia.",
+        "integrated_evidence": "Le tre fonti di evidenza convergono su alcune aree critiche comuni. La valutazione euristica individua problemi legati a controllo, prevenzione dell'errore e trasparenza; i test utente mostrano frizioni pratiche in indirizzo, carrello e checkout; il questionario misura la percezione soggettiva di apprendibilita, efficienza e fiducia.",
         "priority_recommendations": "Gli interventi prioritari dovrebbero concentrarsi sulle fasi ad alto rischio del flusso d'ordine: configurazione, carrello, checkout, pagamento e tracking.\n\nPer Deliveroo: rendere il carrello sempre visibile e recuperabile, migliorare la trasparenza informativa su prodotti e allergeni, ridurre il sovraccarico promozionale e introdurre conferme piu chiare prima delle azioni economicamente rilevanti.\n\nPer Glovo: rendere il checkout piu prevedibile, distinguere chiaramente contenuti sponsorizzati e organici, migliorare la visibilita delle funzioni utili e rafforzare i feedback sullo stato dell'ordine.",
         "final_verdict_argument": "Nel complesso, nessuna delle due applicazioni risulta priva di criticita. Entrambe permettono di completare i task principali, ma mostrano problemi ricorrenti nei momenti in cui l'utente dovrebbe percepire massimo controllo.\n\nLa differenza principale riguarda il tipo di frizione: Deliveroo tende a generare sovraccarico informativo e ambiguita nel recupero del carrello, mentre Glovo tende a distribuire le criticita tra checkout, funzioni accessorie e trasparenza dei contenuti commerciali.",
     }
@@ -1233,15 +1354,20 @@ def _is_dense_quantitative_table(path: Path) -> bool:
         "efficiency_descriptives_by_task.csv",
         "efficiency_relative_tests.csv",
         "efficiency_absolute_tests.csv",
+        "all_user_times_wide.csv",
         "ueq_item_descriptives.csv",
         "ueq_item_tests.csv",
         "ueq_scale_scores.csv",
         "ueq_scale_descriptives.csv",
         "ueq_scale_tests.csv",
         "ueq_benchmark_summary.csv",
+        "ueq_item_analysis_deliveroo.csv",
+        "ueq_item_analysis_glovo.csv",
         "subgroup_availability.csv",
         "ueq_subgroup_scale_scores.csv",
         "ueq_subgroup_item_scores.csv",
+        "slide_ueq_scale_tests_summary.csv",
+        "slide_ueq_benchmark_comparison.csv",
         "task_subgroup_effectiveness.csv",
         "task_subgroup_efficiency.csv",
         "system_comparison_summary.csv",
@@ -1258,7 +1384,7 @@ def _should_paginate_reference_table(path: Path) -> bool:
     name = path.name
     return (
         "problems_slide" in name
-        or name in {"user_testing_times_wide.csv", "user_profiles_slide.csv"}
+        or name in {"user_testing_times_wide.csv", "user_profiles_slide.csv", "all_user_times_wide.csv"}
         or _is_dense_quantitative_table(path)
         or _is_compact_appendix_table(path)
     )

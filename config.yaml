@@ -111,6 +111,22 @@ final_score:
     heuristic_penalty: 0.10
 
 questionnaire:
+  selected_ueq_items:
+    - id: Q01
+      label: "Fastidioso - Piacevole"
+      scale: "Attractiveness"
+    - id: Q04
+      label: "Facile da apprendere - Difficile da apprendere"
+      scale: "Perspicuity"
+    - id: Q09
+      label: "Veloce - Lento"
+      scale: "Efficiency"
+    - id: Q13
+      label: "Complicato - Facile"
+      scale: "Perspicuity"
+    - id: Q23
+      label: "Ordinato - Sovraccarico"
+      scale: "Efficiency"
   demographic_rows:
     - "genere"
     - "eta"

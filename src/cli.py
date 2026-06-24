@@ -57,11 +57,13 @@ from .user_tests import analyze_user_testing_observations, compute_effectiveness
 from .user_task_trials import audit_and_normalize_user_task_trials
 from .users_time import analyze_users_time, users_time_enabled, users_time_file, validate_users_time_file
 from .validation import (
+    ValidationMessage,
     format_validation,
     validate_heuristics_csv,
     validate_questionnaire_csv,
     validate_users_time_csv,
 )
+from .analysis.ueq_benchmark import check_project_benchmark_snapshot, thresholds_dataframe
 
 GENERATED_OUTPUT_PATHS = [
     "outputs/figures",
@@ -164,7 +166,7 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
         print(message)
     print("\n[2/7] Validazione dati...")
     data = load_all(config)
-    print(validate(config, data))
+    print(validate(config, data, include_generated_checks=False))
     print("\n[3/7] Analisi, grafici e tabelle...")
     analyze(config, data)
     sync_clean_figure_alias()
@@ -175,12 +177,17 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     analyze_ueq_benchmark(config)
     print("OK: asset finali generati")
     run_optional_final_heuristics(strict=False)
+    data = load_all(config)
+    generate_final_assets(config, data)
     audit = enforce_data_integrity_audit()
     print(f"OK: data integrity audit ({audit.problem_count} problemi, {audit.expert_count} esperti, {audit.rating_count} rating)")
     print("\n[4b/8] Analisi final report...")
     data = load_all(config)
     build_final_report_outputs(config, data)
     print("OK: analisi, asset e testi final report generati")
+    print("\n[4c/8] Analisi quantitativa dettagliata...")
+    run_quantitative_report_sections()
+    print("OK: sezioni quantitative dettagliate generate")
     print("\n[5/8] Testi slide/report...")
     generate_text_outputs(config)
     print("OK: testi generati")
@@ -233,6 +240,12 @@ def run_optional_final_heuristics(strict: bool = False) -> None:
     print(f"WARNING: {message}")
 
 
+def run_quantitative_report_sections() -> None:
+    from scripts.validate_quantitative_report import main as quantitative_main
+
+    quantitative_main()
+
+
 def generate_report(config: dict) -> None:
     """Generate normalized report assets without assembling the PPTX deck."""
     clean_generated_outputs(config)
@@ -247,6 +260,10 @@ def generate_report(config: dict) -> None:
     sync_clean_figure_alias()
     generate_final_assets(config, data)
     analyze_ueq_benchmark(config)
+    run_optional_final_heuristics(strict=False)
+    data = load_all(config)
+    generate_final_assets(config, data)
+    run_quantitative_report_sections()
     generate_text_outputs(config)
     generate_slide_manifest()
     build_slide_pack(config)
@@ -367,14 +384,61 @@ def heuristics_cli(argv: list[str]) -> None:
         return
 
 
-def validate(config: dict, data: dict[str, pd.DataFrame]) -> str:
+def validate(config: dict, data: dict[str, pd.DataFrame], *, include_generated_checks: bool = True) -> str:
     messages = []
     messages.extend(validate_users_time_csv(data["users_time"], config))
     messages.extend(validate_heuristics_csv(data["heuristics_system_1"]))
     messages.extend(validate_heuristics_csv(data["heuristics_system_2"]))
     messages.extend(validate_questionnaire_csv(data["questionnaire_system_1"], config))
     messages.extend(validate_questionnaire_csv(data["questionnaire_system_2"], config))
+    if include_generated_checks:
+        messages.extend(validate_ueq_benchmark_outputs())
     return format_validation(messages)
+
+
+def validate_ueq_benchmark_outputs() -> list[ValidationMessage]:
+    messages: list[ValidationMessage] = []
+    try:
+        thresholds = thresholds_dataframe()
+        messages.append(ValidationMessage("OK", f"UEQ benchmark thresholds loaded ({len(thresholds)} scale)"))
+    except Exception as exc:
+        return [ValidationMessage("ERROR", f"UEQ benchmark thresholds failed: {exc}")]
+
+    benchmark_path = resolve_path("outputs/tables/ueq/ueq_benchmark_by_scale_app.csv")
+    if not benchmark_path.exists():
+        messages.append(ValidationMessage("ERROR", f"UEQ benchmark CSV mancante: {benchmark_path}"))
+    else:
+        table = pd.read_csv(benchmark_path)
+        checks = check_project_benchmark_snapshot(table)
+        failed = [check for check in checks if not check.ok]
+        if failed:
+            first = failed[0]
+            messages.append(ValidationMessage("ERROR", f"UEQ benchmark mismatch: {first.app} / {first.scale} expected {first.expected_category}, found {first.category}"))
+        else:
+            messages.append(ValidationMessage("OK", "UEQ benchmark categories match golden snapshot"))
+
+    missing_plot_data = []
+    for app in ["deliveroo", "glovo"]:
+        path = resolve_path(f"outputs/validation/ueq_benchmark_plot_data_{app}.csv")
+        if not path.exists():
+            missing_plot_data.append(str(path))
+            continue
+        plot = pd.read_csv(path)
+        if plot["bad_upper"].nunique() <= 1:
+            messages.append(ValidationMessage("ERROR", f"UEQ benchmark plot data has uniform thresholds: {path}"))
+    if missing_plot_data:
+        messages.append(ValidationMessage("ERROR", "UEQ benchmark plot data missing: " + ", ".join(missing_plot_data)))
+    else:
+        messages.append(ValidationMessage("OK", "UEQ benchmark plot data generated"))
+
+    audit_path = resolve_path("reports/audit/ueq_benchmark_slide_audit.md")
+    if audit_path.exists() and "## Risultato sintetico\nPASS" in audit_path.read_text(encoding="utf-8"):
+        messages.append(ValidationMessage("OK", "UEQ benchmark slide audit passed"))
+    elif audit_path.exists():
+        messages.append(ValidationMessage("ERROR", f"UEQ benchmark slide audit failed: {audit_path}"))
+    else:
+        messages.append(ValidationMessage("ERROR", f"UEQ benchmark slide audit missing: {audit_path}"))
+    return messages
 
 
 def analyze(config: dict, data: dict[str, pd.DataFrame]) -> None:
@@ -784,7 +848,10 @@ def main() -> None:
         return
     data = load_all(config)
     if args.command in {"validate", "all", "all-from-formbricks"}:
-        print(validate(config, data))
+        validation_report = validate(config, data)
+        print(validation_report)
+        if args.command == "validate" and "ERROR:" in validation_report:
+            raise SystemExit(1)
     if args.command in {"analyze", "all", "all-from-formbricks", "analyze-user-tests", "analyze-heuristics", "analyze-questionnaire", "export-tables", "export-figures"}:
         analyze(config, data)
         sync_clean_figure_alias()

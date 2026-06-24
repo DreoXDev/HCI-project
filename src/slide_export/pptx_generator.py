@@ -92,7 +92,10 @@ def generate_slides(
         _remove_template_metadata_shapes(slide)
         fields = _collect_fields(spec)
         _replace_text_fields(slide, fields)
-        _replace_named_non_text_fields_with_text(slide, fields, set((spec.get("images") or {}).keys()))
+        protected_visual_placeholders = set((spec.get("images") or {}).keys())
+        if spec.get("table"):
+            protected_visual_placeholders.add(str(spec["table"].get("placeholder", "")))
+        _replace_named_non_text_fields_with_text(slide, fields, protected_visual_placeholders)
         for placeholder, image in (spec.get("images") or {}).items():
             image_path = resolve_path(image)
             if image_path.exists():

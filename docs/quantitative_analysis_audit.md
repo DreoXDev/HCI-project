@@ -18,12 +18,12 @@
 - Efficacia task/app con completamento totale, autonomo, aiuto, errori critici e fallimenti.
 - Test McNemar exact per confronti appaiati Deliveroo vs Glovo.
 - Efficienza con descrittive, test appaiati e confronto OET.
-- UEQ raw 1..7 e trasformato -3..+3, item 1-26, scale e benchmark configurabile.
+- UEQ raw 1..7, score trasformato -3..+3, zone semplici e benchmark ufficiale per scala.
 - Sottogruppi descrittivi sulle variabili profilo realmente disponibili.
 
 ## Colonne mancanti o limiti
 - `app_order` non e presente nei CSV disponibili.
-- I benchmark UEQ sono soglie configurabili locali, non percentili ufficiali da dataset esterno.
+- Le categorie benchmark UEQ usano il benchmark ufficiale centralizzato in `src/analysis/ueq_benchmark.py`.
 - I sottogruppi con N piccolo sono trattati descrittivamente.
 
 ## Output attesi generati

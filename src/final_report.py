@@ -26,6 +26,7 @@ from .questionnaire import numeric_items, nps_summary, ueq_summary
 from .tables import export_table
 from .users_time import users_time_file, validate_users_time_file
 from .visualization.theme import get_brand_palette, style_axis
+from .analysis.ueq_benchmark import benchmark_interpretation, classify_ueq_benchmark
 
 
 FINAL_DATA_DIR = "data/processed/final_report"
@@ -680,7 +681,7 @@ def _ueq_scoring_method_note(data: dict[str, pd.DataFrame], systems: list[str], 
             "- Gli item sono mantenuti nell'ordine configurato e non vengono invertiti manualmente dalla pipeline.",
             "- Le medie per dimensione sono calcolate raggruppando gli item secondo il mapping UEQ salvato in `ueq_item_mapping.csv`.",
             "- I confronti item tra Deliveroo e Glovo sono appaiati sugli stessi partecipanti e usano Wilcoxon signed-rank.",
-            "- Il benchmark usa soglie descrittive UEQ: Bad, Below average, Above average, Good, Excellent.",
+            "- Il benchmark usa le soglie ufficiali UEQ per scala: Bad, Below Average, Above Average, Good, Excellent.",
             f"- Item mappati: {mapping['item_id'].nunique() if not mapping.empty else 0}.",
             "",
         ]
@@ -756,7 +757,7 @@ def _ueq_scale_summary(data: dict[str, pd.DataFrame], systems: list[str], config
         std = values.std(ddof=1)
         se = std / math.sqrt(len(values)) if len(values) > 1 and pd.notna(std) else 0.0
         ci = 1.96 * se
-        label = _ueq_benchmark_label(mean)
+        label = _ueq_benchmark_label(dimension, mean)
         rows.append(
             {
                 "app": app,
@@ -1001,7 +1002,7 @@ def _plot_ueq_benchmark(config: dict, df: pd.DataFrame, path: Path, app: str) ->
         ax.text(0.5, 0.5, "Benchmark UEQ non disponibile", ha="center", va="center")
         ax.axis("off")
     else:
-        colors = df["benchmark_label"].map({"Excellent": "#10B981", "Good": "#22C55E", "Above average": "#84CC16", "Below average": "#F59E0B", "Bad": "#EF4444"}).fillna("#94A3B8")
+        colors = df["benchmark_label"].map({"Excellent": "#10B981", "Good": "#22C55E", "Above Average": "#84CC16", "Below Average": "#F59E0B", "Bad": "#EF4444"}).fillna("#94A3B8")
         ax.barh(df["dimension"], df["mean"], color=colors)
         ax.axvline(0, color="#F8FAFC", linewidth=1)
         ax.set_xlim(-3, 3)
@@ -1260,12 +1261,12 @@ def _split_anchors(item: Any) -> tuple[str, str]:
 
 def _ueq_dimension_for_item(item_id: int) -> str:
     mapping = {
-        "Attrattivita": {1, 5, 6, 7, 12, 18},
-        "Perspicuita": {4, 14, 17, 24},
+        "Attrattività": {1, 5, 6, 7, 12, 18},
+        "Apprendibilità": {4, 14, 17, 24},
         "Efficienza": {9, 13, 20, 22},
-        "Affidabilita": {2, 11, 15, 19},
+        "Controllabilità": {2, 11, 15, 19},
         "Stimolazione": {3, 8, 16, 21},
-        "Novita": {10, 23, 25, 26},
+        "Originalità": {10, 23, 25, 26},
     }
     for dimension, ids in mapping.items():
         if item_id in ids:
@@ -1273,28 +1274,14 @@ def _ueq_dimension_for_item(item_id: int) -> str:
     return "n.d."
 
 
-def _ueq_benchmark_label(mean: float) -> str:
+def _ueq_benchmark_label(scale: str, mean: float) -> str:
     if pd.isna(mean):
         return "n.d."
-    if mean >= 1.5:
-        return "Excellent"
-    if mean >= 1.0:
-        return "Good"
-    if mean >= 0.8:
-        return "Above average"
-    if mean >= 0.0:
-        return "Below average"
-    return "Bad"
+    return classify_ueq_benchmark(scale, float(mean))
 
 
 def _ueq_benchmark_interpretation(label: str) -> str:
-    return {
-        "Excellent": "Risultato molto forte rispetto al benchmark indicativo.",
-        "Good": "Risultato positivo e competitivo.",
-        "Above average": "Risultato sopra la soglia positiva.",
-        "Below average": "Risultato leggibile ma con margini di miglioramento.",
-        "Bad": "Risultato critico rispetto alla scala UEQ standard.",
-    }.get(label, "Benchmark non disponibile.")
+    return benchmark_interpretation(label)
 
 
 def _ueq_analysis_slide_table(df: pd.DataFrame, app: str) -> pd.DataFrame:

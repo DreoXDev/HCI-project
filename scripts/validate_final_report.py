@@ -92,7 +92,7 @@ REQUIRED_SLIDE_TITLES = [
     "Efficienza - riepilogo",
     "Efficienza statistica - sintesi",
     "UEQ D9",
-    "UEQ benchmark - confronto sintetico",
+    "UEQ - confronto sintetico delle scale",
     "Confronto statistico complessivo",
     "Task assistite e issue",
 ]
