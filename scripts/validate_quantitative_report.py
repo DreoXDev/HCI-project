@@ -65,6 +65,18 @@ TABLES = ROOT / "outputs" / "tables"
 CHARTS = ROOT / "outputs" / "charts"
 VALIDATION = ROOT / "outputs" / "validation"
 DOCS = ROOT / "docs"
+UEQ_HEATMAP_SHORT_LABELS = {
+    "Attrattività": "Attr.",
+    "Apprendibilità": "Appr.",
+    "Efficienza": "Eff.",
+    "Controllabilità": "Contr.",
+    "Stimolazione": "Stim.",
+    "Originalità": "Orig.",
+}
+UEQ_HEATMAP_LABEL_NOTE = (
+    "Abbreviazioni delle scale UEQ: Attr. = Attrattività, Appr. = Apprendibilità, "
+    "Eff. = Efficienza, Contr. = Controllabilità, Stim. = Stimolazione, Orig. = Originalità."
+)
 
 
 def main() -> None:
@@ -981,22 +993,40 @@ def plot_subgroup_heatmap(scale_table: pd.DataFrame) -> None:
     for (variable, level, scale), group in usable.groupby(["subgroup_variable", "subgroup_level", "scale_or_item"]):
         wide = group.pivot_table(index="scale_or_item", columns="app", values="mean", aggfunc="first")
         if set(SYSTEMS).issubset(wide.columns):
-            pivot_rows.append({"scale": _display_scale(scale), "subgroup": _display_subgroup(variable, level), "delta": float(wide.loc[scale, SYSTEMS[1]] - wide.loc[scale, SYSTEMS[0]])})
+            pivot_rows.append(
+                {
+                    "scale": _ueq_heatmap_scale_label(scale),
+                    "subgroup": _display_subgroup(variable, level),
+                    "delta": float(wide.loc[scale, SYSTEMS[1]] - wide.loc[scale, SYSTEMS[0]]),
+                }
+            )
     data = pd.DataFrame(pivot_rows)
     if data.empty:
         return
-    matrix = data.pivot_table(index="scale", columns="subgroup", values="delta")
-    fig, ax = plt.subplots(figsize=(max(9, 0.8 * len(matrix.columns)), 5.2), facecolor=BACKGROUND)
+    scale_order = [_ueq_heatmap_scale_label(scale) for scale in UEQ_INTERNAL_SCALE_ORDER]
+    matrix = data.pivot_table(index="subgroup", columns="scale", values="delta").reindex(columns=scale_order)
+    fig, ax = plt.subplots(figsize=(9.4, max(5.2, 0.55 * len(matrix.index) + 2.2)), facecolor=BACKGROUND)
     heatmap = sns.heatmap(matrix, center=0, cmap="vlag", annot=True, fmt=".2f", linewidths=0.5, linecolor=GRID, ax=ax)
-    _dark_axes(ax, title="Sottogruppi UEQ: differenza Glovo - Deliveroo", xlabel="Sottogruppo", ylabel="Scala UEQ")
+    _dark_axes(
+        ax,
+        title="Sottogruppi UEQ: differenza Glovo - Deliveroo",
+        xlabel="Scale UEQ: Attr., Appr., Eff., Contr., Stim., Orig.",
+        ylabel="Sottogruppo",
+    )
     ax.grid(False)
-    ax.tick_params(axis="x", rotation=35)
+    ax.tick_params(axis="x", rotation=0)
+    ax.tick_params(axis="y", rotation=0)
     for text in ax.texts:
         text.set_color("#111827")
     cbar = heatmap.collections[0].colorbar
     cbar.ax.tick_params(colors=MUTED)
     cbar.outline.set_edgecolor(GRID)
+    fig.text(0.5, 0.012, UEQ_HEATMAP_LABEL_NOTE, ha="center", va="bottom", color=MUTED, fontsize=8)
     _savefig(CHARTS / "subgroup_ueq_heatmap.png")
+
+
+def _ueq_heatmap_scale_label(value: object) -> str:
+    return UEQ_HEATMAP_SHORT_LABELS.get(_display_scale(value), str(value))
 
 
 def _display_scale(value: object) -> str:

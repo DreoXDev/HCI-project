@@ -3,6 +3,7 @@
 import argparse
 import shutil
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -41,6 +42,7 @@ from .questionnaire import item_summary, nps_summary, subgroup_summaries, ueq_su
 from .quality_check import run_quality_check
 from .real_inputs import prepare_real_inputs
 from .real_user_testing import generate_real_user_testing_outputs
+from .run_manifest import doctor_report, write_pipeline_run_manifest
 from .slide_pack import build_slide_pack
 from .tables import export_table
 from .text_generation.final_summary_text import generate_text_outputs
@@ -157,17 +159,17 @@ def full_pipeline(config: dict, include_unfinished: bool = False) -> None:
     print("HCI Toolkit - Full Pipeline")
     clean_generated_outputs(config)
     ensure_output_dirs(config)
-    print("\n[1/7] Import Formbricks CSV...")
+    print("\n[1/8] Import Formbricks CSV...")
     import_formbricks_available(config, include_unfinished)
     generate_real_user_testing_outputs(config)
-    print("\n[1b/7] Audit trial user test...")
+    print("\n[1b/8] Audit trial user test...")
     trial_audit = audit_and_normalize_user_task_trials(config, fail_on_missing=False)
     for message in trial_audit.messages:
         print(message)
-    print("\n[2/7] Validazione dati...")
+    print("\n[2/8] Validazione dati...")
     data = load_all(config)
     print(validate(config, data, include_generated_checks=False))
-    print("\n[3/7] Analisi, grafici e tabelle...")
+    print("\n[3/8] Analisi, grafici e tabelle...")
     analyze(config, data)
     sync_clean_figure_alias()
     print("OK: analisi completata")
@@ -566,12 +568,14 @@ def main() -> None:
         "command",
         choices=[
             "validate",
+            "doctor",
             "validate-final-data",
             "validate-users-time",
             "analyze",
             "generate-report",
             "clean-outputs",
             "generate-slides",
+            "validate-template",
             "validate-slide-template",
             "validate-slide-assets",
             "create-templates",
@@ -619,6 +623,7 @@ def main() -> None:
     parser.add_argument("--no-export-pdf", action="store_true", help="Salta esplicitamente l'export PDF")
     parser.add_argument("--include-unfinished", action="store_true", help="Importa anche risposte non completate")
     args = parser.parse_args()
+    command_started_at = datetime.now(timezone.utc)
     app_config_path = "config.yaml" if args.command == "generate-slides" else args.config
     config = load_config(app_config_path)
     if args.plot_style:
@@ -653,6 +658,16 @@ def main() -> None:
         print("\n".join(result.messages))
         print(resolve_path("outputs/reports/users_time_validation_report.md"))
         return
+    if args.command == "doctor":
+        report, ok = doctor_report()
+        target = resolve_path("outputs/reports/doctor.md")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(report, encoding="utf-8")
+        print(report)
+        print(target)
+        if not ok:
+            raise SystemExit(1)
+        return
     if args.command == "validate-final-data":
         result = validate_final_data(config, strict=args.strict)
         report = format_final_data_validation(result)
@@ -664,7 +679,7 @@ def main() -> None:
         if args.strict and not result.ok:
             raise SystemExit(1)
         return
-    if args.command == "validate-slide-template":
+    if args.command in {"validate-template", "validate-slide-template"}:
         target = args.template or "slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx"
         messages = validate_template_structure(target)
         if messages:
@@ -750,6 +765,9 @@ def main() -> None:
                 if args.export_pdf and not args.no_export_pdf:
                     export_pdf_or_exit(result.output)
                 finalize_final_outputs(result.output)
+        md_path, json_path = write_pipeline_run_manifest(config, command="full-pipeline", started_at=command_started_at)
+        print(f"Run manifest: {md_path}")
+        print(f"Run manifest JSON: {json_path}")
         return
     if args.command == "analyze-benchmark":
         analyze_ueq_benchmark(config, args.input or "data/raw/ueq_benchmark.csv")

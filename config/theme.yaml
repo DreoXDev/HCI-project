@@ -1,0 +1,24 @@
+theme:
+  font:
+    heading: "Sora"
+    body: "Inter"
+    fallback: "DejaVu Sans"
+  palette:
+    background: "#050505"
+    panel: "#141418"
+    text: "#FFFFFF"
+    muted_text: "#D6D6D6"
+    grid: "#374151"
+    deliveroo: "#00CCBC"
+    glovo: "#FFC244"
+  charts:
+    style: "dark"
+    dpi: 220
+    show_annotations: true
+  tables:
+    native_pptx: true
+    max_rows_per_slide: 12
+    header_fill: "#111827"
+  slides:
+    template: "slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx"
+    config: "slides/config/slide_deck.yml"

@@ -1,0 +1,22 @@
+ueq:
+  item_mapping: "config/ueq_items.yml"
+  benchmark_thresholds: "config/ueq_benchmark_thresholds.yml"
+  transformed_range: [-3, 3]
+  official_scale_labels:
+    Attractiveness: "Attrattività"
+    Perspicuity: "Apprendibilità"
+    Efficiency: "Efficienza"
+    Dependability: "Controllabilità"
+    Stimulation: "Stimolazione"
+    Novelty: "Originalità"
+  heatmap_short_labels:
+    Attrattività: "Attr."
+    Apprendibilità: "Appr."
+    Efficienza: "Eff."
+    Controllabilità: "Contr."
+    Stimolazione: "Stim."
+    Originalità: "Orig."
+  sanity_checks:
+    - "Non usare raw mean 1..7 come risultato ufficiale UEQ."
+    - "Mostrare benchmark solo quando le soglie ufficiali sono applicate."
+    - "Mantenere label ufficiali nelle tabelle e abbreviazioni solo dove lo spazio lo richiede."

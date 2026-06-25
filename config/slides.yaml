@@ -1,0 +1,98 @@
+slides:
+  - id: cover
+    enabled: true
+    section: intro
+    generator: static
+    layout: cover
+    notes: "Copertina del progetto."
+  - id: index
+    enabled: true
+    section: intro
+    generator: static
+    layout: index_classic
+    notes: "Indice classico: introduzione, valutazione euristica, test utente, questionario, conclusioni, appendice."
+  - id: problem_description
+    enabled: true
+    section: intro
+    generator: static_text
+    layout: text
+    text_key: intro.problem_description
+  - id: evaluation_environment
+    enabled: true
+    section: intro
+    generator: static_text
+    layout: text
+    text_key: intro.evaluation_environment
+  - id: apps_overview
+    enabled: true
+    section: intro
+    generator: static_text
+    layout: app_profile
+    data_source: config/apps.yaml
+  - id: heuristic_objective
+    enabled: true
+    section: heuristic
+    generator: static_text
+    layout: text
+    text_key: heuristic.objective
+  - id: evaluator_table
+    enabled: true
+    section: heuristic
+    generator: table
+    layout: native_table
+    data_source: outputs/tables/heuristics_evaluators_slide.csv
+  - id: heuristic_findings
+    enabled: true
+    section: heuristic
+    generator: chart_table
+    layout: comparison
+    data_source: data/processed/final_report
+  - id: user_test_sample
+    enabled: true
+    section: user_testing
+    generator: chart_table
+    layout: comparison
+    data_source: outputs/charts/users_age_pie.png
+  - id: task_effectiveness
+    enabled: true
+    section: user_testing
+    generator: chart
+    layout: graph
+    data_source: outputs/charts/effectiveness_outcome_matrix.png
+  - id: task_efficiency
+    enabled: true
+    section: user_testing
+    generator: chart_table
+    layout: comparison_with_table
+    data_source: outputs/tables/statistical_tests
+  - id: ueq_method
+    enabled: true
+    section: questionnaire
+    generator: static_text
+    layout: text
+    text_key: questionnaire.ueq_method
+  - id: ueq_scale_comparison
+    enabled: true
+    section: questionnaire
+    generator: chart
+    layout: graph
+    data_source: outputs/charts/ueq_benchmark_comparison.png
+  - id: ueq_subgroup_heatmap
+    enabled: true
+    section: questionnaire
+    generator: chart
+    layout: graph
+    data_source: outputs/charts/subgroup_ueq_heatmap.png
+    notes: "Usa solo qui label UEQ abbreviate: Attr., Appr., Eff., Contr., Stim., Orig."
+  - id: conclusions
+    enabled: true
+    section: conclusions
+    generator: static_text
+    layout: text
+    text_key: conclusions.overall
+  - id: appendices
+    enabled: true
+    section: appendix
+    generator: appendix
+    layout: appendix_table
+    data_source: config/appendices.yaml

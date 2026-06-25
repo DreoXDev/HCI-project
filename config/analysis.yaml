@@ -1,0 +1,19 @@
+analysis:
+  alpha: 0.05
+  bootstrap_iterations: 1000
+  paired_design: true
+  effectiveness:
+    primary_test: "McNemar exact"
+    absolute_threshold_source: "config/analysis_thresholds.yml"
+  efficiency:
+    primary_test_selection: "paired t-test if normal, otherwise Wilcoxon signed-rank"
+    include_only_autonomous_successes: true
+    oet_source: "config/analysis_thresholds.yml"
+  questionnaire:
+    ueq_scale_min: 1
+    ueq_scale_max: 7
+    nps_min: 0
+    nps_max: 10
+  missing_values:
+    fail_on_missing_required_columns: true
+    report_non_blocking_warnings: true

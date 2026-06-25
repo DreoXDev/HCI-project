@@ -1,0 +1,24 @@
+intro:
+  problem_description:
+    title: "Descrizione del problema"
+    body: |
+      Il progetto confronta due applicazioni di food delivery per individuare criticità di usabilità, differenze percepite dagli utenti e priorità di miglioramento.
+  evaluation_environment:
+    title: "Ambiente di valutazione"
+    body: |
+      La valutazione combina analisi esperta, test utente e questionario standardizzato. I dati numerici e i grafici sono generati dalla toolchain, mentre i testi editoriali possono essere revisionati manualmente.
+heuristic:
+  objective:
+    title: "Obiettivo della valutazione euristica"
+    body: |
+      Individuare problemi ricorrenti nei flussi principali, classificarli per euristica e severità, e trasformarli in raccomandazioni operative.
+questionnaire:
+  ueq_method:
+    title: "Scala UEQ e metodo di scoring"
+    body: |
+      Le risposte UEQ sono trasformate dal range raw 1..7 alla scala standard -3..+3. Le medie per dimensione e il benchmark vengono calcolati dalla pipeline.
+conclusions:
+  overall:
+    title: "Conclusioni"
+    body: |
+      La sintesi finale integra valutazione euristica, test utente e questionario per distinguere problemi operativi, percezione soggettiva e priorità di redesign.

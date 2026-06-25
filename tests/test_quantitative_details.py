@@ -174,6 +174,13 @@ def test_ueq_statistical_tests_by_scale_keeps_all_six_dimensions() -> None:
     assert list(out["scale"]) == ["Attractiveness", "Perspicuity", "Efficiency", "Dependability", "Stimulation", "Novelty"]
 
 
+def test_ueq_heatmap_uses_exactly_six_short_scale_labels() -> None:
+    labels = [quantitative._ueq_heatmap_scale_label(scale) for scale in quantitative.UEQ_INTERNAL_SCALE_ORDER]
+
+    assert labels == ["Attr.", "Appr.", "Eff.", "Contr.", "Stim.", "Orig."]
+    assert len(set(labels)) == 6
+
+
 def test_ueq_benchmark_by_scale_app_separates_simple_zone_from_benchmark() -> None:
     scale_stats = pd.DataFrame(
         [

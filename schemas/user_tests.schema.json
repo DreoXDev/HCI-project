@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "User test task row",
+  "type": "object",
+  "required": ["user_id", "app", "task_id", "completion_time_sec", "success"],
+  "properties": {
+    "user_id": {"type": "string", "minLength": 1},
+    "group": {"type": "string"},
+    "app": {"type": "string"},
+    "task_id": {"type": "string", "pattern": "^T[0-9]{2}$"},
+    "task_name": {"type": "string"},
+    "completion_time_sec": {"type": ["integer", "number"], "minimum": 0},
+    "success": {"type": ["integer", "number", "boolean", "string"]},
+    "errors_count": {"type": ["integer", "number"], "minimum": 0},
+    "help_requests": {"type": ["integer", "number"], "minimum": 0},
+    "observer_notes": {"type": "string"}
+  }
+}

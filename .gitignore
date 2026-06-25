@@ -11,6 +11,7 @@ Thumbs.db
 
 outputs/**
 !outputs/.gitkeep
+!outputs/README.md
 !outputs/**/.gitkeep
 
 reports/**

@@ -1,0 +1,3 @@
+id,name,description,expected_result,oet_seconds
+T01,Ricerca ristorante,Find a restaurant matching the prompt,Restaurant page opened,45
+T02,Aggiunta prodotto al carrello,Add the requested product to cart,Cart contains requested product,90

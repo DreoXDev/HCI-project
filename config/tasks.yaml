@@ -1,0 +1,13 @@
+tasks:
+  - id: T01
+    name: "Ricerca ristorante"
+    expected_applications: ["Deliveroo", "Glovo"]
+    oet_seconds: 45
+  - id: T02
+    name: "Aggiunta prodotto al carrello"
+    expected_applications: ["Deliveroo", "Glovo"]
+    oet_seconds: 90
+  - id: T03
+    name: "Modifica carrello"
+    expected_applications: ["Deliveroo", "Glovo"]
+    oet_seconds: 60

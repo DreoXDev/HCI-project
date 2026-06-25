@@ -1,0 +1,3 @@
+user_id,group,app,task_id,task_name,completion_time_sec,success,errors_count,help_requests,observer_notes
+U01,A,Deliveroo,T01,Ricerca ristorante,42,1,0,0,Anonymous demo row
+U01,A,Glovo,T01,Ricerca ristorante,48,1,1,0,Anonymous demo row

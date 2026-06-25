@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HCI user task",
+  "type": "object",
+  "required": ["id", "name", "oet_seconds"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^T[0-9]{2}$"},
+    "name": {"type": "string", "minLength": 1},
+    "description": {"type": "string"},
+    "expected_result": {"type": "string"},
+    "oet_seconds": {"type": ["integer", "number"], "minimum": 1}
+  }
+}

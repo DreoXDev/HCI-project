@@ -479,3 +479,5 @@ Nota: le variabili demografiche sono conteggiate una sola volta per partecipante
 La familiarità con le app di delivery permette di interpretare le prestazioni nei task e le risposte al questionario. Il campione non rappresenta due gruppi distinti per app: gli stessi utenti hanno svolto task e valutazioni su entrambi i sistemi.
 
 Nota: le variabili demografiche sono conteggiate una sola volta per partecipante. Gli stessi utenti hanno valutato entrambe le applicazioni.
+
+Abbreviazioni delle scale UEQ: Attr. = Attrattività, Appr. = Apprendibilità, Eff. = Efficienza, Contr. = Controllabilità, Stim. = Stimolazione, Orig. = Originalità.

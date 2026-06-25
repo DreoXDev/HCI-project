@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Heuristic finding",
+  "type": "object",
+  "required": ["app", "problem_id", "description", "heuristic", "severity"],
+  "properties": {
+    "app": {"type": "string"},
+    "evaluator_id": {"type": "string"},
+    "problem_id": {"type": "string", "minLength": 1},
+    "description": {"type": "string", "minLength": 1},
+    "heuristic": {"type": "string", "minLength": 1},
+    "severity": {"type": ["integer", "number"], "minimum": 0, "maximum": 4},
+    "frequency": {"type": ["integer", "number", "null"]},
+    "impact": {"type": ["integer", "number", "null"]},
+    "redesign_suggestion": {"type": "string"},
+    "screen_reference": {"type": "string"}
+  }
+}

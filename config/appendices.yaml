@@ -1,0 +1,24 @@
+appendices:
+  enabled: true
+  default_in_main_deck: true
+  sections:
+    - id: heuristic_evaluations
+      title: "Appendice A - Valutazioni euristiche individuali"
+      source: "data/processed/heuristics"
+      layout: "appendix_table"
+      enabled: true
+    - id: support_materials
+      title: "Appendice B - Moduli e materiali di supporto"
+      source: "slides/assets/user_task_deck"
+      layout: "reference_pages"
+      enabled: true
+    - id: usability_problem_evaluation
+      title: "Appendice C - Valutazione problemi di usabilità"
+      source: "data/processed/final_report"
+      layout: "appendix_table"
+      enabled: true
+    - id: user_tasks
+      title: "Appendice - Task presentati agli utenti"
+      source: "config/tasks.yaml"
+      layout: "task_cards"
+      enabled: true

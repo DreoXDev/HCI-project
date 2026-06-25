@@ -1,0 +1,3 @@
+app,evaluator_id,problem_id,description,heuristic,severity,frequency,impact,redesign_suggestion,screen_reference
+Deliveroo,E01,PD01,Cart feedback is not explicit,Visibility of system status,3,2,3,Make cart state persistent,cart
+Glovo,E02,PG01,Sponsored content is hard to distinguish,Match between system and real world,2,3,2,Label sponsored sections clearly,home

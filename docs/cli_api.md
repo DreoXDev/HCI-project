@@ -7,13 +7,15 @@
 
 | Comando | Scopo |
 |---|---|
+| `doctor` | Controlla ambiente, dipendenze, LibreOffice, template e scrittura output |
 | `validate` | Valida i CSV normalizzati |
+| `validate-final-data` | Esegue i controlli finali sui dati e sul deck generato |
 | `clean-outputs` | Rimuove artefatti rigenerabili senza toccare dati, template e testi statici |
 | `full-pipeline` | Rigenera analisi, asset, testi, slide pack e, con `--generate-slides`, il PPTX finale |
 | `generate-slides` | Crea un PPTX dalla config indicata |
 | `build-slide-pack` | Prepara testi e asset narrativi per le slide |
 | `quality-check` | Controlla dati, output e documentazione |
-| `validate-slide-template` | Controlla i `TEMPLATE_ID` del template |
+| `validate-template` / `validate-slide-template` | Controlla i `TEMPLATE_ID` del template |
 | `validate-slide-assets` | Controlla asset richiesti dal deck |
 
 ## Pipeline completa
@@ -26,9 +28,9 @@ python -m src.cli full-pipeline --plot-style both --generate-slides --export-pdf
 Con `--generate-slides`, la pipeline completa produce:
 
 - `outputs/slides/final_report.pptx`
-- `outputs/final/final_report.pptx`
-- `outputs/final/final_report_quality_gate.md`
-- `outputs/final/final_report_changelog.md`
+- `outputs/reports/pipeline_run.md`
+- `outputs/reports/pipeline_run.json`
+- report di validazione in `outputs/reports/`
 
 Con `--export-pdf`, esporta anche il PDF del deck generato.
 
@@ -67,12 +69,13 @@ python -m src.cli heuristics severity-pipeline --problems data/processed/heurist
 
 ```powershell
 python -m src.cli validate-slide-template
+python -m src.cli validate-template
 python -m src.cli validate-slide-assets
 python -m src.cli generate-slides --auto --overwrite
 python -m src.cli build-slide-pack --export-pdf
 ```
 
-La presentazione finale da revisionare manualmente si trova in `outputs/final/final_report.pptx`. La copia in `outputs/slides/final_report.pptx` resta l'output tecnico del generatore.
+La presentazione finale da revisionare manualmente si trova in `outputs/slides/final_report.pptx`. Il PDF, quando esportato, si trova in `outputs/slides/final_report.pdf`.
 
 ## Note
 

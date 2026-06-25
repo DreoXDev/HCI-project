@@ -1,0 +1,23 @@
+apps:
+  deliveroo:
+    name: "Deliveroo"
+    short_label: "D"
+    primary_color: "#00CCBC"
+    secondary_color: "#07191B"
+    logo: "assets/logos/deliveroo.png"
+    description: "App di food delivery analizzata come primo sistema."
+    store_data:
+      source: "config/toolchain data"
+      last_checked: null
+      notes: "Aggiornare dati store in config/dati, non nei testi statici."
+  glovo:
+    name: "Glovo"
+    short_label: "G"
+    primary_color: "#FFC244"
+    secondary_color: "#1E1600"
+    logo: "assets/logos/glovo.png"
+    description: "App di food delivery analizzata come secondo sistema."
+    store_data:
+      source: "config/toolchain data"
+      last_checked: null
+      notes: "Aggiornare dati store in config/dati, non nei testi statici."

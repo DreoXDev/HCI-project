@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HCI evaluator profile",
+  "type": "object",
+  "required": ["evaluator_id", "gender", "age_group", "occupation", "usability_experience", "domain_experience"],
+  "properties": {
+    "evaluator_id": {"type": "string", "minLength": 1},
+    "group": {"type": "string"},
+    "gender": {"type": "string"},
+    "age_group": {"type": "string"},
+    "occupation": {"type": "string"},
+    "delivery_familiarity": {"type": ["number", "string"]},
+    "usability_experience": {"type": ["number", "string"]},
+    "domain_experience": {"type": ["number", "string"]},
+    "notes": {"type": "string"}
+  }
+}

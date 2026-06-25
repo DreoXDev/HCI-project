@@ -1,0 +1,15 @@
+project:
+  title: "Deliveroo VS Glovo - Analisi Trasversale di Usabilita"
+  subtitle: "Valutazione euristica, test utente, questionario UEQ/NPS"
+  academic_year: "20XX/20XX"
+  course: "Interazione Uomo-Macchina"
+  language: "it"
+  group: "Gruppo HCI"
+  systems:
+    - deliveroo
+    - glovo
+outputs:
+  generate_pptx: true
+  generate_pdf: true
+  final_pptx: "outputs/slides/final_report.pptx"
+  final_pdf: "outputs/slides/final_report.pdf"

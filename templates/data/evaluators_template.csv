@@ -1,0 +1,3 @@
+evaluator_id,group,gender,age_group,occupation,delivery_familiarity,usability_experience,domain_experience,notes
+E01,usability,F,18-24,Student,3,4,2,Anonymous demo row
+E02,domain,M,25-34,Student worker,2,2,4,Anonymous demo row

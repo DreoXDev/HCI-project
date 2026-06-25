@@ -1,0 +1,16 @@
+presentation:
+  template_path: "slides/templates/Deliveroo_vs_Glovo_clean_python_ready_template.pptx"
+  legacy_template_path: "slides/templates/hci_project_template_legacy_full.pptx"
+  slide_config_path: "slides/config/slide_deck.yml"
+  output_pptx: "outputs/slides/final_report.pptx"
+  output_pdf: "outputs/slides/final_report.pdf"
+  validation_command: "python -m src.cli validate-template"
+  audit_command: "python tools/audit_pptx_template.py"
+sections:
+  include_sources: false
+  include_ueq_question_details: false
+  include_task_detail_cards: false
+  include_legacy_findings_cards: false
+notes:
+  - "The active template must keep TEMPLATE_ID markers and placeholder names used by the generator."
+  - "The legacy template is a safety copy of the fuller layout set."
